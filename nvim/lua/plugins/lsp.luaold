@@ -1,0 +1,221 @@
+local keymaps = require "core.keymaps"
+
+local constants = require "constants"
+local utils = require "utils"
+
+local servers = {
+  "lua_ls", "bashls", "pyright", "clangd",
+  "html", "cssls", "tsserver", "jsonls",
+  "sqlls", "stylelint_lsp", "yamlls",
+  "marksman", "eslint", "dotls", "dockerls",
+  "cssmodules_ls",
+}
+
+local dependencies = {
+  "neovim/nvim-lspconfig",
+  "williamboman/mason-lspconfig.nvim", -- Bonus Mason/lspconfig features
+  "hrsh7th/nvim-cmp",                  -- Autocompletion
+  "hrsh7th/cmp-nvim-lsp",              -- LSP source for nvim-cmp
+  "saadparwaiz1/cmp_luasnip",          -- Snippets source for nvim-cmp
+  "L3MON4D3/LuaSnip",                  -- Snippets plugin
+}
+
+return {
+  {
+    "williamboman/mason.nvim", -- LSP Install Manager
+    dependencies = dependencies,
+    config = function()
+      local lspconfig = require "lspconfig"
+      local mason = require "mason"
+      local mlspconfig = require "mason-lspconfig"
+      local cmp = require "cmp"
+      local cmplsp = require "cmp_nvim_lsp"
+      local luasnip = require "luasnip"
+      local capabilities = vim.lsp.protocol.make_client_capabilities()
+
+      -- Inject cmp-lsp capabilities
+      capabilities = cmplsp.default_capabilities(capabilities)
+
+      -- ============================================================
+      -- Mason setups
+      -- ============================================================
+      mason.setup()
+      mlspconfig.setup {
+        ensure_installed = servers,
+        automatic_installation = true,
+      }
+
+      -- ============================================================
+      -- Server setups
+      -- ============================================================
+      --
+      -- TODO: This may be unecessary
+      -- Define `root_dir` when needed
+      -- See: https://github.com/neovim/nvim-lspconfig/issues/320
+      -- This is a workaround, maybe not work with some servers.
+      -- local root_dir = function()
+      --   return vim.fn.getcwd()
+      -- end
+
+      -- Call setup
+      for _, lsp in ipairs(servers) do
+        local sconfig = {
+          on_attach = utils.lsp_on_attach,
+          -- TODO: This may be unecessary
+          -- root_dir = root_dir,
+          capabilities = capabilities,
+        }
+
+        if lsp == "lua_ls" then
+          sconfig.on_init = function(client)
+            local path = client.workspace_folders[1].name
+
+            ---@diagnostic disable-next-line: undefined-field
+            if vim.loop.fs_stat(path .. '/.luarc.json') or vim.loop.fs_stat(path .. '/.luarc.jsonc') then
+              return
+            end
+
+            client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
+              runtime = {
+                -- Tell the language server which version of Lua you're using
+                -- (most likely LuaJIT in the case of Neovim)
+                version = 'Lua 5.1'
+              },
+              -- Make the server aware of Neovim runtime files
+              workspace = {
+                checkThirdParty = false,
+                library = {
+                  vim.env.VIMRUNTIME
+                  -- Depending on the usage, you might want to add additional paths here.
+                  -- "${3rd}/luv/library"
+                  -- "${3rd}/busted/library",
+                },
+                -- or pull in all of 'runtimepath'. NOTE: this is a lot slower
+                -- library = vim.api.nvim_get_runtime_file("", true)
+              },
+              completion = {
+                displayContext = 5,
+              },
+            })
+          end
+
+          sconfig.settings = {
+            Lua = {}
+          }
+        end
+
+        if lsp == "tsserver" then
+          print("setting up tsserver")
+          sconfig.server = {
+            init_options = {
+              -- TODO this generally only applies to mac so maybe do some conditionals
+              plugins = {
+                {
+                  name = "ts-lit-plugin",
+                  location = vim.uv.cwd() .. "/node_modules/ts-lit-plugin",
+                },
+                {
+                  name = "typescript-lit-html-plugin",
+                  location = vim.uv.cwd() .. "/typescript-lit-html-plugin",
+                },
+              },
+            },
+          }
+        end
+
+        lspconfig[lsp].setup(sconfig)
+      end
+
+      -- ============================================================
+      -- Completion setup
+      -- ============================================================
+      cmp.setup {
+        snippet = {
+          expand = function(args)
+            luasnip.lsp_expand(args.body)
+          end,
+        },
+        mapping = cmp.mapping.preset.insert(keymaps.cmp.get_mapping_presets()),
+        formatting = {
+          fields = { "kind", "abbr", "menu" },
+          format = function(entry, vim_item)
+            vim_item.kind = constants.CMP_KIND_ICONS[vim_item.kind]
+            vim_item.menu = ({
+              nvim_lsp = "",
+              nvim_lua = "",
+              luasnip = "",
+              buffer = "",
+              path = "",
+              emoji = "",
+            })[entry.source.name]
+            return vim_item
+          end,
+        },
+        sources = {
+          { name = 'nvim_lsp' },
+          { name = 'luasnip' },
+          { name = 'path' },
+          { name = 'buffer' },
+        },
+        confirm_opts = {
+          behavior = cmp.ConfirmBehavior.Replace,
+          select = false,
+        },
+        window = {
+          completion = constants.WINDOW_STYLE,
+          documentation = constants.WINDOW_STYLE,
+        },
+        experimental = {
+          ghost_text = true,
+        },
+      }
+
+      -- ============================================================
+      -- Related vim diagnostic / lsp options
+      -- ============================================================
+
+      print("adding custom hover handler")
+      -- Custom hover/popover settings
+      vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(
+        vim.lsp.handlers.hover,
+        constants.WINDOW_STYLE
+      )
+
+      print("adding custom signature help handler")
+      vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(
+        vim.lsp.handlers.signature_help,
+        constants.WINDOW_STYLE
+      )
+
+      -- Diagnostic settings
+      -- see: `:help vim.diagnostic.config`
+      vim.diagnostic.config({
+        update_in_insert = true,
+        float = constants.WINDOW_STYLE,
+        severity_sort = true,
+        underline = true,
+        signs = {
+          active = {
+            { name = "DiagnosticSignError", text = "" },
+            { name = "DiagnosticSignWarn", text = "" },
+            { name = "DiagnosticSignHint", text = "" },
+            { name = "DiagnosticSignInfo", text = "" },
+          },
+        },
+      })
+
+
+    -- TODO Enable this if you reenable vim-notify
+    -- local banned_messages = { "No information available" }
+    -- -- @diagnostic disable-next-line: duplicate-set-field
+    -- vim.notify = function(msg, ...)
+    --   for _, banned in ipairs(banned_messages) do
+    --     if msg == banned then
+    --       return
+    --     end
+    --   end
+    --   return require("notify")(msg, ...)
+    -- end
+    end
+  }
+}
