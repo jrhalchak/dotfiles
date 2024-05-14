@@ -18,6 +18,37 @@ return {
       -- diagnostics appeared/became resolved
       vim.opt.signcolumn = "yes"
 
+      vim.g.coc_global_extensions =  {
+        "coc-lua", "coc-stylua", "coc-git",
+        "coc-browser", "coc-copilot", "coc-docker",
+        "coc-sql", "coc-sqlfluff", "coc-vimlsp", "coc-yaml",
+
+        -- Markup / Styles / JS
+        "coc-html", "coc-htmlhint", "coc-html-css-support", "coc-css",
+        "coc-svg",
+
+        -- Javascript / Styles
+        "coc-json", "coc-tsserver", "coc-eslint", "coc-cssmodules",
+        "coc-prettier",
+
+        -- TODO configure this
+        -- It requires a python build of neovim
+        "coc-snippets",
+
+        -- Python may require setting the python.setIntepreter setting in coc.
+        "@yaegassy/coc-black-formatter", "@yaegassy/coc-ruff", "coc-python",
+
+        -- Stylelint plus with coc-css can conflict, so coc-css validation is
+        -- disabled in the settings.
+        "coc-stylelintplus",
+
+        -- Markdown: These need commands to be bound
+        "coc-markdownlint", "coc-webview", "coc-markdown-preview-enhanced",
+
+        -- Misc/unsure
+        "coc-lists", "coc-yank"
+      }
+
       local keyset = vim.keymap.set
 
        -- Autocomplete

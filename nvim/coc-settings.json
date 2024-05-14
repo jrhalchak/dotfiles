@@ -45,5 +45,7 @@
     "/Users/jonathan.halchack/.nvm/versions/node/v18.20.2/lib/node_modules/ts-lit-plugin",
     "/Users/jonathan.halchack/.nvm/versions/node/v18.20.2/lib/node_modules/typescript-lit-html-plugin"
   ],
+  "markdown-preview-enhanced.enableScriptExecution": true,
+  "snippets.ultisnips.pythonPrompt": false
 }
 
