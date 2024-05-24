@@ -13,6 +13,7 @@ return {
     },
     event = "VeryLazy",
     init = function()
+      -- TODO do I want these options? move them to options
       vim.o.timeout = true
       vim.o.timeoutlen = 300
     end,
@@ -20,16 +21,27 @@ return {
       -- config here or leave empty for defaults
     },
     config = function()
-      local wk = require('which-key')
+      local wk = require"which-key"
 
-      wk.register(keymaps.normal, { mode = "n" })
-      -- wk.register(vim.tbl_extend(
-      --   "force",
-      --   keymaps.normal,
-      --   keymaps.lsp,
-      --   keymaps.cmp,
-      -- ), { mode = "n" })
-      wk.register(keymaps.visual, { mode = "v" })
-    end
-  }
+      wk.register(
+        vim.tbl_extend(
+          "force",
+          keymaps.normal,
+          -- keymaps.lsp,
+          -- keymaps.cmp,
+          -- i mode bindings configured in the plugin config
+          keymaps.telescope.which_key.normal
+        ),
+        { mode = "n" }
+      )
+      wk.register(
+        vim.tbl_extend(
+          "force",
+          keymaps.visual,
+          keymaps.telescope.which_key.visual
+        ),
+        { mode = "v" }
+      )
+    end,
+  },
 }

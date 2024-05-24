@@ -33,6 +33,11 @@ M.normal = {
     ["<C-l>"] = { "<C-w>l", "Move down" },
   },
   {
+    name = "quickfix",
+    ["[c"] = { ":cprevious<CR>", "previous" },
+    ["]c"] = { ":cnext<CR>", "next" },
+  },
+  {
     name = "Buffer switching",
     L = { ":bnext<CR>", "Next buffer" },
     H = { ":bprevious<CR>", "Previous buffer" },
@@ -59,16 +64,11 @@ M.normal = {
       k = { "<C-w>t<C-w>K", "V to H" },
       h = { "<C-w>t<C-w>H", "H to V" },
     },
-    lf = { "<cmd>lua vim.lsp.buf.format{ async = true }<cr>", "Format buffer" },
-    f = {
-      name = "Telescope",
-      f = { ":Telescope find_files<CR>", "Find files" },
-      g = { ":Telescope live_grep<CR>", "Grep files" },
-      r = { ":Telescope oldfiles<CR>", "Old files" },
-      p = { ":Telescope projects<CR>", "Projects" },
-      b = { ":Telescope buffers<CR>", "Buffers" },
+    g = {
+      name = "git",
+      b = { ":CocCommand git.showBlameDoc<CR>", "git blame" },
     },
-
+    -- lf = { "<cmd>lua vim.lsp.buf.format{ async = true }<cr>", "Format buffer" },
     {
       name = "Explore with Netrw",
       e = {
@@ -87,6 +87,8 @@ M.normal = {
     [']d'] = { vim.diagnostic.goto_next, "Next diagnostic" },
     ['<leader>ll'] = { vim.diagnostic.setloclist, "Set loclist" },
   },
+
+
 }
 
 --[[
@@ -253,5 +255,55 @@ M.cmp = {
 }
 
 M.cmp = {}
+
+
+-- ============================================================
+-- Telescope
+-- ============================================================
+
+-- TODO the "which_key" keys should probably have an i, v, and n, property
+M.telescope = {
+  get_mapping_presets = function()
+    local actions = require "telescope.actions"
+    -- These are INPUT MODE mappings
+    return {
+      ["<Down>"] = actions.cycle_history_next,
+      ["<Up>"] = actions.cycle_history_prev,
+      ["<C-j>"] = actions.move_selection_next,
+      ["<C-k>"] = actions.move_selection_previous,
+    }
+  end,
+  which_key = {
+    -- Telescope
+    normal = {
+      -- TODO include lsp_definitions, diagnostics, and implemention combos if they work with CoC
+      -- find
+      ["<leader>ff"] = { "<cmd> Telescope find_files <CR>", "find files" },
+      ["<leader>fa"] = { "<cmd> Telescope find_files follow=true no_ignore=true hidden=true <CR>", "find all" },
+      ["<leader>fw"] = { "<cmd> Telescope live_grep <CR>", "live grep" },
+      ["<leader>fb"] = { "<cmd> Telescope buffers <CR>", "find buffers" },
+      ["<leader>fh"] = { "<cmd> Telescope help_tags <CR>", "help page" },
+      -- ["<leader>fo"] = { "<cmd> Telescope oldfiles <CR>", "find oldfiles" },
+      ["<leader>fz"] = { "<cmd> Telescope current_buffer_fuzzy_find <CR>", "find in current buffer" },
+      ["<leader>fe"] = { "<cmd> Telescope symbols <CR>", "find emojis & symbols" },
+
+      ["<leader>fqf"] = { "<cmd> Telescope quickfix <CR>", "quickfix items" },
+      ["<leader>fqfa"] = { "<cmd> Telescope quickfixhistory <CR>", "quickfix history" },
+      ["<leader>fll"] = { "<cmd> Telescope loclist <CR>", "loclist items" },
+      ["<leader>fch"] = { "<cmd> Telescope command_history <CR>", "command history" },
+      ["<leader>fsh"] = { "<cmd> Telescope search_history <CR>", "search history" },
+
+      -- git
+      ["<leader>fgc"] = { "<cmd> Telescope git_bcommits <CR>", "buffer git commits" },
+      ["<leader>fga"] = { "<cmd> Telescope git_commits <CR>", "all git commits" },
+      ["<leader>fgs"] = { "<cmd> Telescope git_status <CR>", "git status" },
+    },
+    visual = {
+      -- git
+      ["<leader>fgc"] = { "<cmd> Telescope git_bcommits_range <CR>", "(visual) range git commits" },
+    },
+  }
+}
+
 
 return M

@@ -36,7 +36,8 @@ return {
         "coc-snippets",
 
         -- Python may require setting the python.setIntepreter setting in coc.
-        "@yaegassy/coc-black-formatter", "@yaegassy/coc-ruff", "coc-python",
+        "@yaegassy/coc-black-formatter", "@yaegassy/coc-ruff", -- "coc-python",
+        "coc-pyright",
 
         -- Stylelint plus with coc-css can conflict, so coc-css validation is
         -- disabled in the settings.
@@ -115,8 +116,8 @@ return {
 
 
       -- Formatting selected code
-      keyset("x", "<leader>f", "<Plug>(coc-format-selected)", {silent = true})
-      keyset("n", "<leader>f", "<Plug>(coc-format-selected)", {silent = true})
+      keyset("x", "<leader>lf", "<Plug>(coc-format-selected)", {silent = true})
+      keyset("n", "<leader>lf", "<Plug>(coc-format-selected)", {silent = true})
 
 
       -- Setup formatexpr specified filetype(s)

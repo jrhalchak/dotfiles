@@ -49,8 +49,10 @@ M.setup = function()
   g.netrw_banner = 0                  -- Disable the header banner
   g.netrw_sort_sequence = [[[\/]$,*]] -- Sort dirs first
   g.netrw_liststyle = 3               -- Tree view by default
-  g.netrw_sizestyle = "H"             -- Human readable file size 
-  g.netrw_keepdir = 0                 -- Keep view/browse dir synced, avoid move error
+  g.netrw_sizestyle = "H"             -- Human readable file size
+  -- TODO this may be causing trouble?
+  -- g.netrw_keepdir = 0                 -- Keep view/browse dir synced, avoid move error
+
   -- Patterns for hiding files, e.g. node_modules
   -- NOTE: this works by reading '.gitignore' file
   g.netrw_list_hide = vim.fn["netrw_gitignore#Hide"]()

@@ -26,6 +26,12 @@ return {
           hl['netrwTreeBar'] = { fg = c.dark3 }
           hl['CocFloating'] = { bg = c.bg_highlight }
           hl['CocFloatingBorder'] = { fg = c.fg_dark, bg = c.bg }
+          -- hl['DiffAdd'] = { fg = c.gitSigns.add }
+          -- hl['DiffChange'] = { fg = c.gitSigns.change }
+          -- hl['DiffDelete'] = { fg = c.gitSigns.delete }
+          hl['DiffAdd'] = { fg = c.git.add }
+          hl['DiffChange'] = { fg = c.git.change }
+          hl['DiffDelete'] = { fg = c.git.delete }
         end,
       }
       vim.cmd('colorscheme tokyonight-night')
