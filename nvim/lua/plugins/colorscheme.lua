@@ -23,7 +23,6 @@ return {
         -- end
         on_highlights = function(hl, c)
           -- hl['@some.treesitter.hlgroup'] = { undercurl = true, strikethrough = true, sp = '#ffffff', fg = c.fg_dark, bg = c.bg_dark }
-          hl['netrwTreeBar'] = { fg = c.dark3 }
           hl['CocFloating'] = { bg = c.bg_highlight }
           hl['CocFloatingBorder'] = { fg = c.fg_dark, bg = c.bg }
           -- hl['DiffAdd'] = { fg = c.gitSigns.add }

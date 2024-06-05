@@ -46,16 +46,16 @@ M.setup = function()
   -- ============================================================
   -- Netrw
   -- ============================================================
-  g.netrw_banner = 0                  -- Disable the header banner
-  g.netrw_sort_sequence = [[[\/]$,*]] -- Sort dirs first
-  g.netrw_liststyle = 3               -- Tree view by default
-  g.netrw_sizestyle = "H"             -- Human readable file size
+  -- g.netrw_banner = 0                  -- Disable the header banner
+  -- g.netrw_sort_sequence = [[[\/]$,*]] -- Sort dirs first
+  -- g.netrw_liststyle = 3               -- Tree view by default
+  -- g.netrw_sizestyle = "H"             -- Human readable file size
   -- TODO this may be causing trouble?
   -- g.netrw_keepdir = 0                 -- Keep view/browse dir synced, avoid move error
 
   -- Patterns for hiding files, e.g. node_modules
   -- NOTE: this works by reading '.gitignore' file
-  g.netrw_list_hide = vim.fn["netrw_gitignore#Hide"]()
+  -- g.netrw_list_hide = vim.fn["netrw_gitignore#Hide"]()
 
   -- Preview files in a vertical split window
   -- vim.g.netrw_preview = 1
@@ -73,17 +73,17 @@ M.setup = function()
 
   -- Setup file operations commands
   -- TODO: figure out how to add these feature in Windows
-  if package.config:sub(1, 1) == "/" then
-    -- Enable recursive copy of directories in *nix systems
-    vim.g.netrw_localcopydircmd = "cp -r"
+  -- if package.config:sub(1, 1) == "/" then
+  --   -- Enable recursive copy of directories in *nix systems
+  --   vim.g.netrw_localcopydircmd = "cp -r"
 
-    -- Enable recursive creation of directories in *nix systems
-    vim.g.netrw_localmkdir = "mkdir -p"
+  --   -- Enable recursive creation of directories in *nix systems
+  --   vim.g.netrw_localmkdir = "mkdir -p"
 
-    -- Enable recursive removal of directories in *nix systems
-    -- NOTE: we use 'rm' instead of 'rmdir' (default) to be able to remove non-empty directories
-    vim.g.netrw_localrmdir = "rm -r"
-  end
+  --   -- Enable recursive removal of directories in *nix systems
+  --   -- NOTE: we use 'rm' instead of 'rmdir' (default) to be able to remove non-empty directories
+  --   vim.g.netrw_localrmdir = "rm -r"
+  -- end
 
   -- ============================================================
   -- Tabs, indent
@@ -153,10 +153,10 @@ M.setup = function()
     "getscriptPlugin",
     "gzip",
     "logipat",
-    -- "netrw",
-    -- "netrwPlugin",
-    -- "netrwSettings",
-    -- "netrwFileHandlers",
+    "netrw",
+    "netrwPlugin",
+    "netrwSettings",
+    "netrwFileHandlers",
     "matchit",
     "tar",
     "tarPlugin",

@@ -47,16 +47,7 @@ M.normal = {
     [constants.IS_MAC and "Ò" or "<A-L>"] = { ":tabn<CR>", "Next tab" },
     [constants.IS_MAC and "Ó" or "<A-H>"] = { ":tabp<CR>", "Previous tab" },
   },
-  -- TODO: This doesn"t work well
-  {
-    name = "Move lines",
-    [constants.IS_MAC and "∆" or "<A-j>"] = {
-      "<Esc>:m .+1<CR>==gi", "Move line up"
-    },
-    [constants.IS_MAC and "˚" or "<A-k>"] = {
-      "<Esc>:m .-2<CR>==gi", "Move line down"
-    },
-  },
+
   ["<leader>"] = {
     h = { ":nohl<CR>", "Clear highlights" },
     t = {
@@ -70,16 +61,18 @@ M.normal = {
     },
     -- lf = { "<cmd>lua vim.lsp.buf.format{ async = true }<cr>", "Format buffer" },
     {
-      name = "Explore with Netrw",
+      name = "Explore with Neotree",
       e = {
         -- t = { ":20Vex<CR>", "Explore w/ side tree" },
-        v = { ":Vex<CR>", "Explore (vertical split)" },
-        s = { ":Sex<CR>", "Explore (horizontal split)" },
-        w = { ":Ex<CR>", "Explore in window (also \"-\")" }
+        v = { ":vsplit | Neotree current<CR>", "Explore (vertical split)" },
+        s = { ":split | Neotree current<CR>", "Explore (horizontal split)" },
+        w = { ":Neotree current<CR>", "Explore in window (also \"-\")" },
+        l = { ":Neotree left<CR>", "Explore (tree left)" },
+        r = { ":Neotree right<CR>", "Explore (tree right)" },
       }
     },
   },
-  ["-"] = { ":Ex<CR>", "Jump up to Netrw" },
+  ["-"] = { ":Neotree current<CR>", "Jump up to Netrw" },
   {
     name = "Diagnostics",
     ['<leader>k'] = { vim.diagnostic.open_float, "Open floating diagnostics" },
@@ -87,8 +80,16 @@ M.normal = {
     [']d'] = { vim.diagnostic.goto_next, "Next diagnostic" },
     ['<leader>ll'] = { vim.diagnostic.setloclist, "Set loclist" },
   },
-
-
+  -- TODO: This doesn"t work well
+  {
+    name = "Move lines",
+    [constants.IS_MAC and "∆" or "<A-j>"] = {
+      "<Esc>:m .+1<CR>==gi", "Move line up"
+    },
+    [constants.IS_MAC and "˚" or "<A-k>"] = {
+      "<Esc>:m .-2<CR>==gi", "Move line down"
+    },
+  },
 }
 
 --[[
