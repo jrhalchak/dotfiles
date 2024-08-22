@@ -7,10 +7,11 @@ return {
     "lewis6991/gitsigns.nvim",
   },
   config = function()
+    local noice = require"noice"
+
     require"lualine".setup {
       options = {
         icons_enabled = true,
-        theme = "tokyonight",
         component_separators = { left = "", right = ""},
         section_separators = { left = "", right = ""},
         disabled_filetypes = {
@@ -29,7 +30,14 @@ return {
       sections = {
         lualine_a = {"mode"},
         lualine_b = {"branch", "diff", "diagnostics"},
-        lualine_c = {"filename"},
+        lualine_c = {
+          {
+            noice.api.statusline.mode.get,
+            cond = noice.api.statusline.mode.has,
+            color = { fg = '#ff0000' },
+          },
+          "filename"
+        },
         lualine_x = {"encoding", "fileformat", "filetype"},
         lualine_y = {"progress"},
         lualine_z = {"location"}
@@ -38,7 +46,7 @@ return {
         lualine_a = {},
         lualine_b = {},
         lualine_c = {"filename"},
-        lualine_x = {"location"},
+        lualine_x = { "location" },
         lualine_y = {},
         lualine_z = {}
       },

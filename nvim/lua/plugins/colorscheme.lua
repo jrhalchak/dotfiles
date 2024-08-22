@@ -1,39 +1,66 @@
 return {
   {
-    'folke/tokyonight.nvim',
-    lazy = false,
-    priority = 1000,
-    opts = {},
+    "olimorris/onedarkpro.nvim",
+    priority = 1000, -- Ensure it loads first
     config = function()
-      require('tokyonight').setup {
-        -- use the night style
-        style = 'night',
-        transparent = true,
-        -- Style to be applied to different syntax groups
+      local color = require("onedarkpro.helpers")
+
+      require("onedarkpro").setup {
         styles = {
-          -- Value is any valid attr-list value for `:help nvim_set_hl`
-          comments = { italic = true },
-          keywords = { italic = true },
+          -- types = "NONE",
+          -- methods = "NONE",
+          -- numbers = "NONE",
+          -- strings = "NONE",
+          -- comments = "italic",
+          keywords = "bold,italic",
+          -- constants = "NONE",
+          -- functions = "italic",
+          -- operators = "NONE",
+          -- variables = "NONE",
+          -- parameters = "NONE",
+          -- conditionals = "italic",
+          -- virtual_text = "NONE",
         },
-        sidebars = { 'qf', 'vista_kind', 'terminal', 'packer' },
-        -- Change the 'hint' color to the 'orange' color, and make the 'error' color bright red
-        -- on_colors = function(colors)
-        --   colors.hint = colors.orange
-        --   colors.error = '#ff0000'
-        -- end
-        on_highlights = function(hl, c)
-          -- hl['@some.treesitter.hlgroup'] = { undercurl = true, strikethrough = true, sp = '#ffffff', fg = c.fg_dark, bg = c.bg_dark }
-          hl['CocFloating'] = { bg = c.bg_highlight }
-          hl['CocFloatingBorder'] = { fg = c.fg_dark, bg = c.bg }
-          -- hl['DiffAdd'] = { fg = c.gitSigns.add }
-          -- hl['DiffChange'] = { fg = c.gitSigns.change }
-          -- hl['DiffDelete'] = { fg = c.gitSigns.delete }
-          hl['DiffAdd'] = { fg = c.git.add }
-          hl['DiffChange'] = { fg = c.git.change }
-          hl['DiffDelete'] = { fg = c.git.delete }
-        end,
+        colors = {
+          yellow = color.darken("yellow", 7, "onelight"),
+          orange = color.darken("orange", 7, "onelight"),
+          comment_color = color.darken("gray", 10, "onelight"),
+        --   my_new_green = "require('onedarkpro.helpers').darken('green', 10, 'onedark')"
+        },
+        highlights = {
+          Comment = { fg = "${comment_color}", italic = true, bold = true },
+          CocFloating = { bg = "${white}" },
+          CocFloatingBorder = { fg = "${gray}", bg = "${white}" },
+        --   Error = {
+        --     fg = "${my_new_red}",
+        --     bg = "${my_new_green}"
+        --   },
+        }
       }
-      vim.cmd('colorscheme tokyonight-night')
+      vim.cmd("colorscheme onelight")
     end
-  },
+  }
 }
+
+--[[
+=============================================================================
+Color keys/values from OneDarkPro's "onelight" theme
+=============================================================================
+{
+    bg = "#fafafa",
+    fg = "#6a6a6a",
+    red = "#e05661",
+    orange = "#ee9025",
+    yellow = "#eea825",
+    green = "#1da912",
+    cyan = "#56b6c2",
+    blue = "#118dc3",
+    purple = "#9a77cf",
+    white = "#fafafa",
+    black = "#6a6a6a",
+    gray = "#bebebe",
+    highlight = "#e2be7d",
+    comment = "#9b9fa6",
+    none = "NONE",
+}
+--]]

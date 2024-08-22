@@ -107,7 +107,7 @@ M.setup = function()
   -- Migrated
   -- ============================================================
   opt.backup = false                           -- creates a backup file
-  opt.background = "dark"                      -- set background for colorscheme
+  opt.background = "light"                     -- set background for colorscheme
   opt.cmdheight = 1                            -- more space in the neovim command line for displaying messages
   opt.completeopt = { "menuone", "noselect" }  -- mostly just for cmp
   opt.conceallevel = 0                         -- so that `` is visible in markdown files
@@ -153,10 +153,10 @@ M.setup = function()
     "getscriptPlugin",
     "gzip",
     "logipat",
-    "netrw",
-    "netrwPlugin",
-    "netrwSettings",
-    "netrwFileHandlers",
+    -- "netrw",
+    -- "netrwPlugin",
+    -- "netrwSettings",
+    -- "netrwFileHandlers",
     "matchit",
     "tar",
     "tarPlugin",

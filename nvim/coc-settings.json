@@ -7,6 +7,20 @@
     "highlight": "CocFloating",
     "borderhighlight": "CocFloatingBorder",
   },
+  "suggest.floatConfig": {
+    "border": true,
+    "rounded": true,
+    "shadow": false,
+    "winblend": 20,
+    "highlight": "CocFloating",
+    "borderhighlight": "CocFloatingBorder",
+  },
+  "suggest.formatItems": [
+    "kind",
+    "abbr",
+    "menu",
+    "shortcut"
+  ],
   "suggest.completionItemKindLabels": {
     "text": "󰊄",
     "method": "",
