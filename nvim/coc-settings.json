@@ -60,6 +60,9 @@
     "/Users/jonathan.halchack/.nvm/versions/node/v18.20.2/lib/node_modules/typescript-lit-html-plugin"
   ],
   "markdown-preview-enhanced.enableScriptExecution": true,
+  "markdownlint.config": {
+    "line_length": false
+  },
   "snippets.ultisnips.pythonPrompt": false,
   "git.addedSign.text": "┃",
   "git.addedSign.hlGroup": "DiffAdd",
