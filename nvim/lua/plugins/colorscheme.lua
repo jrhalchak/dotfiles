@@ -6,6 +6,9 @@ return {
       local color = require("onedarkpro.helpers")
 
       require("onedarkpro").setup {
+        options = {
+          transparency = true,
+        },
         styles = {
           -- types = "NONE",
           -- methods = "NONE",
