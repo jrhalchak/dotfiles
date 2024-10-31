@@ -1,4 +1,4 @@
-local genplugs = require"plugins.general"
-local orgplugs = require"plugins.orgmode"
+local genplugs = require"plugs.general"
+local orgplugs = require"plugs.orgmode"
 
-return vim.tbl_merge(genplugs, orgplugs)
+return vim.list_extend(genplugs, orgplugs)

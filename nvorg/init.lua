@@ -35,9 +35,9 @@ vim.opt.background = "dark"
 --------------------------------
 -- /Mapping setup
 --------------------------------
-require"lazy".setup(
-  require"allplugins"
-)
+local allplugs = require"allplugins"
+
+require"lazy".setup(allplugs)
 
 -- open workspace index on start
 -- vim.cmd("index")
@@ -45,6 +45,6 @@ vim.cmd[[
   set cursorline
   set relativenumber
   set conceallevel=2
-  set conceallevel=nc
+  set conceallevel=0
 ]]
 
