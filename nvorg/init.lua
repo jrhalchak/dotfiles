@@ -31,13 +31,24 @@ vim.g.maplocalleader = " "
 -- set background for colorscheme
 -- vim.opt.background = "light"
 vim.opt.background = "dark"
+--------------------------------
+--/ Mapping setup
+--------------------------------
 
 --------------------------------
--- /Mapping setup
+-- Lazy / Plugin setup
 --------------------------------
-local allplugs = require"allplugins"
-
-require"lazy".setup(allplugs)
+require"lazy".setup {
+  spec = {
+    { import = "plugins" }
+  },
+  install = {
+    colorscheme = { "tokyonight" }
+  },
+}
+--------------------------------
+--/ Lazy / Plugin setup
+--------------------------------
 
 -- open workspace index on start
 -- vim.cmd("index")
@@ -45,6 +56,5 @@ vim.cmd[[
   set cursorline
   set relativenumber
   set conceallevel=2
-  set conceallevel=0
 ]]
 

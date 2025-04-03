@@ -28,7 +28,7 @@ return {
 
         -- Markup / Styles / JS
         "coc-html", "coc-htmlhint", "coc-html-css-support", "coc-css",
-        "coc-svg",
+        "coc-svg", "@yaegassy/coc-tailwindcss3",
 
         -- Javascript / Styles
         "coc-json", "coc-tsserver", "coc-eslint", "coc-cssmodules",

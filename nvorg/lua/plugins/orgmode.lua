@@ -29,11 +29,12 @@ return {
       require("org-roam").setup({
         directory = "~/org_roam_files",
         -- optional
-        org_files = {
-          "~/another_org_dir",
-          "~/some/folder/*.org",
-          "~/a/single/org_file.org",
-        }
+        org_files = { "~/orgfiles/" }
+        -- org_files = {
+        --   "~/another_org_dir",
+        --   "~/some/folder/*.org",
+        --   "~/a/single/org_file.org",
+        -- }
       })
     end
   },
