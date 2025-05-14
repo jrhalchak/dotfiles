@@ -4,7 +4,7 @@ local g = vim.g       -- Global variables
 local opt = vim.opt   -- Set options (global/buffer/windows-scoped)
 
 -- ============================================================
--- Utilities / Callbaccks
+-- Utilities / Callbacks
 -- ============================================================
 M.disable_colorcolumn = function()
   -- Disable line-length column
@@ -30,10 +30,11 @@ M.setup = function()
   -- ============================================================
   -- Neovim UI
   -- ============================================================
+  opt.winborder = "rounded"   -- Set global winborder for Neovim 0.11+
   opt.number = true           -- Show line numbers
   opt.relativenumber = true   -- Make line relative numbers
   opt.showmatch = true        -- Highlight matching parenthesis
-  opt.foldmethod = "marker"   -- Enable folding (default "foldmarker")
+  -- opt.foldmethod = "marker"   -- Enable folding (default "foldmarker")
   opt.colorcolumn = "80"      -- Line length marker at 80 columns
   opt.splitright = true       -- Vertical split to the right
   opt.splitbelow = true       -- Horizontal split to the bottom
@@ -46,19 +47,17 @@ M.setup = function()
   -- ============================================================
   -- Netrw
   -- ============================================================
-  -- g.netrw_banner = 0                  -- Disable the header banner
-  -- g.netrw_sort_sequence = [[[\/]$,*]] -- Sort dirs first
-  -- g.netrw_liststyle = 3               -- Tree view by default
-  -- g.netrw_sizestyle = "H"             -- Human readable file size
-  -- TODO this may be causing trouble?
-  -- g.netrw_keepdir = 0                 -- Keep view/browse dir synced, avoid move error
-
+  g.netrw_banner = 0                  -- Disable the header banner
+  g.netrw_sort_sequence = [[[\/]$,*]] -- Sort dirs first
+  g.netrw_liststyle = 3               -- Tree view by default
+  g.netrw_sizestyle = "H"             -- Human readable file size 
+  g.netrw_keepdir = 0                 -- Keep view/browse dir synced, avoid move error
   -- Patterns for hiding files, e.g. node_modules
   -- NOTE: this works by reading '.gitignore' file
-  -- g.netrw_list_hide = vim.fn["netrw_gitignore#Hide"]()
+  g.netrw_list_hide = vim.fn["netrw_gitignore#Hide"]()
 
   -- Preview files in a vertical split window
-  -- vim.g.netrw_preview = 1
+  vim.g.netrw_preview = 1
 
   -- Open files in split
   -- 0 : re-use the same window (default)
@@ -73,17 +72,17 @@ M.setup = function()
 
   -- Setup file operations commands
   -- TODO: figure out how to add these feature in Windows
-  -- if package.config:sub(1, 1) == "/" then
-  --   -- Enable recursive copy of directories in *nix systems
-  --   vim.g.netrw_localcopydircmd = "cp -r"
+  if package.config:sub(1, 1) == "/" then
+    -- Enable recursive copy of directories in *nix systems
+    vim.g.netrw_localcopydircmd = "cp -r"
 
-  --   -- Enable recursive creation of directories in *nix systems
-  --   vim.g.netrw_localmkdir = "mkdir -p"
+    -- Enable recursive creation of directories in *nix systems
+    vim.g.netrw_localmkdir = "mkdir -p"
 
-  --   -- Enable recursive removal of directories in *nix systems
-  --   -- NOTE: we use 'rm' instead of 'rmdir' (default) to be able to remove non-empty directories
-  --   vim.g.netrw_localrmdir = "rm -r"
-  -- end
+    -- Enable recursive removal of directories in *nix systems
+    -- NOTE: we use 'rm' instead of 'rmdir' (default) to be able to remove non-empty directories
+    vim.g.netrw_localrmdir = "rm -r"
+  end
 
   -- ============================================================
   -- Tabs, indent
@@ -107,13 +106,7 @@ M.setup = function()
   -- Migrated
   -- ============================================================
   opt.backup = false                           -- creates a backup file
-<<<<<<< Updated upstream
-  opt.background = "dark"                     -- set background for colorscheme
-||||||| Stash base
-  opt.background = "light"                     -- set background for colorscheme
-=======
   opt.background = "dark"                      -- set background for colorscheme
->>>>>>> Stashed changes
   opt.cmdheight = 1                            -- more space in the neovim command line for displaying messages
   opt.completeopt = { "menuone", "noselect" }  -- mostly just for cmp
   opt.conceallevel = 0                         -- so that `` is visible in markdown files
@@ -187,3 +180,4 @@ M.setup = function()
 end
 
 return M
+

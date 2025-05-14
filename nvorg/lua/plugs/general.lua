@@ -15,6 +15,11 @@ return {
           variables = {}, -- style for variables
         },
         -- custom_highlights = {} or function(highlights, palette) return {} end,
+        custom_highlights = function(_, pal)
+          return {
+            NotifyBackground = { bg = pal.white },
+          }
+        end,
         -- extend highlights
         -- custom_palette = {} or function(palette) return {} end,
         -- extend palette

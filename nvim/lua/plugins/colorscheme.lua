@@ -1,72 +1,32 @@
 return {
   {
-    "folke/tokyonight.nvim",
-    priority = 1000, -- Ensure it loads first
+    'folke/tokyonight.nvim',
+    lazy = false,
+    priority = 1000,
+    opts = {},
     config = function()
-      require("tokyonight").setup {
-        style = "night",
+      require('tokyonight').setup {
+        -- use the night style
+        style = 'night',
         transparent = true,
+        -- Style to be applied to different syntax groups
         styles = {
-          -- Style to be applied to different syntax groups
           -- Value is any valid attr-list value for `:help nvim_set_hl`
           comments = { italic = true },
-          keywords = { bold = true, italic = true },
-          functions = {},
-          variables = {},
-          -- Background styles. Can be "dark", "transparent" or "normal"
-          sidebars = "dark", -- style for sidebars, see below
-          floats = "dark", -- style for floating windows
+          keywords = { italic = true },
         },
-        dim_inactive = true,
-
-        on_colors = function(colors)
-          -- local util = require("tokyonight.util")
-
-          -- aplugin.background = colors.bg_dark
-          -- aplugin.my_error = util.lighten(colors.red1, 0.3) -- number between 0 and 1. 0 results in white, 1 results in red1
-          -- colors = {
-          --   yellow = color.darken("yellow", 7, "onelight"),
-          --   orange = color.darken("orange", 7, "onelight"),
-          --   comment_color = color.darken("gray", 10, "onelight"),
-          --   -- my_new_green = "require('onedarkpro.helpers').darken('green', 10, 'onedark')"
-          -- }
+        sidebars = { 'qf', 'vista_kind', 'terminal', 'packer' },
+        -- Change the 'hint' color to the 'orange' color, and make the 'error' color bright red
+        -- on_colors = function(colors)
+        --   colors.hint = colors.orange
+        --   colors.error = '#ff0000'
+        -- end
+        on_highlights = function(hl, c)
+          -- hl['@some.treesitter.hlgroup'] = { undercurl = true, strikethrough = true, sp = '#ffffff', fg = c.fg_dark, bg = c.bg_dark }
+          hl['netrwTreeBar'] = { fg = c.dark3 }
         end,
-        on_highlights = function(highlights, colors)
-          -- highlights = {
-          --   Comment = { fg = "${comment_color}", italic = true, bold = true }
-          --   CocFloating = { bg = "${white}" },
-          --   CocFloatingBorder = { fg = "${gray}", bg = "${white}" },
-          -- --   Error = {
-          -- --     fg = "${my_new_red}",
-          -- --     bg = "${my_new_green}"
-          -- --   },
-          -- }
-        end
       }
-      vim.cmd("colorscheme tokyonight-night")
+      vim.cmd('colorscheme tokyonight-night')
     end
-  }
+  },
 }
-
---[[
-=============================================================================
-Color keys/values from OneDarkPro's "onelight" theme
-=============================================================================
-{
-    bg = "#fafafa",
-    fg = "#6a6a6a",
-    red = "#e05661",
-    orange = "#ee9025",
-    yellow = "#eea825",
-    green = "#1da912",
-    cyan = "#56b6c2",
-    blue = "#118dc3",
-    purple = "#9a77cf",
-    white = "#fafafa",
-    black = "#6a6a6a",
-    gray = "#bebebe",
-    highlight = "#e2be7d",
-    comment = "#9b9fa6",
-    none = "NONE",
-}
---]]

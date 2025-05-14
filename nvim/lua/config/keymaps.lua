@@ -1,5 +1,9 @@
-local utils = require"utils"
-local constants = require"constants"
+-- until this is fixed
+return {}
+
+-- TODO: remove whichkey, maybe export LSP keymaps from here somehow?
+local utils = require"config.utils"
+local constants = require"config.constants"
 
 --[[
   The normal/visual configurations are setup for which-key. Use utils.keymap if
@@ -33,11 +37,6 @@ M.normal = {
     ["<C-l>"] = { "<C-w>l", "Move down" },
   },
   {
-    name = "quickfix",
-    ["[c"] = { ":cprevious<CR>", "previous" },
-    ["]c"] = { ":cnext<CR>", "next" },
-  },
-  {
     name = "Buffer switching",
     L = { ":bnext<CR>", "Next buffer" },
     H = { ":bprevious<CR>", "Previous buffer" },
@@ -46,39 +45,6 @@ M.normal = {
     name = "Tab traversal",
     [constants.IS_MAC and "Ò" or "<A-L>"] = { ":tabn<CR>", "Next tab" },
     [constants.IS_MAC and "Ó" or "<A-H>"] = { ":tabp<CR>", "Previous tab" },
-  },
-
-  ["<leader>"] = {
-    h = { ":nohl<CR>", "Clear highlights" },
-    t = {
-      name = "Split Orientation",
-      k = { "<C-w>t<C-w>K", "V to H" },
-      h = { "<C-w>t<C-w>H", "H to V" },
-    },
-    g = {
-      name = "git",
-      b = { ":CocCommand git.showBlameDoc<CR>", "git blame" },
-    },
-    -- lf = { "<cmd>lua vim.lsp.buf.format{ async = true }<cr>", "Format buffer" },
-    {
-      name = "Explore with Neotree",
-      e = {
-        -- t = { ":20Vex<CR>", "Explore w/ side tree" },
-        v = { ":vsplit | Neotree reveal position=current toggle<cr>", "Explore (vertical split)" },
-        s = { ":split | Neotree reveal position=current toggle<cr>", "Explore (horizontal split)" },
-        w = { ":Neotree reveal position=current toggle<cr>", "Explore in window (also \"-\")" },
-        l = { ":Neotree reveal position=left toggle<cr>", "Explore (tree left)" },
-        r = { ":Neotree reveal position=right toggle<cr>", "Explore (tree right)" },
-      }
-    },
-  },
-  ["-"] = { ":Neotree reveal position=current toggle<cr>", "Jump up to Netrw" },
-  {
-    name = "Diagnostics",
-    ['<leader>k'] = { vim.diagnostic.open_float, "Open floating diagnostics" },
-    ['[d'] = { vim.diagnostic.goto_prev, "Previous diagnostic" },
-    [']d'] = { vim.diagnostic.goto_next, "Next diagnostic" },
-    ['<leader>ll'] = { vim.diagnostic.setloclist, "Set loclist" },
   },
   -- TODO: This doesn"t work well
   {
@@ -89,6 +55,41 @@ M.normal = {
     [constants.IS_MAC and "˚" or "<A-k>"] = {
       "<Esc>:m .-2<CR>==gi", "Move line down"
     },
+  },
+  ["<leader>"] = {
+    h = { ":nohl<CR>", "Clear highlights" },
+    t = {
+      name = "Split Orientation",
+      k = { "<C-w>t<C-w>K", "V to H" },
+      h = { "<C-w>t<C-w>H", "H to V" },
+    },
+    lf = { "<cmd>lua vim.lsp.buf.format{ async = true }<cr>", "Format buffer" },
+    f = {
+      name = "Telescope",
+      f = { ":Telescope find_files<CR>", "Find files" },
+      g = { ":Telescope live_grep<CR>", "Grep files" },
+      r = { ":Telescope oldfiles<CR>", "Old files" },
+      p = { ":Telescope projects<CR>", "Projects" },
+      b = { ":Telescope buffers<CR>", "Buffers" },
+    },
+
+    {
+      name = "Explore with Netrw",
+      e = {
+        -- t = { ":20Vex<CR>", "Explore w/ side tree" },
+        v = { ":Vex<CR>", "Explore (vertical split)" },
+        s = { ":Sex<CR>", "Explore (horizontal split)" },
+        w = { ":Ex<CR>", "Explore in window (also \"-\")" }
+      }
+    },
+  },
+  ["-"] = { ":Ex<CR>", "Jump up to Netrw" },
+  {
+    name = "Diagnostics",
+    ['<leader>k'] = { vim.diagnostic.open_float, "Open floating diagnostics" },
+    ['[d'] = { vim.diagnostic.goto_prev, "Previous diagnostic" },
+    [']d'] = { vim.diagnostic.goto_next, "Next diagnostic" },
+    ['<leader>ll'] = { vim.diagnostic.setloclist, "Set loclist" },
   },
 }
 
@@ -185,8 +186,6 @@ M.lsp = {
   },
 }
 
-M.lsp = {}
-
 -- ============================================================
 -- Completion keymaps for use with cmp.mapping_preset in
 -- plugins/lsp.lua
@@ -254,57 +253,5 @@ M.cmp = {
     }
   },
 }
-
-M.cmp = {}
-
-
--- ============================================================
--- Telescope
--- ============================================================
-
--- TODO the "which_key" keys should probably have an i, v, and n, property
-M.telescope = {
-  get_mapping_presets = function()
-    local actions = require "telescope.actions"
-    -- These are INPUT MODE mappings
-    return {
-      ["<Down>"] = actions.cycle_history_next,
-      ["<Up>"] = actions.cycle_history_prev,
-      ["<C-j>"] = actions.move_selection_next,
-      ["<C-k>"] = actions.move_selection_previous,
-    }
-  end,
-  which_key = {
-    -- Telescope
-    normal = {
-      -- TODO include lsp_definitions, diagnostics, and implemention combos if they work with CoC
-      -- find
-      ["<leader>ff"] = { "<cmd> Telescope find_files <CR>", "find files" },
-      ["<leader>fa"] = { "<cmd> Telescope find_files follow=true no_ignore=true hidden=true <CR>", "find all" },
-      ["<leader>fw"] = { "<cmd> Telescope live_grep <CR>", "live grep" },
-      ["<leader>fb"] = { "<cmd> Telescope buffers <CR>", "find buffers" },
-      ["<leader>fh"] = { "<cmd> Telescope help_tags <CR>", "help page" },
-      -- ["<leader>fo"] = { "<cmd> Telescope oldfiles <CR>", "find oldfiles" },
-      ["<leader>fz"] = { "<cmd> Telescope current_buffer_fuzzy_find <CR>", "find in current buffer" },
-      ["<leader>fe"] = { "<cmd> Telescope symbols <CR>", "find emojis & symbols" },
-
-      ["<leader>fqf"] = { "<cmd> Telescope quickfix <CR>", "quickfix items" },
-      ["<leader>fqfa"] = { "<cmd> Telescope quickfixhistory <CR>", "quickfix history" },
-      ["<leader>fll"] = { "<cmd> Telescope loclist <CR>", "loclist items" },
-      ["<leader>fch"] = { "<cmd> Telescope command_history <CR>", "command history" },
-      ["<leader>fsh"] = { "<cmd> Telescope search_history <CR>", "search history" },
-
-      -- git
-      ["<leader>fgc"] = { "<cmd> Telescope git_bcommits <CR>", "buffer git commits" },
-      ["<leader>fga"] = { "<cmd> Telescope git_commits <CR>", "all git commits" },
-      ["<leader>fgs"] = { "<cmd> Telescope git_status <CR>", "git status" },
-    },
-    visual = {
-      -- git
-      ["<leader>fgc"] = { "<cmd> Telescope git_bcommits_range <CR>", "(visual) range git commits" },
-    },
-  }
-}
-
 
 return M

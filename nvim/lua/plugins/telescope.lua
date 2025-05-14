@@ -1,25 +1,18 @@
 return {
-  {
-    "nvim-telescope/telescope.nvim",
+    'nvim-telescope/telescope.nvim', tag = '0.1.8',
+    -- or                          , branch = '0.1.x',
     dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-telescope/telescope-symbols.nvim",
+        'nvim-lua/plenary.nvim',
+        'nvim-telescope/telescope-ui-select.nvim'
     },
     config = function()
-      local keymaps = require"core.keymaps"
+        local telescope = require"telescope"
+        telescope.setup {
+            -- extensions = {
+                -- ['ui-select'] = {
+                    -- require('telescope.themes').get_dropdown { }
+	}
 
-      require"telescope".setup {
-        defaults = {
-          prompt_prefix = " ",
-          selection_caret = " ",
-          path_display = { "smart" },
-          file_ignore_patterns = { ".git/", "node_modules" },
-
-          mappings = {
-            i = keymaps.telescope.get_mapping_presets(),
-          },
-        },
-      }
-    end,
-  },
+	telescope.load_extension("ui-select")
+    end
 }
