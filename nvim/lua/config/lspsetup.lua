@@ -21,13 +21,14 @@ local lsp_capabilities = require('cmp_nvim_lsp').default_capabilities()
 require('mason').setup({})
 require('mason-lspconfig').setup({
   ensure_installed = {
-    'ts_ls', 'bashls', 'awk_ls', 'clangd', 'cmake', 'css_variables',
+    'vtsls', 'bashls', 'awk_ls', 'clangd', 'cmake', 'css_variables',
     'cssls', 'cssmodules_ls', 'tailwindcss', 'docker_compose_language_service',
     'dockerls', 'jinja_lsp', 'ast_grep', 'html', 'biome', -- 'denols',
     'typos_lsp', 'harper_ls', 'eslint', 'yamlls', 'lwc_ls', 'jsonls', 'lua_ls',
     'marksman', 'perlnavigator', 'pyright', 'ruff', 'sqls', 'vimls',
     'custom_elements_ls'
 
+    -- 'ts_ls',
     -- textlsp | Grammar/spellcheck w/ AI integrations, needs config
   },
   handlers = {
@@ -56,6 +57,25 @@ require('mason-lspconfig').setup({
         }
       })
     end,
+    vtsls = function()
+      require('lspconfig').vtsls.setup({
+        capabilities = lsp_capabilities,
+        settings = {
+          typescript = {
+            tsdk = "./node_modules/typescript/lib",
+          },
+          vtsls = {
+            autoUseWorkspaceTsdk = true,
+          },
+        },
+      })
+    end,
+    -- ts_ls = function()
+    --   require('lspconfig').tsserver.setup({
+    --     -- Use node_modules version
+    --     cmd = { "node", "./node_modules/.bin/tsserver", "--stdio" }
+    --   })
+    -- end,
   }
 })
 
