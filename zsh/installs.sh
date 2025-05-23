@@ -48,9 +48,9 @@ if ! command -v go >/dev/null 2>&1; then
 fi
 
 # fnm
-FNM_PATH="/Users/jonathan.halchack/Library/Application Support/fnm"
+FNM_PATH="$HOME/.local/share/fnm"
 if [ -d "$FNM_PATH" ]; then
-  export PATH="/Users/jonathan.halchack/Library/Application Support/fnm:$PATH"
+  export PATH="$HOME/.local/share/fnm:$PATH"
   eval "`fnm env`"
 fi
 
@@ -58,10 +58,9 @@ fi
 if ! command -v fnm >/dev/null 2>&1; then
   echo "Installing fnm (Fast Node Manager)..."
   curl -fsSL https://fnm.vercel.app/install | bash
+  eval "$(fnm env --shell zsh)"
   installed=true
 fi
-
-eval "$(fnm env --shell zsh)"
 
 # Install Rust / cargo
 if ! command -v cargo >/dev/null 2>&1; then

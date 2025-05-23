@@ -1,6 +1,9 @@
 # For a nice loading-time output (see end of file)
 # zmodload zsh/zprof
 
+# Enable "advanced" completion
+autoload -U compinit; compinit
+
 # Source private configs if it exists
 if [ -f ~/dotfiles/zsh/private.sh ]; then
   source ~/dotfiles/zsh/private.sh
@@ -8,7 +11,10 @@ elif [ -f ~/private.sh ]; then
   source ~/private.sh
 fi
 
+[ -f ~/dotfiles/zsh/installs.sh ] && source ~/dotfiles/zsh/installs.sh
+
 export GIT_EDITOR=nvim
+export NEORG_DW="notes"
 
 # Aliases
 alias vi="nvim"
@@ -17,9 +23,13 @@ alias vim="vi"
 alias ctags='/usr/local/bin/ctags'
 alias vidc="nvim -u \"NONE\""
 
+alias restart-plasma="systemctl restart --user plasme-plasmashell"
+
 # alias neorg="nvim -u ~/neorg/.config/init.lua"
 alias neorg="NVIM_APPNAME=neorg nvim"
 alias nvorg="cd ~/orgfiles && NVIM_APPNAME=nvorg nvim"
+
+alias dollama="docker run -d --gpus=all -v ollama:/root/.ollama -p 11434:11434 --security-opt=no-new-privileges --cap-drop=ALL --cap-add=SYS_NICE --memory=8g --memory-swap=8g --cpus=4 --read-only --name ollama ollama/ollama"
 
 alias gg="git log --graph --abbrev-commit --decorate --oneline"
 
@@ -28,6 +38,9 @@ alias listpf="ls $(echo $PATH | tr ':' ' ') | grep -v '/' | grep . | sort"
 
 # List all commands by name
 alias listp="ls $(echo $PATH | tr ':' ' ')"
+
+# Search package manuals by keyword
+alias mansearch="man -k"
 
 # TODO: This requires `source-highlight`
 # You can get it via brew on MacOS (`brew install source-highlight`)
@@ -56,12 +69,27 @@ function stt() {
   echo -en "\e]2;$@\a"
 }
 
+function cheat() {
+  curl cheat.sh/$1
+}
+
+[ -f ~/dotfiles/scripts/utils/ollama.sh ] && source ~/dotfiles/scripts/utils/ollama.sh
+
 # Helpers so I remember basic worktree commands, lol
 source ~/dotfiles/zsh/worktree-helpers.sh
 
 # Mac-specific configurations
 if [[ "$(uname)" == "Darwin" ]]; then
-  source ~/dotfiles/zsh/mac-linux-utils.sh
+  [ -f ~/dotfiles/zsh/mac-linux-utils.sh ] && source ~/dotfiles/zsh/mac-linux-utils.sh
+
+  # fnm - This is manages in ~/dotfiles/zsh/installs.sh
+  FNM_PATH="/Users/jonathan.halchack/Library/Application Support/fnm"
+  if [ -d "$FNM_PATH" ]; then
+    export PATH="/Users/jonathan.halchack/Library/Application Support/fnm:$PATH"
+    eval "`fnm env`"
+  fi
+
+  eval "$(fnm env --shell zsh)"
 fi
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$HOME/bin:/usr/local/bin:$PATH"
