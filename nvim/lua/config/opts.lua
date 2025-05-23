@@ -50,7 +50,7 @@ M.setup = function()
   g.netrw_banner = 0                  -- Disable the header banner
   g.netrw_sort_sequence = [[[\/]$,*]] -- Sort dirs first
   g.netrw_liststyle = 3               -- Tree view by default
-  g.netrw_sizestyle = "H"             -- Human readable file size 
+  g.netrw_sizestyle = "H"             -- Human readable file size
   g.netrw_keepdir = 0                 -- Keep view/browse dir synced, avoid move error
   -- Patterns for hiding files, e.g. node_modules
   -- NOTE: this works by reading '.gitignore' file
@@ -138,6 +138,17 @@ M.setup = function()
   opt.whichwrap:append("<,>,[,],h,l")          -- keys allowed to move to the previous/next line when the beginning/end of line is reached
   opt.iskeyword:append("-")                    -- treats words with `-` as single words
   opt.formatoptions:remove({ "c", "r", "o" })  -- This is a sequence of letters which describes how automatic formatting is to be done
+
+
+  -- ============================================================
+  -- Filetypes
+  -- ============================================================
+  -- See Treesitter config for mdx registration
+  vim.filetype.add({
+    extension = {
+      mdx = 'mdx',
+    }
+  })
 
   -- ============================================================
   -- Startup

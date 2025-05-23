@@ -52,6 +52,10 @@ return {
             additional_vim_regex_highlighting = false,
           },
         }
+
+        -- Tell TS to parse mdx using the markdown parser. See options.setup &
+        -- markdown query injections file
+        vim.treesitter.language.register('markdown', 'mdx')
       end
     }
 }

@@ -47,6 +47,13 @@ if ! command -v go >/dev/null 2>&1; then
   installed=true
 fi
 
+# fnm
+FNM_PATH="/Users/jonathan.halchack/Library/Application Support/fnm"
+if [ -d "$FNM_PATH" ]; then
+  export PATH="/Users/jonathan.halchack/Library/Application Support/fnm:$PATH"
+  eval "`fnm env`"
+fi
+
 # Install fnm
 if ! command -v fnm >/dev/null 2>&1; then
   echo "Installing fnm (Fast Node Manager)..."

@@ -42,16 +42,62 @@ M.setup = function()
       ["<down>"] = { ":resize +2<CR>", "+/- Win v-size" },
       ["<left>"] = { ":vertical resize -2<CR>", "+/- Win h-size" },
       ["<right>"] = { ":vertical resize +2<CR>", "+/- Win h-size" },
+
+      -- Window traversal
       ["<C-h>"] = { "<C-w>h", "Move left" },
       ["<C-j>"] = { "<C-w>j", "Move right" },
       ["<C-k>"] = { "<C-w>k", "Move up" },
-      ["<C-l>"] = { "<C-w>l", "Move down" }
+      ["<C-l>"] = { "<C-w>l", "Move down" },
+
+      -- Buffer switching
+      L = { ":bnext<CR>", "Next buffer" },
+      H = { ":bprevious<CR>", "Previous buffer" },
+
+      -- Tab switching
+      [constants.IS_MAC and "Ò" or "<A-L>"] = { ":tabn<CR>", "Next tab" },
+      [constants.IS_MAC and "Ó" or "<A-H>"] = { ":tabp<CR>", "Previous tab" },
     }
   }
 
   for set, val in pairs(keys) do
     mapkeys(val, set == "_" and "" or set)
   end
+
+  -- kitty.conf split changes
+  -- map ctrl+h pass_keys neighboring_window left
+  -- map ctrl+j pass_keys neighboring_window bottom
+  -- map ctrl+k pass_keys neighboring_window top
+  -- map ctrl+l pass_keys neighboring_window right
+
+  -- local function kitty_navigate(direction, kitty_action)
+  --   local ok = vim.fn.winnr(direction)
+  --   if ok == vim.fn.winnr() then
+  --     -- No window in that direction, send the key to kitty
+  --     vim.fn.system({'kitty', '@', 'send-text', '--match', 'active', kitty_action})
+  --   else
+  --     -- Move within vim
+  --     vim.cmd('wincmd ' .. direction)
+  --   end
+  -- end
+
+  -- vim.keymap.set('n', '<C-h>', function() kitty_navigate('h', '\x02h') end, { noremap = true, silent = true })
+  -- vim.keymap.set('n', '<C-j>', function() kitty_navigate('j', '\x02j') end, { noremap = true, silent = true })
+  -- vim.keymap.set('n', '<C-k>', function() kitty_navigate('k', '\x02k') end, { noremap = true, silent = true })
+  -- vim.keymap.set('n', '<C-l>', function() kitty_navigate('l', '\x02l') end, { noremap = true, silent = true })
+
+  -- or --
+
+  -- local directions = { h = "left", j = "down", k = "up", l = "right" }
+  -- for key, dir in pairs(directions) do
+  --   vim.keymap.set("n", "<C-"..key..">", function()
+    --     local cur_win = vim.api.nvim_get_current_win()
+    --     vim.cmd("wincmd " .. key)
+    --     if vim.api.nvim_get_current_win() == cur_win then
+    --       -- No split in that direction, send ctrl+key to kitty
+    --       vim.fn.system({"kitty", "@", "send-text", "--match", "active", string.char(0x1d) .. key})
+    --     end
+    --   end, { noremap = true, silent = true })
+    -- end
 end
 
 -- until this is fixed
@@ -61,31 +107,6 @@ return M
 -- -- Keymaps for vim modes using plugins/whichkey
 -- -- ============================================================
 -- M.normal = {
---   {
---     name = "Win resize",
---     ["<up>"] = { ":resize -2<CR>", "+/- Win v-size" },
---     ["<down>"] = { ":resize +2<CR>", "+/- Win v-size" },
---     ["<left>"] = { ":vertical resize -2<CR>", "+/- Win h-size" },
---     ["<right>"] = { ":vertical resize +2<CR>", "+/- Win h-size" },
---   },
---   -- TODO add to netrw commands
---   {
---     name = "Win traversal",
---     ["<C-h>"] = { "<C-w>h", "Move left" },
---     ["<C-j>"] = { "<C-w>j", "Move right" },
---     ["<C-k>"] = { "<C-w>k", "Move up" },
---     ["<C-l>"] = { "<C-w>l", "Move down" },
---   },
---   {
---     name = "Buffer switching",
---     L = { ":bnext<CR>", "Next buffer" },
---     H = { ":bprevious<CR>", "Previous buffer" },
---   },
---   {
---     name = "Tab traversal",
---     [constants.IS_MAC and "Ò" or "<A-L>"] = { ":tabn<CR>", "Next tab" },
---     [constants.IS_MAC and "Ó" or "<A-H>"] = { ":tabp<CR>", "Previous tab" },
---   },
 --   -- TODO: This doesn"t work well
 --   {
 --     name = "Move lines",

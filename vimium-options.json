@@ -1,0 +1,14 @@
+{
+  "keyMappings": "# Insert your preferred key mappings here.\nmap e LinkHints.activateMode action=hover\nmap <a-M> toggleMuteTab all\nmap <a-m> toggleMuteTab other\nmap R reload hard",
+  "settingsVersion": "2.2.1",
+  "exclusionRules": [
+    {
+      "passKeys": "",
+      "pattern": "https?://mail.google.com/*"
+    },
+    {
+      "passKeys": "",
+      "pattern": "https?://www.photopea.com/*"
+    }
+  ]
+}
