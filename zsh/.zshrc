@@ -23,6 +23,32 @@ alias nvorg="cd ~/orgfiles && NVIM_APPNAME=nvorg nvim"
 
 alias gg="git log --graph --abbrev-commit --decorate --oneline"
 
+# List by folder
+alias listpf="ls $(echo $PATH | tr ':' ' ') | grep -v '/' | grep . | sort"
+
+# List all commands by name
+alias listp="ls $(echo $PATH | tr ':' ' ')"
+
+# TODO: This requires `source-highlight`
+# You can get it via brew on MacOS (`brew install source-highlight`)
+# Or apt on Deb-based distro if you have the software source
+# (`sudo apt install source-highlight`)
+LESSPIPE=`which src-hilite-lesspipe.sh`
+export LESSOPEN="| ${LESSPIPE} %s"
+# Default args
+# -R is needed for coloring, so leave that.
+# -X will leave the text in your Terminal, so it doesn’t disappear when you exit less.
+# -F will exit less if the output fits on one screen (so you don’t have to press “q”).
+export LESS=' -R -X -F '
+
+# `source-highlight` (any version) doesn't currently support markdown so
+# add `glow` with `brew install glow` or `sudo snap install glow` or
+# # Debian/Ubuntu
+# sudo mkdir -p /etc/apt/keyrings
+# curl -fsSL https://repo.charm.sh/apt/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/charm.gpg
+# echo "deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *" | sudo tee /etc/apt/sources.list.d/charm.list
+# sudo apt update && sudo apt install glow
+
 # not desired for workflow of controlling terminal title.
 DISABLE_AUTO_TITLE="true"
 
