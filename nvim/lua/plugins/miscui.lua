@@ -1,3 +1,5 @@
+local keymaps = require("config.keymaps")
+
 return {
   {
     "nvim-tree/nvim-web-devicons",
@@ -29,12 +31,40 @@ return {
     end,
   },
   {
-  "roobert/tailwindcss-colorizer-cmp.nvim",
-  -- optionally, override the default options:
-  config = function()
-    require("tailwindcss-colorizer-cmp").setup({
-      color_square_width = 2,
-    })
-  end
-}
+    "roobert/tailwindcss-colorizer-cmp.nvim",
+    -- optionally, override the default options:
+    config = function()
+      require("tailwindcss-colorizer-cmp").setup({
+        color_square_width = 2,
+      })
+    end
+  },
+  {
+    "lukas-reineke/headlines.nvim",
+    dependencies = "nvim-treesitter/nvim-treesitter",
+    config = true, -- or `opts = {}`
+  },
+  {
+    "folke/snacks.nvim",
+    ---@type snacks.Config
+    opts = {
+      toggle = {
+        -- your toggle configuration comes here
+        -- or leave it empty to use the default settings
+        -- refer to the configuration section below
+      }
+    }
+  },
+  {
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    opts = {
+      -- configuration goes here
+    },
+    -- Just adding them in keymaps.lua
+    -- keys = {},
+    config = function()
+      keymaps.setup();
+    end
+  }
 }

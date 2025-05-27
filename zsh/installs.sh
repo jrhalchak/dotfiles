@@ -35,6 +35,9 @@ installed=false
 #   return 1
 # fi
 
+# TODO - Get rid of all the aliases and stuff where they're unecessary, and just
+# move from using ~/Applications to ~/bin/ and update the PATH or something..
+
 export PATH=$PATH:/usr/local/go/bin
 
 # Install Go v1.24.3
@@ -85,6 +88,19 @@ if [ ! -f "$nvim_appimage" ]; then
   mkdir -p "$HOME/Applications"
   curl -fsSL "https://github.com/neovim/neovim/releases/download/${nvim_version}/nvim-linux-x86_64.appimage" -o "$nvim_appimage"
   chmod +x "$nvim_appimage"
+  installed=true
+fi
+
+# Wezterm if not installed
+# Filename from wezterm site, make version variable for latest if desired
+WEZTERM_FILENAME="WezTerm-20240203-110809-5046fc22-Ubuntu20.04.AppImage"
+WEZTERM_APPIMAGE="$HOME/Applications/$WEZTERM_FILENAME"
+alias wezterm="$WEZTERM_APPIMAGE"
+
+if [ ! -f "$WEZTERM_APPIMAGE" ]; then
+  echo "Installing Wezterm"
+  curl -fsSL -o "$HOME/Applications/$WEZTERM_FILENAME" "https://github.com/wezterm/wezterm/releases/download/20240203-110809-5046fc22/$WEZTERM_FILENAME"
+  chmod +x "$HOME/Applications/$WEZTERM_FILENAME"
   installed=true
 fi
 

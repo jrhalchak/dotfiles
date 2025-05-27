@@ -76,7 +76,7 @@ function cheat() {
 [ -f ~/dotfiles/scripts/utils/ollama.sh ] && source ~/dotfiles/scripts/utils/ollama.sh
 
 # Helpers so I remember basic worktree commands, lol
-source ~/dotfiles/zsh/worktree-helpers.sh
+[ -f ~/dotfiles/zsh/worktree-helpers.sh ] && source ~/dotfiles/zsh/worktree-helpers.sh
 
 # Mac-specific configurations
 if [[ "$(uname)" == "Darwin" ]]; then
@@ -94,15 +94,6 @@ fi
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$HOME/bin:/usr/local/bin:$PATH"
 
-# fnm
-FNM_PATH="/Users/jonathan.halchack/Library/Application Support/fnm"
-if [ -d "$FNM_PATH" ]; then
-  export PATH="/Users/jonathan.halchack/Library/Application Support/fnm:$PATH"
-  eval "`fnm env`"
-fi
-
-eval "$(fnm env --shell zsh)"
-
 source ~/dotfiles/zsh/promptline.sh
 
 # -------------------------
@@ -117,3 +108,4 @@ source ~/dotfiles/zsh/promptline.sh
 # For a nice loading-time output (see beginning of file)
 # zprof
 
+eval $(thefuck --alias)
