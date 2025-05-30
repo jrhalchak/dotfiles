@@ -106,7 +106,7 @@
   ],
   "logo": {
     "type": "file",
-    "source": "~/.config/fastfetch/logo.txt",
+    "source": "~/.config/fastfetch/logo-small.txt",
     "padding": {
       "right": 8
     },
