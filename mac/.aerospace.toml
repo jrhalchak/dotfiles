@@ -11,6 +11,27 @@
 # Mouse follows focus when focused monitor changes
 on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 
+# =======================================================
+# TODO I don't think these startup commands do anything
+# =======================================================
+
+# Run Sketchybar together with AeroSpace
+# sketchbar has a built-in detection of already running process,
+# so it won't be run twice on AeroSpace restart
+after-startup-command = [
+  'exec-and-forget /usr/local/bin/sketchybar',
+  # JankyBorders has a built-in detection of already running process,
+  # so it won't be run twice on AeroSpace restart
+  'exec-and-forget /usr/local/bin/borders active_color=0xffe1e3e4 inactive_color=0xff494d64 width=5.0'
+]
+
+# Notify Sketchybar about workspace change
+exec-on-workspace-change = ['/bin/bash', '-c',
+  # Sketchybar has a built-in detection of already running process,
+  # so it won't be run twice on AeroSpace restart
+  '/usr/local/bin/sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE',
+]
+
 [mode.main.binding]
     # See: https://nikitabobko.github.io/AeroSpace/goodies#open-a-new-window-with-applescript
     # cmd-alt-t = '''exec-and-forget osascript -e '
@@ -20,7 +41,7 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
     # end tell'
     # '''
 
-    # i3 wraps focus by default
+# i3 wraps focus by default
     cmd-h = 'focus --boundaries-action wrap-around-the-workspace left'
     cmd-j = 'focus --boundaries-action wrap-around-the-workspace down'
     cmd-k = 'focus --boundaries-action wrap-around-the-workspace up'
@@ -92,3 +113,22 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
     l = 'resize width +50'
     enter = 'mode main'
     esc = 'mode main'
+
+
+# Gaps between windows (inner-*) and between monitor edges (outer-*).
+# Possible values:
+# - Constant:     gaps.outer.top = 8
+# - Per monitor:  gaps.outer.top = [{ monitor.main = 16 }, { monitor."some-pattern" = 32 }, 24]
+#                 In this example, 24 is a default value when there is no match.
+#                 Monitor pattern is the same as for 'workspace-to-monitor-force-assignment'.
+#                 See:
+#                 https://nikitabobko.github.io/AeroSpace/guide#assign-workspaces-to-monitors
+
+[gaps]
+    inner.horizontal = 24
+    inner.vertical =   24
+    outer.left =       24
+    outer.bottom =     24
+    outer.top =        64
+    outer.right =      24
+

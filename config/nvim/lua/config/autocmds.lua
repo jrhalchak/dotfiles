@@ -1,9 +1,9 @@
-local options = require"config.opts"
+local options = require "config.opts"
 local M = {}
 
 local groupopts = { clear = true }
-local augroup = vim.api.nvim_create_augroup   -- Create/get autocommand group
-local autocmd = vim.api.nvim_create_autocmd   -- Create autocommand
+local augroup = vim.api.nvim_create_augroup -- Create/get autocommand group
+local autocmd = vim.api.nvim_create_autocmd -- Create autocommand
 
 M.setup = function()
   --[[ Lua Autocmd Example
@@ -19,7 +19,7 @@ M.setup = function()
   -- Help
   -- ============================================================
   augroup("OpenHelpInTab", groupopts)
-  -- NOTE This applies to any *.txt file, which I don't use 
+  -- NOTE This applies to any *.txt file, which I don't use
   -- (intentionally) myself so it will open any help txt in a new
   -- tab. If any help is triggered again it can cause notice
   -- messages since help is confined to 1 window and the buffers
@@ -38,19 +38,19 @@ M.setup = function()
   autocmd('TextYankPost', {
     group = 'YankHighlight',
     callback = function()
-      vim.highlight.on_yank({ higroup = 'IncSearch', timeout = '1000' })
+      vim.highlight.on_yank({ higroup = 'IncSearch', timeout = 1000 })
     end
   })
 
   -- Remove whitespace on save
   autocmd('BufWritePre', {
-    pattern = '',
+    pattern = '*',
     command = ":%s/\\s\\+$//e"
   })
 
   -- Don't auto commenting new lines
   autocmd('BufEnter', {
-    pattern = '',
+    pattern = '*',
     command = 'set fo-=c fo-=r fo-=o'
   })
 

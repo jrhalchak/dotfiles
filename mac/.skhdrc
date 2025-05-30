@@ -1,0 +1,278 @@
+# ################################################################ #
+# THE FOLLOWING IS AN EXPLANATION OF THE GRAMMAR THAT SKHD PARSES. #
+# FOR SIMPLE EXAMPLE MAPPINGS LOOK FURTHER DOWN THIS FILE..        #
+# ################################################################ #
+
+# A list of all built-in modifier and literal keywords can
+# be found at https://github.com/koekeishiya/skhd/issues/1
+#
+# A hotkey is written according to the following rules:
+#
+#   hotkey       = <mode> '<' <action> | <action>
+#
+#   mode         = 'name of mode' | <mode> ',' <mode>
+#
+#   action       = <keysym> '[' <proc_map_lst> ']' | <keysym> '->' '[' <proc_map_lst> ']'
+#                  <keysym> ':' <command>          | <keysym> '->' ':' <command>
+#                  <keysym> ';' <mode>             | <keysym> '->' ';' <mode>
+#
+#   keysym       = <mod> '-' <key> | <key>
+#
+#   mod          = 'modifier keyword' | <mod> '+' <mod>
+#
+#   key          = <literal> | <keycode>
+#
+#   literal      = 'single letter or built-in keyword'
+#
+#   keycode      = 'apple keyboard kVK_<Key> values (0x3C)'
+#
+#   proc_map_lst = * <proc_map>
+#
+#   proc_map     = <string> ':' <command> | <string>     '~' |
+#                  '*'      ':' <command> | '*'          '~'
+#
+#   string       = '"' 'sequence of characters' '"'
+#
+#   command      = command is executed through '$SHELL -c' and
+#                  follows valid shell syntax. if the $SHELL environment
+#                  variable is not set, it will default to '/bin/bash'.
+#                  when bash is used, the ';' delimeter can be specified
+#                  to chain commands.
+#
+#                  to allow a command to extend into multiple lines,
+#                  prepend '\' at the end of the previous line.
+#
+#                  an EOL character signifies the end of the bind.
+#
+#   ->           = keypress is not consumed by skhd
+#
+#   *            = matches every application not specified in <proc_map_lst>
+#
+#   ~            = application is unbound and keypress is forwarded per usual, when specified in a <proc_map>
+#
+# A mode is declared according to the following rules:
+#
+#   mode_decl = '::' <name> '@' ':' <command> | '::' <name> ':' <command> |
+#               '::' <name> '@'               | '::' <name>
+#
+#   name      = desired name for this mode,
+#
+#   @         = capture keypresses regardless of being bound to an action
+#
+#   command   = command is executed through '$SHELL -c' and
+#               follows valid shell syntax. if the $SHELL environment
+#               variable is not set, it will default to '/bin/bash'.
+#               when bash is used, the ';' delimeter can be specified
+#               to chain commands.
+#
+#               to allow a command to extend into multiple lines,
+#               prepend '\' at the end of the previous line.
+#
+#               an EOL character signifies the end of the bind.
+
+# ############################################################### #
+# THE FOLLOWING SECTION CONTAIN SIMPLE MAPPINGS DEMONSTRATING HOW #
+# TO INTERACT WITH THE YABAI WM. THESE ARE SUPPOSED TO BE USED AS #
+# A REFERENCE ONLY, WHEN MAKING YOUR OWN CONFIGURATION..          #
+# ############################################################### #
+
+# focus window
+alt - h : yabai -m window --focus west
+alt - l : yabai -m window --focus east
+alt - k : yabai -m window --focus north
+alt - j : yabai -m window --focus south
+
+# swap managed window
+cmd + alt - h : yabai -m window --swap west
+cmd + alt - l : yabai -m window --swap east
+cmd + alt - k : yabai -m window --swap north
+cmd + alt - j : yabai -m window --swap south
+
+# move managed window
+shift + cmd - h : yabai -m window --warp west
+shift + cmd - l : yabai -m window --warp east
+shift + cmd - k : yabai -m window --warp north
+shift + cmd - j : yabai -m window --warp south
+
+# balance size of windows
+shift + alt - 0 : yabai -m space --balance
+
+# make floating window fill screen
+shift + alt - f : yabai -m window --grid 1:1:0:0:1:1
+
+# make floating window fill left-half of screen
+ctrl + alt - h : yabai -m window --grid 1:2:0:0:1:1
+ctrl + alt - l : yabai -m window --grid 1:2:1:1:1:1
+ctrl + alt - k : yabai -m window --grid 2:1:0:0:1:1
+ctrl + alt - j : yabai -m window --grid 2:1:0:1:1:1
+
+# create desktop, move window and follow focus - uses jq for parsing json (brew install jq)
+shift + cmd - n : yabai -m space --create && \
+                  index="$(yabai -m query --spaces --display | jq 'map(select(."is-native-fullscreen" == false))[-1].index')" && \
+                  yabai -m window --space "${index}" && \
+                  yabai -m space --focus "${index}"
+
+# fast focus desktop
+cmd + alt - x : yabai -m space --focus recent
+cmd + alt - 1 : yabai -m space --focus 1
+cmd + alt - 2 : yabai -m space --focus 2
+cmd + alt - 3 : yabai -m space --focus 3
+cmd + alt - 4 : yabai -m space --focus 4
+cmd + alt - 5 : yabai -m space --focus 5
+
+# send window to desktop and follow focus
+shift + cmd + alt - z : yabai -m window --space next; yabai -m space --focus next
+shift + cmd + alt - 1 : yabai -m window --space  1; yabai -m space --focus 1
+shift + cmd + alt - 2 : yabai -m window --space  2; yabai -m space --focus 2
+
+# focus monitor
+# ctrl + alt - z : yabai -m display --focus prev
+# ctrl + alt - 3 : yabai -m display --focus 3
+
+# send window to monitor and follow focus
+# ctrl + cmd - c : yabai -m window --display next; yabai -m display --focus next
+# ctrl + cmd - 1 : yabai -m window --display 1; yabai -m display --focus 1
+
+# move floating window
+# shift + ctrl - a : yabai -m window --move rel:-20:0
+# shift + ctrl - s : yabai -m window --move rel:0:20
+
+# increase window size
+shift + alt - 0x2B : yabai -m window --resize left:-20:0 # </,
+shift + alt - 0x2F : yabai -m window --resize left:+20:0  # >/.
+shift + alt - 0x1B : yabai -m window --resize top:0:-20  # -/_
+shift + alt - 0x18 : yabai -m window --resize top:0:+20  # +/=
+
+# decrease window size
+# shift + cmd - s : yabai -m window --resize bottom:0:-20
+# shift + cmd - w : yabai -m window --resize top:0:20
+
+# set insertion point in focused container
+# ctrl + alt - h : yabai -m window --insert west
+
+# toggle window zoom
+# alt - d : yabai -m window --toggle zoom-parent
+# alt - f : yabai -m window --toggle zoom-fullscreen
+
+# toggle window split type
+alt - e : yabai -m window --toggle split
+
+# float / unfloat window and center on screen
+alt - t : yabai -m window --toggle float --grid 4:4:1:1:2:2
+
+# toggle sticky(+float), picture-in-picture
+alt - p : yabai -m window --toggle sticky --toggle pip
+
+# terminal hotkey
+cmd - return : /Applications/kitty.app/Contents/MacOS/kitty --single-instance -d ~
+
+# ======================
+# Mods (<mod>)
+# ======================
+# fn
+#
+# cmd
+# lcmd
+# rcmd
+#
+# shift
+# lshift
+# rshift
+#
+# alt
+# lalt
+# ralt
+#
+# ctrl
+# lctrl
+# rctrl
+#
+# hyper (cmd + shift + alt + ctrl)
+#
+# meh (shift + alt + ctrl)
+
+# ======================
+# Key Literals
+# ======================
+# "return"     (kVK_Return)
+# "tab"        (kVK_Tab)
+# "space"      (kVK_Space)
+# "backspace"  (kVK_Delete)
+# "escape"     (kVK_Escape)
+#
+# The following keys can not be used with the fn-modifier:
+#
+# "delete"     (kVK_ForwardDelete)
+# "home"       (kVK_Home)
+# "end"        (kVK_End)
+# "pageup"     (kVK_PageUp)
+# "pagedown"   (kVK_PageDown)
+# "insert"     (kVK_Help)
+# "left"       (kVK_LeftArrow)
+# "right"      (kVK_RightArrow)
+# "up"         (kVK_UpArrow)
+# "down"       (kVK_DownArrow)
+# "f1"         (kVK_F1)
+# "f2"         (kVK_F2)
+# "f3"         (kVK_F3)
+# "f4"         (kVK_F4)
+# "f5"         (kVK_F5)
+# "f6"         (kVK_F6)
+# "f7"         (kVK_F7)
+# "f8"         (kVK_F8)
+# "f9"         (kVK_F9)
+# "f10"        (kVK_F10)
+# "f11"        (kVK_F11)
+# "f12"        (kVK_F12)
+# "f13"        (kVK_F13)
+# "f14"        (kVK_F14)
+# "f15"        (kVK_F15)
+# "f16"        (kVK_F16)
+# "f17"        (kVK_F17)
+# "f18"        (kVK_F18)
+# "f19"        (kVK_F19)
+# "f20"        (kVK_F20)
+#
+# "sound_up"          (NX_KEYTYPE_SOUND_UP)
+# "sound_down"        (NX_KEYTYPE_SOUND_DOWN)
+# "mute"              (NX_KEYTYPE_MUTE)
+# "play"              (NX_KEYTYPE_PLAY)
+# "previous"          (NX_KEYTYPE_PREVIOUS)
+# "next"              (NX_KEYTYPE_NEXT)
+# "rewind"            (NX_KEYTYPE_REWIND)
+# "fast"              (NX_KEYTYPE_FAST)
+# "brightness_up"     (NX_KEYTYPE_BRIGHTNESS_UP)
+# "brightness_down"   (NX_KEYTYPE_BRIGHTNESS_DOWN)
+# "illumination_up"   (NX_KEYTYPE_ILLUMINATION_UP)
+# "illumination_down" (NX_KEYTYPE_ILLUMINATION_DOWN)
+
+# ======================
+# Misc (comments)
+# ======================
+# > @Njiallu: '`' (~) is 0x32 on my keyboard, and
+# > `cmd - 0x32: ...`
+# > works :)
+# ======================
+# @FranzSkuffka These all work for me. Note that the order you define your binds in matters: if you define shift - x before rshift -  x, the latter one will never trigger.
+#
+# # shift - x : terminal-notifier -message "shift - x"
+# lshift - x : terminal-notifier -message "lshift - x"
+# rshift - x : terminal-notifier -message "rshift - x"
+#
+# If you have a specific question, you should file a separate issue and add your skhdrc file.
+# ======================
+# I discovered a nifty trick, which is maybe not intended to be like that but can be quite useful:
+# fn works as mod as well as key if you use the 0xB3 instead the literal
+# If you then set capslock to fn in macOS settings you can then use capslock as escape key as well as a modifier.
+#
+# e.g.:
+#
+# 0xB3 : skhd -k escape
+# lcmd - 0xB3 ; tiling
+# fn - c :    echo "hello capslock"
+# ======================
+# Open it with skhd -o and enter a key and you'll get a keycode. For example
+#
+# skhd -k "cmd - 0x2A"
+# ======================
+

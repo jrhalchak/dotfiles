@@ -60,7 +60,17 @@ function preexec() {
 function precmd() {
   local cmd_status=$?
 
-  echo "" # Add a buffer line after command output
+  if [[ -z "$PROMPTLINE_INITIALIZED" ]]; then
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
+    #|-> TODO: do the darwin/linux tests for different configs <-|#
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
+    clear
+    echo "" # buffer line
+    fastfetch
+  else
+    echo "" # Add a buffer line after command output
+  fi
+  PROMPTLINE_INITIALIZED=1
 
   if [ $timer ]; then
     timer_show=$(($SECONDS - $timer))

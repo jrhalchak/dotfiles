@@ -1,5 +1,6 @@
 -- TODO: remove whichkey, maybe export LSP keymaps from here somehow?
 local constants = require"config.constants"
+local utils = require"config.utils"
 
 --[[
   The normal/visual configurations are setup for which-key. Use utils.keymap if
@@ -55,6 +56,7 @@ M.setup = function()
     { constants.IS_MAC and "˚" or "<A-k>", "<Esc>:m .-2<CR>==gi", desc = "Move line down" },
 
     -- Telescope
+    { "<leader>f", group = "Telescope" },
     { "<leader>ff", ":Telescope find_files<CR>", desc = "Find files" },
     { "<leader>fg", ":Telescope live_grep<CR>", desc = "Grep files" },
     { "<leader>fr", ":Telescope oldfiles<CR>", desc = "Old files" },
@@ -69,7 +71,9 @@ M.setup = function()
     { "-", ":Ex<CR>", desc = "Jump up to Netrw" },
 
     -- Misc
-    { "<leader>h", ":nohl<CR>", desc = "Clear highlights" },
+    { "<leader>u", group = "Utilities" },
+    { "<leader>uh", ":nohl<CR>", desc = "UTIL: Clear highlights" },
+    { "<leader>up", utils.open_plugin_url, desc = "UTIL: Open Github Plugin URL" },
 
     -- Splits
     { "<leader>tk", "<C-w>t<C-w>K", desc = "Split Orientation V to H" },
@@ -111,47 +115,69 @@ M.setup_lsp = function(buf)
     {
       mode = "n",
       buffer = buf,
-      { "K", vim.lsp.buf.hover, "LSP: Hover" },
-      { "gD", vim.lsp.buf.declaration, "Go to Declaration" },
-      { "gd", vim.lsp.buf.definition, "Go to Definition" },
-      { "gi", vim.lsp.buf.implementation, "Go to Implementation" },
-      { "gr", vim.lsp.buf.references, "Go to References" },
-      { "<leader>lt", vim.lsp.buf.type_definition, "Go to Type Definition" },
-      { '<leader>ll', vim.diagnostic.setloclist, "Set loclist" },
-      { "<leader>ls", vim.lsp.buf.workspace_symbol, "LSP: View Workspace Symbols" },
-      { "<leader>ld", vim.diagnostic.open_float, "LSP: View Diagnostic" },
-      { "<leader>la", vim.lsp.buf.code_action, "LSP: View Code Action" },
-      { "<leader>lr", vim.lsp.buf.references, "LSP: View References" },
-      { "<leader>ln", vim.lsp.buf.rename, "LSP: Rename" },
-      { "<leader>lf", "<cmd>lua vim.lsp.buf.format{ async = true }<cr>", "LSP: Format buffer" },
-      { "<leader>wa",
+      { "K", vim.lsp.buf.hover, desc = "LSP: Hover" },
+      { "gD", vim.lsp.buf.declaration, desc = "Go to Declaration" },
+      { "gd", vim.lsp.buf.definition, desc = "Go to Definition" },
+      { "gi", vim.lsp.buf.implementation, desc = "Go to Implementation" },
+      { "gr", vim.lsp.buf.references, desc = "Go to References" },
+      { "<leadeR>l", group ="lsp" },
+      { "<leader>lt", vim.lsp.buf.type_definition, desc = "LSP: Go to Type Definition" },
+      { '<leader>ll', vim.diagnostic.setloclist, desc = "LSP: Set loclist" },
+      { "<leader>ls", vim.lsp.buf.workspace_symbol, desc = "LSP: View Workspace Symbols" },
+      { "<leader>ld", vim.diagnostic.open_float, desc = "LSP: View Diagnostic" },
+      { "<leader>la", vim.lsp.buf.code_action, desc = "LSP: View Code Action" },
+      { "<leader>lr", vim.lsp.buf.references, desc = "LSP: View References" },
+      { "<leader>ln", vim.lsp.buf.rename, desc = "LSP: Rename" },
+      {
+        "<leader>lwa",
         vim.lsp.buf.add_workspace_folder,
-        "Add Workspace Folder",
+        desc = "LSP: Add Workspace Folder",
       },
-      { "<leader>wr",
+      {
+        "<leader>lwr",
         vim.lsp.buf.remove_workspace_folder,
-        "Remove Workspace Folder",
+        desc = "LSP: Remove Workspace Folder",
       },
-      { "<leader>wl",
+      {
+        "<leader>lwl",
         function()
           print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
         end,
-        "List Workspace Folders",
+        desc = "LSP: List Workspace Folders",
       },
 
-      { "<leader>f",
+      {
+        "<leader>lf",
         function()
           vim.lsp.buf.format { async = true }
         end,
-        "Format",
+        desc = "LSP: Format",
       },
-      { "[d", function() vim.diagnostic.jump({ count=1, float=true }) end, "LSP: Next Diagnostic" },
-      { "]d", function() vim.diagnostic.jump({ count=-1, float=true }) end, "LSP: Previous Diagnostic" },
+      {
+        "[d",
+        function()
+          vim.diagnostic.jump({ count=1, float=true })
+        end,
+        desc = "LSP: Next Diagnostic"
+      },
+      {
+        "]d",
+        function()
+          vim.diagnostic.jump({ count=-1, float=true })
+        end,
+        desc = "LSP: Previous Diagnostic"
+      },
     },
     {
       mode = "i",
       buffer = buf,
-      { "<C-h>", function() vim.lsp.buf.signature_help() end, "LSP: Signature Help" },
+      {
+        "<C-h>",
+        function()
+          vim.lsp.buf.signature_help()
+        end,
+        desc = "LSP: Signature Help"
+      },
     },
   })
 end

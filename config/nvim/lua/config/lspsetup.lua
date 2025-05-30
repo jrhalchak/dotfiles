@@ -3,22 +3,46 @@ local keymaps = require("config.keymaps")
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('user_lsp_attach', {clear = true}),
   callback = function(event)
+    -- Detach LSP if buffer is not a normal file
+    local buftype = vim.api.nvim_get_option_value("buftype", { buf = event.buf })
+    local bufname = vim.api.nvim_buf_get_name(event.buf)
+    if buftype ~= "" or bufname == "" then
+      vim.schedule(function()
+        local clients = vim.lsp.get_active_clients({ bufnr = event.buf })
+        for _, client in ipairs(clients) do
+          vim.lsp.buf_detach_client(event.buf, client.id)
+        end
+      end)
+      return
+    end
+
     keymaps.setup_lsp(event.buf)
   end,
 })
+
+local function is_real_file(bufnr)
+  local buftype = vim.api.nvim_get_option_value("buftype", { buf = bufnr })
+  local bufname = vim.api.nvim_buf_get_name(bufnr)
+  return buftype == "" and bufname ~= ""
+end
 
 local lsp_capabilities = require('cmp_nvim_lsp').default_capabilities()
 
 require('mason').setup({})
 require('mason-lspconfig').setup({
   ensure_installed = {
-    'vtsls', 'bashls', 'awk_ls', 'clangd', 'cmake', 'css_variables',
+    'vtsls', 'bashls', 'clangd', 'cmake', 'css_variables',
     'cssls', 'cssmodules_ls', 'tailwindcss', 'docker_compose_language_service',
     'dockerls', 'jinja_lsp', 'ast_grep', 'html', 'biome', -- 'denols',
-    'typos_lsp', 'harper_ls', 'eslint', 'yamlls', 'lwc_ls', 'jsonls', 'lua_ls',
+    'eslint', 'yamlls', 'lwc_ls', 'jsonls', 'lua_ls',
     'marksman', 'perlnavigator', 'pyright', 'ruff', 'sqls', 'vimls',
-    'custom_elements_ls'
+    'custom_elements_ls',
 
+    -- test which to use
+    -- 'harper_ls',
+    'typos_lsp',
+
+    -- 'awk_ls', -- Always fails to install and throws errors
     -- 'ts_ls',
     -- textlsp | Grammar/spellcheck w/ AI integrations, needs config
   },
@@ -26,6 +50,13 @@ require('mason-lspconfig').setup({
     function(server_name)
       require('lspconfig')[server_name].setup({
         capabilities = lsp_capabilities,
+        on_init = function(client)
+          local bufnr = vim.api.nvim_get_current_buf()
+          if not is_real_file(bufnr) then
+            client.stop()
+            return false
+          end
+        end,
       })
     end,
     lua_ls = function()

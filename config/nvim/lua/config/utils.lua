@@ -19,6 +19,26 @@ M.keymap = function(mode, lhs, rhs, opts)
   end
 end
 
+M.open_plugin_url = function()
+  local line = vim.api.nvim_get_current_line()
+  local plugin = line:match([["([^"]+/[^"]+)"]])
+  if not plugin then
+    vim.notify("No plugin string found under cursor", vim.log.levels.ERROR)
+    return
+  end
+  local url = "https://github.com/" .. plugin
+  local open_cmd
+  if vim.fn.has("macunix") == 1 then
+    open_cmd = { "open", url }
+  elseif vim.fn.has("unix") == 1 then
+    open_cmd = { "xdg-open", url }
+  else
+    vim.notify("Unsupported OS for opening URLs", vim.log.levels.ERROR)
+    return
+  end
+  vim.fn.jobstart(open_cmd, { detach = true })
+end
+
 -- M.lsp_on_attach = function(client, bufnr)
 --   local keymaps = require"core.keymaps"
 --
