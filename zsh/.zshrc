@@ -1,8 +1,57 @@
 # For a nice loading-time output (see end of file)
 # zmodload zsh/zprof
 
-# Enable "advanced" completion
-autoload -U compinit; compinit
+# Enable Vim mode in ZSH
+bindkey -v
+# Reduce the timeout between switching modes (from 0.4s to 0.1s)
+export KEYTIMEOUT=1
+
+# Change cursor shape for different vi modes - Kitty compatible
+# Block cursor for normal mode, line cursor for insert mode
+cursor_mode() {
+    # Cursor shapes: 0=block, 1=beam, 2=underline
+    # Different terminals use different escape sequences
+    cursor_block='\e[1 q' # Block cursor
+    cursor_beam='\e[5 q'  # Beam cursor
+
+    # For Kitty terminal specifically
+    kitty_block='\e]50;CursorShape=0\x7'
+    kitty_beam='\e]50;CursorShape=1\x7'
+
+    function zle-keymap-select {
+        if [[ ${KEYMAP} == vicmd ]] || [[ $1 = 'block' ]]; then
+            echo -ne $cursor_block
+            echo -ne $kitty_block
+        elif [[ ${KEYMAP} == main ]] || [[ ${KEYMAP} == viins ]] || [[ ${KEYMAP} = '' ]] || [[ $1 = 'beam' ]]; then
+            echo -ne $cursor_beam
+            echo -ne $kitty_beam
+        fi
+    }
+
+    zle -N zle-keymap-select
+
+    # Initialize cursor shape for new prompts
+    function zle-line-init {
+        echo -ne $cursor_beam
+        echo -ne $kitty_beam
+    }
+    zle -N zle-line-init
+
+    # Ensure beam cursor when starting the shell
+    function precmd {
+        echo -ne $cursor_beam
+        echo -ne $kitty_beam
+    }
+
+    # Ensure beam cursor for each new prompt
+    function preexec {
+        echo -ne $cursor_beam
+        echo -ne $kitty_beam
+    }
+}
+
+# Initialize the cursor mode
+cursor_mode
 
 # Source private configs if it exists
 if [ -f ~/dotfiles/zsh/private.sh ]; then
@@ -11,10 +60,7 @@ elif [ -f ~/private.sh ]; then
   source ~/private.sh
 fi
 
-[ -f ~/dotfiles/zsh/installs.sh ] && source ~/dotfiles/zsh/installs.sh
-
 export GIT_EDITOR=nvim
-export NEORG_DW="notes"
 
 # Aliases
 alias vi="nvim"
@@ -23,24 +69,11 @@ alias vim="vi"
 alias ctags='/usr/local/bin/ctags'
 alias vidc="nvim -u \"NONE\""
 
-alias restart-plasma="systemctl restart --user plasme-plasmashell"
-
 # alias neorg="nvim -u ~/neorg/.config/init.lua"
 alias neorg="NVIM_APPNAME=neorg nvim"
 alias nvorg="cd ~/orgfiles && NVIM_APPNAME=nvorg nvim"
 
-alias dollama="docker run -d --gpus=all -v ollama:/root/.ollama -p 11434:11434 --security-opt=no-new-privileges --cap-drop=ALL --cap-add=SYS_NICE --memory=8g --memory-swap=8g --cpus=4 --read-only --name ollama ollama/ollama"
-
 alias gg="git log --graph --abbrev-commit --decorate --oneline"
-
-# List by folder
-alias listpf="ls $(echo $PATH | tr ':' ' ') | grep -v '/' | grep . | sort"
-
-# List all commands by name
-alias listp="ls $(echo $PATH | tr ':' ' ')"
-
-# Search package manuals by keyword
-alias mansearch="man -k"
 
 # TODO: This requires `source-highlight`
 # You can get it via brew on MacOS (`brew install source-highlight`)
@@ -69,30 +102,24 @@ function stt() {
   echo -en "\e]2;$@\a"
 }
 
-function cheat() {
-  curl cheat.sh/$1
-}
-
-[ -f ~/dotfiles/scripts/utils/ollama.sh ] && source ~/dotfiles/scripts/utils/ollama.sh
-
 # Helpers so I remember basic worktree commands, lol
-[ -f ~/dotfiles/zsh/worktree-helpers.sh ] && source ~/dotfiles/zsh/worktree-helpers.sh
+source ~/dotfiles/zsh/worktree-helpers.sh
 
 # Mac-specific configurations
 if [[ "$(uname)" == "Darwin" ]]; then
-  [ -f ~/dotfiles/zsh/mac-linux-utils.sh ] && source ~/dotfiles/zsh/mac-linux-utils.sh
-
-  # fnm - This is manages in ~/dotfiles/zsh/installs.sh
-  FNM_PATH="/Users/jonathan.halchack/Library/Application Support/fnm"
-  if [ -d "$FNM_PATH" ]; then
-    export PATH="/Users/jonathan.halchack/Library/Application Support/fnm:$PATH"
-    eval "`fnm env`"
-  fi
-
-  eval "$(fnm env --shell zsh)"
+  source ~/dotfiles/zsh/mac-linux-utils.sh
 fi
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$HOME/bin:/usr/local/bin:$PATH"
+
+# fnm
+FNM_PATH="/Users/jonathan.halchack/Library/Application Support/fnm"
+if [ -d "$FNM_PATH" ]; then
+  export PATH="/Users/jonathan.halchack/Library/Application Support/fnm:$PATH"
+  eval "`fnm env`"
+fi
+
+eval "$(fnm env --shell zsh)"
 
 source ~/dotfiles/zsh/promptline.sh
 
@@ -107,5 +134,3 @@ source ~/dotfiles/zsh/promptline.sh
 
 # For a nice loading-time output (see beginning of file)
 # zprof
-
-eval $(thefuck --alias)

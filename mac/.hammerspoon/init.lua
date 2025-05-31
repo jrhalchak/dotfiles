@@ -16,6 +16,11 @@ hs.hotkey.bind({"cmd", "shift", "alt"}, "n", function()
   hs.alert.show("Sent " .. count .. " test notifications")
 end)
 
+-- TODO: this is hacky
+-- hs.hotkey.bind({"cmd"}, "space", function()
+--     hs.application.launchOrFocus("Sol")
+-- end)
+
 -- I'd like hammerspoon to send sigals to be received by MacOS' mouse keys setting. Give me a lua function that will map these keys to the numpad (not the actual numbers listed):
 -- - some modifier + `h` = `4`
 -- - some modifier + `j` = `2`
