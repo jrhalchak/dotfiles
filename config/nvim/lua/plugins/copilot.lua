@@ -1,20 +1,20 @@
 return {
-  -- {
-  --   "CopilotC-Nvim/CopilotChat.nvim",
-  --   dependencies = {
-  --     { "zbirenbaum/copilot.lua" }, -- or github/copilot.vim
-  --     { "nvim-lua/plenary.nvim", branch = "master" }, -- for curl, log and async functions
-  --   },
-  --   -- build = "make tiktoken", -- Only on MacOS or Linux
-  --   -- opts = {
-  --   --   -- See Configuration section for options
-  --   -- },
-  --   -- See Commands section for default commands if you want to lazy load on them
-  --   config = function()
-  --     require"copilot".setup{}
-  --     require"CopilotChat".setup{}
-  --   end
-  -- },
+  {
+    "CopilotC-Nvim/CopilotChat.nvim",
+    dependencies = {
+      { "zbirenbaum/copilot.lua" }, -- or github/copilot.vim
+      { "nvim-lua/plenary.nvim", branch = "master" }, -- for curl, log and async functions
+    },
+    -- build = "make tiktoken", -- Only on MacOS or Linux
+    -- opts = {
+    --   -- See Configuration section for options
+    -- },
+    -- See Commands section for default commands if you want to lazy load on them
+    config = function()
+      require"copilot".setup{}
+      require"CopilotChat".setup{}
+    end
+  },
   -- {
   --   "zbirenbaum/copilot.lua",
   --   -- Remove once https://github.com/LazyVim/LazyVim/pull/5900 is released
@@ -46,7 +46,7 @@ return {
 			provider = "copilot",
 			copilot = {
 				-- model = "claude-3.7-sonnet-thought", -- your desired model (or use gpt-4o, etc.)
-				model = "claude-3.7-sonnet", -- your desired model (or use gpt-4o, etc.)
+				model = "claude-3.5-sonnet", -- your desired model (or use gpt-4o, etc.)
 			},
 			-- The system_prompt type supports both a string and a function that returns a string. Using a function here allows dynamically updating the prompt with mcphub
 			system_prompt = function()
