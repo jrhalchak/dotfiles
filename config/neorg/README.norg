@@ -1,0 +1,30 @@
+* Neorg Config
+** Requirements
+   - `neorg@8.0.0`
+   - `neovim --HEAD`
+   -- Currently using `v0.10.0-dev-2917+g603f3b36a` via `homebrew` on MacOS
+   -- Linux version is also >= `v0.10.0`
+
+*** Other Requirements
+    There are additional requirements that aren't listed here (like ripgrep).
+    They may be related to the additional plugins, my own lua code, or Neorg itself.
+
+*** TODO
+    - ( ) Update the README to reflect actual requirements
+    - ( ) Implement exports to markdown for this README
+
+** Using Neorg With This Vault
+   Previously, I was including a hidden `.config/` directory and launching neovim with
+   the `-u` argument via an alias.  This led to issues with installing plugins and
+   keeping them separate.
+
+   I've since moved to using the `NVIM_APPNAME` variable, set to `neorg` and creating
+   the following folders:
+   - `~/.local/share/neorg`
+   - `~/.config/neorg`
+
+   The config autoruns `:Neorg index` on load, and changes the CWD, so there's no
+   need to run the command from a specific folder. This config expects the vault to
+   be cloned to `~/neorg`. At least the config code may require that and cause issues
+   as I continue to make changes to it. 
+
