@@ -1,6 +1,8 @@
 # For a nice loading-time output (see end of file)
 # zmodload zsh/zprof
 
+source ~/dotfiles/zsh/installs.sh
+
 # Enable Vim mode in ZSH
 bindkey -v
 # Reduce the timeout between switching modes (from 0.4s to 0.1s)
@@ -69,11 +71,19 @@ alias vim="vi"
 alias ctags='/usr/local/bin/ctags'
 alias vidc="nvim -u \"NONE\""
 
-# alias neorg="nvim -u ~/neorg/.config/init.lua"
+if [[ "$(uname)" == "Darwin" ]]; then
+  export NEORG_DW="omni"
+else
+  export NEORG_DW="notes"
+fi
+
 alias neorg="NVIM_APPNAME=neorg nvim"
 alias nvorg="cd ~/orgfiles && NVIM_APPNAME=nvorg nvim"
 
 alias gg="git log --graph --abbrev-commit --decorate --oneline"
+
+# Display images in the terminal using Kitty's icat protocol
+alias icat='kitty +kitten icat'
 
 # TODO: This requires `source-highlight`
 # You can get it via brew on MacOS (`brew install source-highlight`)

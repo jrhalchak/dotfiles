@@ -7,7 +7,7 @@ TOKYO_YELLOW='#e0af68'
 # TOKYO_CYAN='#7dcfff'
 
 # Darker variants (for backgrounds or subtle elements)
-# TOKYO_DARK_BLUE='#4c71c7'
+TOKYO_DARK_BLUE='#4c71c7'
 # TOKYO_DARK_PURPLE='#9070d0'
 TOKYO_DARK_GREEN='#6ba845'
 # TOKYO_DARK_YELLOW='#b88940'
@@ -17,7 +17,7 @@ TOKYO_DARK_RED='#d0506a'
 # Even deeper/darker variants
 # TOKYO_DEEP_BLUE='#33508f'
 TOKYO_DEEP_PURPLE='#664f93'
-# TOKYO_DEEP_GREEN='#4a7530'
+TOKYO_DEEP_GREEN='#4a7530'
 # TOKYO_DEEP_YELLOW='#85622e'
 TOKYO_DEEP_RED='#9a3a4d'
 # TOKYO_DEEP_CYAN='#377a9e'
@@ -46,7 +46,9 @@ TOKYO_BRIGHT_RED='#ff4d6b'
 
 # Neutrals for backgrounds and text
 TOKYO_BG_DARK='#1a1b26'    # Dark background
+TOKYO_BG_MID='#202233'      # Midpoint background
 TOKYO_BG_MEDIUM='#24283b'  # Medium background
+TOKYO_BG_BRIGHT='#2e3348'   # Bright background
 TOKYO_FG_BRIGHT='#c0caf5'  # Bright foreground
 TOKYO_FG_MUTED='#565f89'   # Muted foreground
 
@@ -67,6 +69,7 @@ function precmd() {
     clear
     echo "" # buffer line
     fastfetch
+    echo "" # buffer line
   else
     echo "" # Add a buffer line after command output
   fi
@@ -77,20 +80,20 @@ function precmd() {
     timer_show=$(printf '%.*f\n' 3 $timer_show)
 
     # Status code color based on success/failure
-    local status_val="%F{$TOKYO_BG_DARK}%f%F{$TOKYO_FG_MUTED}%K{$TOKYO_BG_DARK}  ${cmd_status} %k%f"
+    local status_val="%F{$TOKYO_BG_BRIGHT}%f%F{$TOKYO_DARK_GREEN}%K{$TOKYO_BG_BRIGHT} 󰄬 ${cmd_status} %k%f"
     [ $cmd_status -ne 0 ] && status_val="%F{$TOKYO_DEEP_RED}%f%F{$TOKYO_FG_BRIGHT}%K{$TOKYO_DEEP_RED}  %{${BLINKON}%}${cmd_status}%{${BLINKOFF}%} %k%f"
 
    # Status color based on success/failure
-    local status_end="%K{$TOKYO_BG_DARK}"
+    local status_end="%K{$TOKYO_BG_BRIGHT}"
     [ $cmd_status -ne 0 ] && status_end="%K{$TOKYO_DEEP_RED}"
 
     # Time color based on duration
-    local time_val="${status_end}%F{$TOKYO_BG_DARK}%f%k%K{$TOKYO_BG_DARK}%F{$TOKYO_FG_MUTED}  ${timer_show}s %f%k"
+    local time_val="${status_end}%F{$TOKYO_BG_MID}%f%k%K{$TOKYO_BG_MID}%F{$TOKYO_FG_MUTED} 󰔚 ${timer_show}s %f%k"
     if (( $(echo "$timer_show > 3.0" | bc -l) )); then
-      time_val="%B${status_end}%F{$TOKYO_YELLOW}%f%k%K{$TOKYO_YELLOW}%F{$TOKYO_BG_DARK}  ${timer_show}s %f%k%b"
+      time_val="%B${status_end}%F{$TOKYO_YELLOW}%f%k%K{$TOKYO_YELLOW}%F{$TOKYO_BG_MID} 󰔚 ${timer_show}s %f%k%b"
     fi
     if (( $(echo "$timer_show > 10.0" | bc -l) )); then
-      time_val="%B${status_end}%F{$TOKYO_DEEP_RED}%f%k%K{$TOKYO_DEEP_RED}%F{$TOKYO_FG_BRIGHT}  ${timer_show}s %f%k%b"
+      time_val="%B${status_end}%F{$TOKYO_DEEP_RED}%f%k%K{$TOKYO_DEEP_RED}%F{$TOKYO_FG_BRIGHT} 󰔚 ${timer_show}s %f%k%b"
     fi
 
     # Build the right prompt with icons and colors
@@ -145,55 +148,73 @@ get_git_branch() {
 }
 
 # Function to generate binary clock using braille characters
+# binary_clock() {
+#   # Get current time components
+#   local -i hour=$(date +%H)
+#   local -i min=$(date +%M)
+#   local -i sec=$(date +%S)
+#
+#   # Initialize output
+#   local output=""
+#
+#   # Generate 3 braille characters
+#   for col in {0..2}; do
+#     local char_code=10240  # base braille character (⠀)
+#
+#     # Hours (top row)
+#     if (( hour & (1 << (5 - col * 2)) )); then
+#       char_code=$((char_code + 1))
+#     fi
+#     if (( hour & (1 << (4 - col * 2)) )); then
+#       char_code=$((char_code + 8))
+#     fi
+#
+#     # Minutes (middle row)
+#     if (( min & (1 << (5 - col * 2)) )); then
+#       char_code=$((char_code + 2))
+#     fi
+#     if (( min & (1 << (4 - col * 2)) )); then
+#       char_code=$((char_code + 16))
+#     fi
+#
+#     # Seconds (bottom row)
+#     if (( sec & (1 << (5 - col * 2)) )); then
+#       char_code=$((char_code + 4))
+#     fi
+#     if (( sec & (1 << (4 - col * 2)) )); then
+#       char_code=$((char_code + 32))
+#     fi
+#
+#     # Convert code to character using perl (more reliable for Unicode)
+#     output+=$(perl -e "binmode(STDOUT, ':utf8'); print chr($char_code);")
+#   done
+#
+#   echo -n $output
+# }
+
+# Alternative horizontal binary clock
 binary_clock() {
-  # Get current time components
-  local -i hour=$(date +%H)
-  local -i min=$(date +%M)
-  local -i sec=$(date +%S)
-
-  # Initialize output
-  local output=""
-
-  # Generate 3 braille characters
-  for col in {0..2}; do
-    local char_code=10240  # base braille character (⠀)
-
-    # Hours (top row)
-    if (( hour & (1 << (5 - col * 2)) )); then
-      char_code=$((char_code + 1))
-    fi
-    if (( hour & (1 << (4 - col * 2)) )); then
-      char_code=$((char_code + 8))
-    fi
-
-    # Minutes (middle row)
-    if (( min & (1 << (5 - col * 2)) )); then
-      char_code=$((char_code + 2))
-    fi
-    if (( min & (1 << (4 - col * 2)) )); then
-      char_code=$((char_code + 16))
-    fi
-
-    # Seconds (bottom row)
-    if (( sec & (1 << (5 - col * 2)) )); then
-      char_code=$((char_code + 4))
-    fi
-    if (( sec & (1 << (4 - col * 2)) )); then
-      char_code=$((char_code + 32))
-    fi
-
-    # Convert code to character using perl (more reliable for Unicode)
-    output+=$(perl -e "binmode(STDOUT, ':utf8'); print chr($char_code);")
+  local time parts part bin vis output=" " count=0
+  time=$(date +"%H %M")
+  parts=(${=time})  # Zsh: split $time into array
+  for part in $parts; do
+    local one='%F{white}󰨓%f'
+    local zero='%F{$TOKYO_FG_MUTED}󰨔%f'
+    bin=$(printf "%06d" "$(echo "obase=2; $((10#$part))" | bc)")
+    vis=$(echo "$bin" | sed "s/1/$one/g; s/0/$zero/g; s/ $//")
+    output+="$vis"
+    (( ++count < 2 )) && output+=""
   done
-
-  echo -n $output
+  echo "$output"
 }
+
 
 setopt PROMPT_SUBST
 
-PROMPT=$'%K{$TOKYO_BLUE}%F{$TOKYO_BG_DARK} %B󰅏%b %f%k' # Icon segment
-PROMPT+=$'%K{$TOKYO_BG_DARK}%F{$TOKYO_BLUE}%f' # First separator
-PROMPT+=$'%F{$TOKYO_FG_MUTED}⏐%f%F{white}$(binary_clock)%f%F{$TOKYO_FG_MUTED}⏐%f' # Binary clock
+# PROMPT=$'%K{$TOKYO_BLUE}%F{$TOKYO_BG_DARK} %B󰅏%b %f%k' # Icon segment
+PROMPT=$'%K{$TOKYO_BLUE}%F{$TOKYO_BG_DARK} %B󰥋%b %f%k' # Icon segment
+PROMPT+=$'%K{$TOKYO_BG_MEDIUM}%F{$TOKYO_BLUE}%f' # First separator
+PROMPT+=$'$(binary_clock)' # Binary clock
 PROMPT+=$'%F{$TOKYO_DEEP_PURPLE}%f%k' # Second separator
 PROMPT+=$'%K{$TOKYO_DEEP_PURPLE} %F{$TOKYO_FG_BRIGHT} %B%(5~|%-1~/…/%3~|%4~)%b%f %k' # Directory path
 PROMPT+=$'$(get_git_branch)' # Git status
