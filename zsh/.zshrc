@@ -275,6 +275,14 @@ fi
 
 eval "$(fnm env --shell zsh)"
 
+# Enable copilot (requires github cli and running `gh extension install github/gh-copilot`)
+# see also: https://docs.github.com/en/copilot/managing-copilot/configure-personal-settings/configuring-github-copilot-in-the-cli#setting-up-aliases
+# for information on configuring, disabling telemetry, etc
+# eval "$(gh copilot alias -- zsh)"
+# ~~~
+# EDIT: this functionality isn't available for our copilot version :(
+# ~~~
+
 source ~/dotfiles/zsh/promptline.sh
 
 # -------------------------
