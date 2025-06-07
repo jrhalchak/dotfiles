@@ -152,8 +152,14 @@ end
 
 state.percent = fmt(hi_pattern, 'UserStatusBlock', ' %2p%% ')
 
+-- TODO move this to the theme
+vim.cmd[[
+  hi Container guifg=#BADA55 guibg=Black
+]]
+
 state.full_status = {
   '%{%v:lua._statusline_component("mode")%} ',
+  (vim.g.currentContainer ~= nil and '%#Container#%{g:currentContainer} ' or ''),
   '%t',
   '%r',
   '%m',
@@ -171,7 +177,7 @@ state.short_status = {
 }
 
 state.inactive_status = {
-  ' %t',
+  '%t',
   '%r',
   '%m',
   '%=',
@@ -262,6 +268,8 @@ function M.setup()
     end
   })
 end
+
+
 
 function M.get_status(name)
   return table.concat(state[fmt('%s_status', name)], '')

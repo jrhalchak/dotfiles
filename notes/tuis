@@ -1,0 +1,141 @@
+# TUIs That Seem Useful
+
+SEE ALSO: https://github.com/toolleeo/awesome-cli-apps-in-a-csv?tab=readme-ov-file
+
+## Work / General
+- fjira (https://github.com/mk-5/fjira)
+- bpytop / btop
+- act3
+- fx
+- flawz
+- ranger
+- oha (load testing)
+- STU (S3 tui) (https://github.com/lusingander/stu)
+- diagon / diagon.vim (https://github.com/ArthurSonzogni/Diagon / https://github.com/willchao612/vim-diagon)
+- artem (image to ascii generator) (https://github.com/FineFindus/artem)
+- just (?) (make alternative) (https://github.com/casey/just)
+- boxes (?) (box-drawing cli) (https://boxes.thomasjensen.com/)
+- lolcat (?)
+- browsh (?) (text-based web browser)
+  - find an alternative if this isn't
+    keyboard-controllable
+  - carbonyl
+- Hackernews TUI (https://github.com/aome510/hackernews-TUI)
+- haxor-news (https://github.com/donnemartin/haxor-news)
+- hackers mind map (https://github.com/nadrad/h-m-m)
+- taskline (todos, copy?) (https://github.com/perryrh0dan/taskline)
+- taskwarrior (todos, copy?) (https://github.com/kdheepak/taskwarrior-tui)
+- television (fzf w/ preview, kinda' like telescope) (https://github.com/alexpasmantier/television)
+- newsboat (RSS reader) (https://github.com/newsboat/newsboat)
+- entr (watch files and run scripts) (https://github.com/eradman/entr / https://eradman.com/entrproject/)
+
+Maybe worth checking out x-cmd? https://github.com/x-cmd/x-cmd
+
+- Calcurse: Khal alternative? (https://calcurse.org/)
+  - Calcure (cool big TUI w/ calcurse support)
+
+- Todoman (caldav integrated todos) (https://todoman.readthedocs.io/en/stable/)
+
+#### Jupyter Notebook
+- Jupynium (https://github.com/kiyoon/jupynium.nvim)
+- Molten.nvim (Jupyter notebookds) (https://github.com/benlubas/molten-nvim)
+  - euporie (JUPYTER TUI) (https://github.com/joouha/euporie)
+  - vim-jukit (jupyter vim plugin) (https://github.com/luk400/vim-jukit)
+
+#### Docker
+- **lazydocker**
+  - This one worked
+- oxker(?)
+- ctop (?)
+- ducker(?)
+
+#### AI
+- Elia: client for llms (https://github.com/darrenburns/elia)
+- Tenere: llm client (https://github.com/pythops/tenere)
+
+#### Data / Spreadsheets
+- sc-im (https://github.com/andmarti1424/sc-im)
+- sheetsui (https://github.com/zaphar/sheetsui?tab=readme-ov-file)
+- visidata (? looks cool) (https://github.com/saulpw/visidata?tab=readme-ov-file)
+- dblab (DB client) (https://github.com/danvergara/dblab)
+  - dbee (DB _BROWSER_) (https://github.com/murat-cileli/dbee?tab=readme-ov-file)
+  - rainfrog (DB client) (https://github.com/achristmascarl/rainfrog)
+
+#### Presentation / Informational
+- presenterm (https://github.com/mfontanini/presenterm)
+- slides (https://github.com/maaslalani/slides)
+
+#### GIT
+- Github CLI (PRs, branches, etc)
+- **Octo.nvim** (https://github.com/pwntester/octo.nvim?tab=readme-ov-file#-pr-reviews)
+- PRS (https://github.com/dhth/prs)
+  - PReam-Team
+    (https://github.com/nikoladucak/pream-team/)
+    (may not work with work's GH org)
+- Lazygit (already using w/ Neovim)
+  (https://github.com/murat-cileli/dbee?tab=readme-ov-file)
+- Re (github pr review) (https://github.com/jordanlewis/re)
+
+### Mac-Specific
+??
+
+### Linux-Specific
+- kmon
+- sysz
+- bluetuith / bluetui
+- impala
+- diskonaut / gdu
+- tray-tui
+- packemon
+- neoss
+- marstui-rustio
+- pkm (package manager tui) (https://github.com/wick3dr0se/pkm)
+
+Kovid Goyal made a qt chromium keyboard-based browser: https://github.com/kovidgoyal/vise
+
+## Personal
+- steamtui
+- discordo / endcord
+- tuisky
+- twitch-tui
+- gurk / signal-cli(?)
+- tuir (pipx install tuir-continued)
+- moc (?)
+- nmtui (?)
+- manga-tui
+- yewtube
+- Catena Vetus (historical christian commentary) (https://github.com/jimbob88/CatenaVetus?tab=readme-ov-file)
+  - bibling (https://github.com/tsur/bibling)
+  - bible-browser (? seems sketchy) (https://github.com/iTawkins/terminal-bible-browser?tab=readme-ov-file)
+  - diatheke / diatheke-tui (?)
+
+- Figlet (npm i -g figlet-cli)
+- TOIlet (https://github.com/cacalabs/toilet)
+  - (brew/apt install toilet)
+
+YT FZF Experiment (won't be updated): https://github.com/pystardust/ytfzf
+
+`npx firew0rks`
+
+https://github.com/ChrisBuilds/terminaltexteffects
+
+A bunch of flashcard ones, like GoCard and Markdown-Flashcard
+
+### Music
+- rmpc *
+- mpvc (?)
+- spotui / ncspot
+- aome510/spotify-player (?)
+- termusic (?)
+
+---
+
+Any games on https://github.com/rothgar/awesome-tuis?tab=readme-ov-file
+
+See TUI tutorials for grep/sed/awk/python at https://github.com/learnbyexample/TUI-apps
+
+## Maybe?
+- https://github.com/Zaloog/kanban-python
+
+
+LOOK UP pandoc -> pptx conversion w/ templates for work stuff
