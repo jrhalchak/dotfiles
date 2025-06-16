@@ -262,8 +262,9 @@ require('lazy').setup({
         max_height_window_percentage = 50,
         window_overlap_clear_enabled = false, -- toggles images when windows are overlapped
         window_overlap_clear_ft_ignore = { 'cmp_menu', 'cmp_docs', '' },
-        editor_only_render_when_focused = false, -- auto show/hide images when the editor gains/looses focus
-        tmux_show_only_in_active_window = false, -- auto show/hide images in the correct Tmux window (needs visual-activity off)
+        editor_only_render_when_focused = true, -- auto show/hide images when the editor gains/looses focus
+        tmux_show_only_in_active_window = true, -- auto show/hide images in the correct Tmux window (needs visual-activity off)
+        auto_clear = true,
         hijack_file_patterns = { '*.png', '*.jpg', '*.jpeg', '*.gif', '*.webp' }, -- render image files as images when opened
       })
     end
@@ -368,6 +369,19 @@ require('lazy').setup({
             b = { ':Telescope find_backlinks<CR>', 'Find backlinks' },
             a = { ':Telescope find_header_backlinks<CR>', 'Find all backlinks (headers incl)' }
           },
+	  z = {
+	    name = 'Fold levels',
+	    ['0'] = { ':set foldlevel=0<CR>', 'Set fold lvl 0' },
+	    ['1'] = { ':set foldlevel=1<CR>', 'Set fold lvl 1' },
+	    ['2'] = { ':set foldlevel=2<CR>', 'Set fold lvl 2' },
+	    ['3'] = { ':set foldlevel=3<CR>', 'Set fold lvl 3' },
+	    ['4'] = { ':set foldlevel=4<CR>', 'Set fold lvl 4' },
+	    ['5'] = { ':set foldlevel=5<CR>', 'Set fold lvl 5' },
+	    ['6'] = { ':set foldlevel=6<CR>', 'Set fold lvl 6' },
+	    ['7'] = { ':set foldlevel=7<CR>', 'Set fold lvl 7' },
+	    ['8'] = { ':set foldlevel=8<CR>', 'Set fold lvl 8' },
+	    ['9'] = { ':set foldlevel=9<CR>', 'Set fold lvl 9' },
+	  },
           m = {
             name = 'Neorg Mode',
             h = { ':Neorg mode traverse-heading<CR>', 'Traverse headings' },
@@ -406,19 +420,6 @@ require('lazy').setup({
         ['<'] = { '<gv', 'Better decrease indent'},
         ['>'] = { '>gv', 'Better increase indent'},
         [';'] = { ':', 'Command in visual mode' },
-        f = {
-          name = 'Fold levels',
-          ['0'] = { ':set foldlevel=0<CR>', 'Set fold lvl 0' },
-          ['1'] = { ':set foldlevel=1<CR>', 'Set fold lvl 1' },
-          ['2'] = { ':set foldlevel=2<CR>', 'Set fold lvl 2' },
-          ['3'] = { ':set foldlevel=3<CR>', 'Set fold lvl 3' },
-          ['4'] = { ':set foldlevel=4<CR>', 'Set fold lvl 4' },
-          ['5'] = { ':set foldlevel=5<CR>', 'Set fold lvl 5' },
-          ['6'] = { ':set foldlevel=6<CR>', 'Set fold lvl 6' },
-          ['7'] = { ':set foldlevel=7<CR>', 'Set fold lvl 7' },
-          ['8'] = { ':set foldlevel=8<CR>', 'Set fold lvl 8' },
-          ['9'] = { ':set foldlevel=9<CR>', 'Set fold lvl 9' },
-        }
       }, { mode = "v" })
     end
   },

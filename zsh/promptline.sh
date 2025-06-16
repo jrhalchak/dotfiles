@@ -201,9 +201,9 @@ binary_clock() {
     local one='%F{white}󰨓%f'
     local zero='%F{$TOKYO_FG_MUTED}󰨔%f'
     bin=$(printf "%06d" "$(echo "obase=2; $((10#$part))" | bc)")
-    vis=$(echo "$bin" | sed "s/1/$one/g; s/0/$zero/g; s/ $//")
+    vis=$(echo "$bin" | sed "s/1/$one /g; s/0/$zero /g; s/ $/ /")
     output+="$vis"
-    (( ++count < 2 )) && output+=""
+    (( ++count < 2 )) && output+=" "
   done
   echo "$output"
 }
