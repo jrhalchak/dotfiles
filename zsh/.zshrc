@@ -187,6 +187,10 @@ function doc() {
   ' "$file" | sed '/^[[:space:]]*$/d' | sed 's/^[[:space:]]*#\s\{0,1\}//'
 }
 
+function qr() {
+  curl "qrenco.de/$1"
+}
+
 function tnf() {
   if ! command -v telnet >/dev/null 2>&1; then
     echo "telnet is not installed. Please install it first."
