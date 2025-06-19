@@ -15,18 +15,38 @@ set $mod Mod4
 # is used in the bar {} block below.
 font pango:VictorMono Nerd Font Mono Bold 10
 
-gaps inner 16
-gaps outer 8
-gaps top 56
+# gaps inner 16
+# gaps outer 8
+# gaps top 56
+# Set gaps programmatically depending on resolution
+exec_always --no-startup-id ~/.config/i3/set_gaps.sh
 
 bindsym $mod+F12 exec --no-startup-id setxkbmap -option caps:escape
 
 # Set wallpaper
 exec_always --no-startup-id feh --bg-fill ~/Pictures/Wallpapers/tokyo-night-aesthetic.jpg
 
-# This font is widely installed, provides lots of unicode glyphs, right-to-left
-# text rendering and scalability on retina/hidpi displays (thanks to pango).
-#font pango:DejaVu Sans Mono 8
+# Always run input for reversing mouse direction and remapping ESC to CAPS-LOCK
+exec_always --no-startup-id ~/dotfiles/scripts/sys/input.sh
+
+# Backup for if the keybindings/mouse get messed up
+bindsym $mod+Shift+i exec --no-startup-id ~/dotfiles/scripts/sys/input.sh
+
+# Always run keynav for keyboard (mouse) pointer navigation with splits
+exec_always --no-startup-id keynav 'loadconfig ~/.config/keynav/keynavrc,daemonize'
+
+# ----
+# Add "scrolling" for keynav
+# NOTE: sudo apt install xdotool
+# ----
+
+# Scroll up with $mod+alt+k
+bindsym $mod+Mod1+k exec --no-startup-id xdotool click 4
+
+# Scroll down with $mod+alt+j
+bindsym $mod+Mod1+j exec --no-startup-id xdotool click 5
+
+# This font is widely installed, provides lots of unicode glyphs, right-to-left text rendering and scalability on retina/hidpi displays (thanks to pango). #font pango:DejaVu Sans Mono 8
 
 # Start XDG autostart .desktop files using dex. See also
 # https://wiki.archlinux.org/index.php/XDG_Autostart
@@ -98,7 +118,7 @@ bindsym $mod+Shift+space exec rofi -no-config -no-lazy-grab -show drun -modi fil
 bindsym $mod+Tab exec rofi -no-config -no-lazy-grab -show window -theme ~/.config/wofi/launcher.rasi
 
 # Power menu
-bindsym $mod+P exec /home/jrh/.config/wofi/wofi-power.sh
+# bindsym $mod+P exec /home/jrh/.config/wofi/wofi-power.sh
 
 # start dmenu (a program launcher)
 # bindsym $mod+d exec --no-startup-id dmenu_run
@@ -207,27 +227,22 @@ bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcu
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
-# These bindings trigger as soon as you enter the resize mode
-
-# Pressing left will shrink the window’s width.
-# Pressing right will grow the window’s width.
-# Pressing up will shrink the window’s height.
-# Pressing down will grow the window’s height.
+  # These bindings trigger as soon as you enter the resize mode
   bindsym h resize shrink width 10 px or 2 ppt
-    bindsym j resize grow height 10 px or 2 ppt
-    bindsym k resize shrink height 10 px or 2 ppt
-    bindsym l resize grow width 10 px or 2 ppt
+  bindsym j resize grow height 10 px or 2 ppt
+  bindsym k resize shrink height 10 px or 2 ppt
+  bindsym l resize grow width 10 px or 2 ppt
 
-# same bindings, but for the arrow keys
-# bindsym Left resize shrink width 10 px or 10 ppt
-# bindsym Down resize grow height 10 px or 10 ppt
-# bindsym Up resize shrink height 10 px or 10 ppt
-# bindsym Right resize grow width 10 px or 10 ppt
+  # same bindings, but for the arrow keys
+  # bindsym Left resize shrink width 10 px or 10 ppt
+  # bindsym Down resize grow height 10 px or 10 ppt
+  # bindsym Up resize shrink height 10 px or 10 ppt
+  # bindsym Right resize grow width 10 px or 10 ppt
 
-# back to normal: Enter or Escape or $mod+r
-    bindsym Return mode "default"
-    bindsym Escape mode "default"
-    bindsym $mod+r mode "default"
+  # back to normal: Enter or Escape or $mod+r
+  bindsym Return mode "default"
+  bindsym Escape mode "default"
+  bindsym $mod+r mode "default"
 }
 
 bindsym $mod+r mode "resize"
@@ -235,6 +250,6 @@ bindsym $mod+r mode "resize"
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 # bar {
-  # status_command i3status
-  # mode hide
+#     status_command i3status
+#     mode hide
 # }

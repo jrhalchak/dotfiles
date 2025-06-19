@@ -13,7 +13,7 @@ end
 function M.tabpage(opts)
   local highlight = '%#TabLine#'
   local separator = '%#TabLine#▏'
-  local label = '[No Name]'
+  local label = '[No Name 2309512345]'
 
   if opts.selected then
     highlight = '%#TabLineSel#'

@@ -1,5 +1,7 @@
 {
-  "keyMappings": "# Insert your preferred key mappings here.\nmap e LinkHints.activateMode action=hover\nmap <a-M> toggleMuteTab all\nmap <a-m> toggleMuteTab other\nmap R reload hard",
+  "keyMappings": "# Insert your preferred key mappings here.\nmap e LinkHints.activateMode action=hover\nmap <a-M> toggleMuteTab all\nmap <a-m> toggleMuteTab other\nmap R reload hard\nmap <c-d> scrollFullPageDown\nmap <c-u> scrollFullPageUp\nmap ] nextTab\nmap [ previousTab",
+  "regexFindMode": true,
+  "grabBackFocus": true,
   "settingsVersion": "2.2.1",
   "exclusionRules": [
     {

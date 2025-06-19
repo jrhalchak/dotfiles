@@ -1,6 +1,8 @@
 # For a nice loading-time output (see end of file)
 # zmodload zsh/zprof
 
+source ~/dotfiles/zsh/installs.sh
+
 # Setup completion
 autoload -U compinit; compinit
 
@@ -72,26 +74,22 @@ alias vim="vi"
 alias ctags='/usr/local/bin/ctags'
 alias vidc="nvim -u \"NONE\""
 
+if [[ "$(uname)" == "Darwin" ]]; then
+  source ~/dotfiles/zsh/mac-linux-utils.sh
+
+  # Source fjira terminal completion for macbook pro
+  source ~/dotfiles/zsh/fjir-mac-completion.sh
+
+  export NEORG_DW="omni"
+else
+  export NEORG_DW="notes"
+fi
+
 # alias neorg="nvim -u ~/neorg/.config/init.lua"
 alias neorg="NVIM_APPNAME=neorg nvim"
 alias nvorg="cd ~/orgfiles && NVIM_APPNAME=nvorg nvim"
 
 alias gg="git log --graph --abbrev-commit --decorate --oneline"
-
-# Display images in the terminal using Kitty's icat protocol
-alias icat='kitty +kitten icat'
-
-# NOTE: You can add ?format=[1-4] for different 1-liners
-alias weather="curl wttr.in/Barberton"
-
-# Places w/ people I care about
-alias weathera="curl -s 'wttr.in/{Barberton,Sarasota,Orlando,NewCastle,NewYorkCity}?format=3'"
-
-alias mermaid=mmdc
-
-# See https://github.com/chubin/wttr.in for more about custom formatring, etc prompt output, etc
-# See tmux warning https://github.com/chubin/wttr.in?tab=readme-ov-file#tmux
-
 
 # TODO: This requires `source-highlight`
 # You can get it via brew on MacOS (`brew install source-highlight`)
@@ -116,7 +114,6 @@ export LESS=' -R -X -F '
 # not desired for workflow of controlling terminal title.
 DISABLE_AUTO_TITLE="true"
 
-# Set title (BROKEN?)
 function stt() {
   echo -en "\e]2;$@\a"
 }
@@ -257,16 +254,9 @@ function tnf() {
   esac
 }
 
+
 # Helpers so I remember basic worktree commands, lol
 source ~/dotfiles/zsh/worktree-helpers.sh
-
-# Mac-specific configurations
-if [[ "$(uname)" == "Darwin" ]]; then
-  source ~/dotfiles/zsh/mac-linux-utils.sh
-
-  # Source fjira terminal completion for macbook pro
-  source ~/dotfiles/zsh/fjir-mac-completion.sh
-fi
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$HOME/bin:/usr/local/bin:$PATH"
 
@@ -278,14 +268,6 @@ if [ -d "$FNM_PATH" ]; then
 fi
 
 eval "$(fnm env --shell zsh)"
-
-# Enable copilot (requires github cli and running `gh extension install github/gh-copilot`)
-# see also: https://docs.github.com/en/copilot/managing-copilot/configure-personal-settings/configuring-github-copilot-in-the-cli#setting-up-aliases
-# for information on configuring, disabling telemetry, etc
-# eval "$(gh copilot alias -- zsh)"
-# ~~~
-# EDIT: this functionality isn't available for our copilot version :(
-# ~~~
 
 source ~/dotfiles/zsh/promptline.sh
 

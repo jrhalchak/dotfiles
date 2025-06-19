@@ -64,11 +64,18 @@ M.setup = function()
     { "<leader>fb", ":Telescope buffers<CR>", desc = "Buffers" },
 
     -- Netrw
-    { "<leader>et", ":20Vex<CR>", desc = "Netrw side panel" },
-    { "<leader>ev", ":Vex<CR>", desc = "Netrw (vsplit)" },
-    { "<leader>es", ":Sex<CR>", desc = "Netrw (split)" },
-    { "<leader>ew", ":Ex<CR>", desc = "Netrw here (also \"-\")" },
-    { "-", ":Ex<CR>", desc = "Jump up to Netrw" },
+    -- { "<leader>et", ":20Vex<CR>", desc = "Netrw side panel" },
+    -- { "<leader>ev", ":Vex<CR>", desc = "Netrw (vsplit)" },
+    -- { "<leader>es", ":Sex<CR>", desc = "Netrw (split)" },
+    -- { "<leader>ew", ":Ex<CR>", desc = "Netrw here (also \"-\")" },
+    -- { "-", ":Ex<CR>", desc = "Jump up to Netrw" },
+
+    -- Oil.nvim
+    { "<leader>et", "<CMD>Oil --float<CR>", desc = "Oil side panel (float)" },
+    { "<leader>ev", "<CMD>vertical Oil<CR>", desc = "Oil (vsplit)" },
+    { "<leader>es", "<CMD>split | Oil<CR>", desc = "Oil (split)" },
+    { "<leader>ew", "<CMD>Oil<CR>", desc = "Oil here" },
+    { "-", "<CMD>Oil<CR>", desc = "Jump up to folder w/ Oil" },
 
     -- Misc
     { "<leader>u", group = "Utilities" },

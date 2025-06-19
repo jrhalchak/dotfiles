@@ -19,14 +19,10 @@ M.setup = function()
   -- Help
   -- ============================================================
   augroup("OpenHelpInTab", groupopts)
-  -- NOTE This applies to any *.txt file, which I don't use
-  -- (intentionally) myself so it will open any help txt in a new
-  -- tab. If any help is triggered again it can cause notice
-  -- messages since help is confined to 1 window and the buffers
-  -- aren't treated as separate "real' buffers
-  autocmd("BufEnter", {
+  -- Only open actual help files in new tabs, not all .txt files
+  autocmd("FileType", {
     group = "OpenHelpInTab",
-    pattern = "*.txt",
+    pattern = "help",
     command = "wincmd T"
   })
 

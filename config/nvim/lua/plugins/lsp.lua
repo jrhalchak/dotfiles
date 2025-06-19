@@ -1,7 +1,18 @@
+local autocmds = require("config.autocmds")
+local lspsetup = require("config.lspsetup")
+
 return {
     "neovim/nvim-lspconfig",
     "williamboman/mason.nvim",
-    "williamboman/mason-lspconfig.nvim",
+    {
+      "williamboman/mason-lspconfig.nvim",
+      -- Stop race conditions when opening directly to an oil folder view
+      dependencies = { "stevearc/oil.nvim" },
+      config = function()
+        autocmds.setup()
+        lspsetup.setup()
+      end
+    },
     "hrsh7th/nvim-cmp",
     "hrsh7th/cmp-nvim-lsp",
     "hrsh7th/cmp-buffer",
@@ -24,9 +35,12 @@ return {
 
           -- List of parsers to ignore installing (or "all")
           -- ignore_install = { "norg" },
+          ignore_install = {},
 
           ---- If you need to change the installation directory of the parsers (see -> Advanced Setup)
           -- parser_install_dir = "/some/path/to/store/parsers", -- Remember to run vim.opt.runtimepath:append("/some/path/to/store/parsers")!
+
+          modules = {},
 
           highlight = {
             enable = true,

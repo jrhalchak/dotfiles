@@ -79,9 +79,9 @@ nvim_version="v0.11.1"
 nvim_appimage="$HOME/Applications/nvim-linux-x86_64_${nvim_version}.appimage"
 
 # Setup aliases for vi, vim, and nvim
-alias nvim="$nvim_appimage"
-alias vim="$nvim_appimage"
-alias vi="$nvim_appimage"
+# alias nvim="$nvim_appimage"
+# alias vim="$nvim_appimage"
+# alias vi="$nvim_appimage"
 
 if [ ! -f "$nvim_appimage" ]; then
   echo "Installing Neovim AppImage $nvim_version..."
@@ -128,4 +128,5 @@ if [ "$installed" = true ]; then
   echo "-----------------------------------------------------"
   echo ""
 fi
+
 
