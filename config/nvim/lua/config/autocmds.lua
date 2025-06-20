@@ -19,6 +19,7 @@ M.setup = function()
   -- Help
   -- ============================================================
   augroup("OpenHelpInTab", groupopts)
+
   -- Only open actual help files in new tabs, not all .txt files
   autocmd("FileType", {
     group = "OpenHelpInTab",
