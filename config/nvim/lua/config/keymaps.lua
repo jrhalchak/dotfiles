@@ -21,12 +21,13 @@ local function genfoldkeys_whichkey()
 end
 
 -- normal mode
-local window_traversal_keys_whichkey = {
-  { "<C-h>", "<C-w>h", desc = "Move left" },
-  { "<C-j>", "<C-w>j", desc = "Move right" },
-  { "<C-k>", "<C-w>k", desc = "Move up" },
-  { "<C-l>", "<C-w>l", desc = "Move down" },
-}
+-- Now handled by smart-splits.nvim (below)
+-- local window_traversal_keys_whichkey = {
+--   { "<C-h>", "<C-w>h", desc = "Move left" },
+--   { "<C-j>", "<C-w>j", desc = "Move right" },
+--   { "<C-k>", "<C-w>k", desc = "Move up" },
+--   { "<C-l>", "<C-w>l", desc = "Move down" },
+-- }
 
 M.setup = function()
   local wk = require"which-key"
@@ -39,10 +40,11 @@ M.setup = function()
     { "<right>", "<nop>" },
 
     -- Window resizing
-    { "<up>", ":resize -2<CR>", desc = "+/- Win v-size" },
-    { "<down>", ":resize +2<CR>", desc = "+/- Win v-size" },
-    { "<left>", ":vertical resize -2<CR>", desc = "+/- Win h-size" },
-    { "<right>", ":vertical resize +2<CR>", desc = "+/- Win h-size" },
+    -- Now handled by smart-splits.nvim (below)
+    -- { "<up>", ":resize -2<CR>", desc = "+/- Win v-size" },
+    -- { "<down>", ":resize +2<CR>", desc = "+/- Win v-size" },
+    -- { "<left>", ":vertical resize -2<CR>", desc = "+/- Win h-size" },
+    -- { "<right>", ":vertical resize +2<CR>", desc = "+/- Win h-size" },
 
     -- Buffer switching
     { "L", ":bnext<CR>", desc = "Next buffer" },
@@ -92,9 +94,10 @@ M.setup = function()
   }
 
   -- Add window traversal keys
-  for _, v in ipairs(window_traversal_keys_whichkey) do
-    table.insert(which_keymaps, v)
-  end
+  -- Now handled by smart-splits.nvim (below)
+  -- for _, v in ipairs(window_traversal_keys_whichkey) do
+  --   table.insert(which_keymaps, v)
+  -- end
 
   -- VISUAL mode mappings
   local which_keymaps_v = {
@@ -190,19 +193,24 @@ M.setup_lsp = function(buf)
 end
 
 
-M.get_netrw = function()
-  local traversal_keys = {}
-  for _, v in pairs(window_traversal_keys_whichkey) do
-    traversal_keys[v[1]] = v[2] .. "<CR>"
-  end
+M.setup_splits = function()
+  local wk = require"which-key"
+  local smart_splits = require("smart-splits")
 
-  return vim.tbl_extend("force", {
-    -- Function mappings receive an object describing the node under the cursor
-    ["p"]         = function(payload) print(vim.inspect(payload)) end,
-    ["<leader>r"] = ":e .<CR>"
-    -- String mappings are executed as vim commands
-    -- ['<Leader>p'] = ":echo 'hello world'<CR>",
-  }, traversal_keys)
+  wk.add({
+    {
+      mode = "n",
+      { "<C-h>", smart_splits.move_cursor_left, desc = "" },
+      { "<C-j>", smart_splits.move_cursor_down, desc = "" },
+      { "<C-k>", smart_splits.move_cursor_up, desc = "" },
+      { "<C-l>", smart_splits.move_cursor_right, desc = "" },
+
+      { "<left>", smart_splits.resize_left, desc = "" },
+      { "<down>", smart_splits.resize_down, desc = "" },
+      { "<up>", smart_splits.resize_up, desc = "" },
+      { "<right>", smart_splits.resize_right, desc = "" },
+    },
+  })
 end
 
 -- until this is fixed

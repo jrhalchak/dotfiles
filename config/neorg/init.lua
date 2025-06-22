@@ -82,9 +82,9 @@ require('lazy').setup({
     },
     version = "*",
     config = function()
-      local neorg_todos = require("neorg_todos")
+      -- local neorg_todos = require("neorg_todos")
 
-      vim.api.nvim_create_user_command('OpenTodos', neorg_todos.open, {})
+      -- vim.api.nvim_create_user_command('OpenTodos', neorg_todos.open, {})
 
       local dirman_config = {
         config = {
@@ -432,6 +432,19 @@ require('lazy').setup({
     end,
     ft = { "markdown" },
   },
+  {
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      'nvim-neorg/neorg',
+    },
+    dir = vim.fn.stdpath("config") .. "/pack/dev/start/bdiagram",
+    name = "bdiagram",
+    build = "make install",
+    lazy = false,
+    config = function()
+      require("bdiagram").setup()
+    end,
+  }
 })
 
 -- vim.cmd('Neorg index')
