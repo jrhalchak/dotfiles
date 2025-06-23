@@ -11,3 +11,4 @@ return {
     keymaps.setup_splits()
   end,
 }
+

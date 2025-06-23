@@ -1,8 +1,6 @@
 # For a nice loading-time output (see end of file)
 # zmodload zsh/zprof
 
-source ~/dotfiles/zsh/installs.sh
-
 # Setup completion
 autoload -U compinit; compinit
 

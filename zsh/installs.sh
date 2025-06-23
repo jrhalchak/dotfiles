@@ -35,11 +35,6 @@ installed=false
 #   return 1
 # fi
 
-# TODO - Get rid of all the aliases and stuff where they're unecessary, and just
-# move from using ~/Applications to ~/bin/ and update the PATH or something..
-
-export PATH=$PATH:/usr/local/go/bin
-
 # Install Go v1.24.3
 if ! command -v go >/dev/null 2>&1; then
   echo "Installing Go v1.24.3..."
@@ -53,7 +48,6 @@ fi
 # fnm
 FNM_PATH="$HOME/.local/share/fnm"
 if [ -d "$FNM_PATH" ]; then
-  export PATH="$HOME/.local/share/fnm:$PATH"
   eval "`fnm env`"
 fi
 
@@ -76,46 +70,37 @@ fi
 
 # Install Neovim AppImage if not present
 nvim_version="v0.11.1"
-nvim_appimage="$HOME/Applications/nvim-linux-x86_64_${nvim_version}.appimage"
-
-# Setup aliases for vi, vim, and nvim
-# alias nvim="$nvim_appimage"
-# alias vim="$nvim_appimage"
-# alias vi="$nvim_appimage"
+nvim_appimage="$HOME/dotfiles/apps/bin"
 
 if [ ! -f "$nvim_appimage" ]; then
   echo "Installing Neovim AppImage $nvim_version..."
-  mkdir -p "$HOME/Applications"
-  curl -fsSL "https://github.com/neovim/neovim/releases/download/${nvim_version}/nvim-linux-x86_64.appimage" -o "$nvim_appimage"
-  chmod +x "$nvim_appimage"
+  mkdir -p "$HOME/dotfiles/apps/bin"
+  curl -fsSL "https://github.com/neovim/neovim/releases/download/${nvim_version}/nvim-linux-x86_64.appimage" -o "nvim"
+  chmod +x "nvim"
   installed=true
 fi
 
 # Wezterm if not installed
 # Filename from wezterm site, make version variable for latest if desired
 WEZTERM_FILENAME="WezTerm-20240203-110809-5046fc22-Ubuntu20.04.AppImage"
-WEZTERM_APPIMAGE="$HOME/Applications/$WEZTERM_FILENAME"
+WEZTERM_APPIMAGE="$HOME/dotfiles/apps/bin/wezterm"
 alias wezterm="$WEZTERM_APPIMAGE"
 
 if [ ! -f "$WEZTERM_APPIMAGE" ]; then
   echo "Installing Wezterm"
-  curl -fsSL -o "$HOME/Applications/$WEZTERM_FILENAME" "https://github.com/wezterm/wezterm/releases/download/20240203-110809-5046fc22/$WEZTERM_FILENAME"
-  chmod +x "$HOME/Applications/$WEZTERM_FILENAME"
+  curl -fsSL -o "$HOME/dotfiles/apps/bin/wezterm" "https://github.com/wezterm/wezterm/releases/download/20240203-110809-5046fc22/$WEZTERM_FILENAME" chmod +x "$HOME/dotfiles/apps/bin/wezterm"
   installed=true
 fi
 
 # Install Vifm AppImage if not present
-vifm_version="v0.14.2"
-vifm_appimage="$HOME/Applications/vifm-${vifm_version}-x86_64.appimage"
+VIFM_VERSION="v0.14.2"
+VIFM_APPIMAGE="$HOME/dotfiles/apps/bin/vifm"
 
-# Setup alias for vifm to avoid PATH issues
-alias vifm="$vifm_appimage"
-
-if [ ! -f "$vifm_appimage" ]; then
-  echo "Installing Vifm AppImage $vifm_version..."
-  mkdir -p "$HOME/Applications"
-  curl -fsSL "https://prdownloads.sourceforge.net/vifm/vifm-${vifm_version}-x86_64.AppImage?download" -o "$vifm_appimage"
-  chmod +x "$vifm_appimage"
+if [ ! -f "$VIFM_APPIMAGE" ]; then
+  echo "Installing Vifm AppImage $VIFM_VERSION..."
+  mkdir -p "$HOME/dotfiles/apps/bin/"
+  curl -fsSL "https://prdownloads.sourceforge.net/vifm/vifm-${VIFM_VERSION}-x86_64.AppImage?download" -o "$VIFM_APPIMAGE"
+  chmod +x "$VIFM_APPIMAGE"
   installed=true
 fi
 
