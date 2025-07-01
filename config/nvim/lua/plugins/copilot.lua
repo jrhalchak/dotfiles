@@ -18,7 +18,8 @@ return {
       require"CopilotChat".setup({
         -- debug = true,
         -- Raw values for default settings
-        model = "claude-3.5-sonnet",
+        -- model = "claude-sonnet-4",
+        model = "gpt-4.1",
         context = { "files", "buffers" },
         system_prompt = [[# Professional Coding Assistant
 
