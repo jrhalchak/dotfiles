@@ -37,6 +37,15 @@ link "$DOTFILES_DIR/config/nvim" "$HOME/.config/nvim"
 link "$DOTFILES_DIR/config/neorg" "$HOME/.config/neorg"
 link "$DOTFILES_DIR/config/wezterm" "$HOME/.config/wezterm"
 
+# ====================
+# Linux Bin Mgmgt
+# ====================
+
+# Exit this script early if running on macOS (Darwin)
+if [ "$(uname)" = "Darwin" ]; then
+  exit 0
+fi
+
 # Bins
 for bin_file in "$DOTFILES_DIR/apps/bin"/*; do
   [ -f "$bin_file" ] && link "$bin_file" "$HOME/.local/bin/$(basename "$bin_file")"
