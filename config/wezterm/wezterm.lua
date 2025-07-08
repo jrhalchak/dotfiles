@@ -148,19 +148,19 @@ w.on("format-tab-title", function(tab, tabs, panes, config, hover, max_width)
   local is_first = tabs[1].tab_id == tab.tab_id
   local prefix = is_first and " " or ""
 
-  local SOLID_LEFT_ARROW = w.nerdfonts.ple_lower_right_triangle
-  local SOLID_RIGHT_ARROW = w.nerdfonts.ple_upper_left_triangle
+  local RIGHT_BOTTOM_TRIANGLE = w.nerdfonts.ple_lower_right_triangle
+  local LEFT_TOP_TRIANGLE = w.nerdfonts.ple_upper_left_triangle
 
   local edge_bg = "#0b0022"
   local active_fg = "#2b2042"
   local inactive_fg = "#1b1032"
-  local active_bg = edge_bg
-  local inactive_bg = edge_bg
+  -- local active_bg = edge_bg
+  -- local inactive_bg = edge_bg
 
   local left_arrow = {
     { Background = { Color = edge_bg } },
     { Foreground = { Color = is_active and active_fg or inactive_fg } },
-    { Text = prefix .. SOLID_LEFT_ARROW },
+    { Text = prefix .. RIGHT_BOTTOM_TRIANGLE },
   }
 
   local title = {
@@ -172,7 +172,7 @@ w.on("format-tab-title", function(tab, tabs, panes, config, hover, max_width)
   local right_arrow = {
     { Background = { Color = edge_bg } },
     { Foreground = { Color = is_active and active_fg or inactive_fg } },
-    { Text = SOLID_RIGHT_ARROW },
+    { Text = LEFT_TOP_TRIANGLE },
   }
 
   w.log_info(inspect(tab))
@@ -181,8 +181,29 @@ w.on("format-tab-title", function(tab, tabs, panes, config, hover, max_width)
 end)
 
 w.on('update-right-status', function(window, pane)
+  local function binary_clock()
+    local hour = tonumber(os.date("%H"))
+    local min = tonumber(os.date("%M"))
+    local sec = tonumber(os.date("%S"))
+    local function to_bin(val)
+      local bin = ""
+      for i = 5, 0, -1 do
+        bin = bin .. ((val & (1 << i)) ~= 0 and "󰄮 " or "󰢤 ")
+      end
+      return bin
+    end
+    return to_bin(hour) .. "  " .. to_bin(min) .. "  " .. to_bin(sec)
+  end
+
+  -- The filled in variant of the < symbol
+  local SOLID_LEFT_ARROW = w.nerdfonts.ple_right_hard_divider
+  local RIGHT_BOTTOM_TRIANGLE = w.nerdfonts.ple_lower_right_triangle
+
   -- Each element holds the text for a cell in a "powerline" style << fade
-  local cells = {}
+  local cells = {
+    { Text = SOLID_LEFT_ARROW },
+    binary_clock()
+  }
 
   -- Figure out the cwd and host of the current pane.
   -- This will pick up the hostname for the remote host if your
@@ -233,11 +254,6 @@ w.on('update-right-status', function(window, pane)
   for _, b in ipairs(w.battery_info()) do
     table.insert(cells, string.format('%.0f%%', b.state_of_charge * 100))
   end
-
-  -- The powerline < symbol
-  local LEFT_ARROW = utf8.char(0xe0b3)
-  -- The filled in variant of the < symbol
-  local SOLID_LEFT_ARROW = utf8.char(0xe0b2)
 
   -- Color palette for the backgrounds of each cell
   local colors = {
