@@ -12,7 +12,7 @@ function M.render()
   local win_width = vim.api.nvim_win_get_width(state.win)
   local workspace = dirman.get_current_workspace()
   local files = {}
-  local result = parser.find_files(workspace)
+d- ocal result =hparser.find_files(workspace)
 
   for k in pairs(result) do
     local item = utils.split_str(result[k], ':')

@@ -127,6 +127,33 @@ function cheat() {
   curl cheat.sh/$1
 }
 
+# Auto add/commit/push neorg notes
+# Arguments:
+#   $1 - The (optional) workspace to sync, defaults to '~/neorg/'
+function notesync() {
+  local base_dir="$HOME/neorg"
+  local workspace="${1:-}"
+  local target_dir="$base_dir"
+
+  if [[ "$workspace" == "work" || "$workspace" == "omni" ]]; then
+    target_dir="$base_dir/$workspace"
+  fi
+
+  if [ ! -d "$target_dir/.git" ]; then
+    echo "No git repository found in $target_dir"
+    return 1
+  fi
+
+  if command -v gdate >/dev/null 2>&1; then
+    timestamp="$(gdate --rfc-3339=seconds)"
+  else
+    timestamp="$(date --rfc-3339=seconds)"
+  fi
+
+  cd "$target_dir" || return 1
+  git add . && git commit -m "$timestamp" && git push origin main
+}
+
 # ghlc: Submit a comment with Github CLI on a specific line of the diff via the API
 # Arguments:
 #   $1 - The commit hash where the change was made
