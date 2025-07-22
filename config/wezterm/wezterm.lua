@@ -407,7 +407,7 @@ cfg.keys = {
 
   -- Tabs
   {
-    key = "c",
+    key = "t",
     mods = "LEADER",
     action = act.SpawnTab("CurrentPaneDomain"),
   },

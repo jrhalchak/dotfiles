@@ -205,10 +205,10 @@ M.setup_splits = function()
       { "<C-k>", smart_splits.move_cursor_up, desc = "" },
       { "<C-l>", smart_splits.move_cursor_right, desc = "" },
 
-      { "<left>", smart_splits.resize_left, desc = "" },
-      { "<down>", smart_splits.resize_down, desc = "" },
-      { "<up>", smart_splits.resize_up, desc = "" },
-      { "<right>", smart_splits.resize_right, desc = "" },
+      { "<A-h>", smart_splits.resize_left, desc = "" },
+      { "<A-j>", smart_splits.resize_down, desc = "" },
+      { "<A-k>", smart_splits.resize_up, desc = "" },
+      { "<A-l>", smart_splits.resize_right, desc = "" },
     },
   })
 end
