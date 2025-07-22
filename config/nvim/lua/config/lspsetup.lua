@@ -1,4 +1,5 @@
 local keymaps = require("config.keymaps")
+local utils = require("config.utils")
 
 local M = {}
 
@@ -123,16 +124,93 @@ M.setup = function()
       }
     }),
     mapping = cmp.mapping.preset.insert({
-      ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
-      ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
-      ['<C-y>'] = cmp.mapping.confirm({select = true}),
-      ['<C-Space>'] = cmp.mapping.complete(),
+      -- ['<Tab>'] = cmp.mapping.select_next_item(cmp_select),
+      ['<Tab>'] = cmp.mapping(function(fallback)
+        if cmp.visible() then
+          cmp.select_next_item()
+          utils.update_cmp_sel() -- custom kind highlights
+        else
+          fallback()
+        end
+      end, { 'i', 's' }),
+      -- ['<S-Tab>'] = cmp.mapping.select_prev_item(cmp_select),
+      ['<S-Tab>'] = cmp.mapping(function(fallback)
+        if cmp.visible() then
+          cmp.select_prev_item()
+          utils.update_cmp_sel() -- custom kind highlights
+        else
+          fallback()
+        end
+      end, { 'i', 's' }),
+      ['<CR>'] = cmp.mapping(function(fallback)
+        if cmp.visible() and cmp.get_selected_entry() then
+          cmp.confirm({ select = false })
+        else
+          fallback()
+        end
+      end, { 'i', 's' }),
+      ['<C-Space>'] = cmp.mapping(function(_) -- param is fallback for inserting newline
+        if cmp.visible() then
+          cmp.abort()
+        else
+          cmp.complete()
+        end
+      end, { 'i', 'c' }),
     }),
+    window = {
+      completion = {
+        col_offset = -3,
+        side_padding = 1,
+        -- This character/highlight combo is undocumented, but supported
+        border = {
+          { "╭", "CmpBorder" },
+          { "─", "CmpBorder" },
+          { "╮", "CmpBorder" },
+          { "│", "CmpBorder" },
+          { "╯", "CmpBorder" },
+          { "━", "CmpBorder" },
+          { "╰", "CmpBorder" },
+          { "│", "CmpBorder" },
+        },
+        winhighlight = "Normal:CmpNormal,FloatBorder:CmpBorder,CursorLine:CmpSel,Search:None",
+        scrollbar = true
+      },
+      documentation = {
+        -- This character/highlight combo is undocumented, but supported
+        border = {
+          { "╭", "CmpBorder" },
+          { "╌", "CmpBorder" },
+          { "╮", "CmpBorder" },
+          { "┆", "CmpBorder" },
+          { "╯", "CmpBorder" },
+          { "╍", "CmpBorder" },
+          { "╰", "CmpBorder" },
+          { "┆", "CmpBorder" },
+        },
+        winhighlight = "Normal:CmpNormal,FloatBorder:CmpBorder",
+        scrollbar = "󰇙"
+      }
+    },
     formatting = {
-      fields = { "kind", "abbr" },
-      format = function(_, vim_item)
-        vim_item.kind = constants.CMP_KIND_ICONS[vim_item.kind] or ""
-        return vim_item
+      fields = { "kind", "abbr", "menu" },
+      format = function(entry, item)
+        local kinds = constants.CMP_KINDS
+        local icon = kinds[item.kind].icon
+
+        -- set highlihgt group before overriding
+        item.kind_hl_group = "CmpItemKind" .. item.kind
+
+        item.kind = icon and " " .. icon .. " " or "   "
+
+        item.menu = ({
+          buffer = "[Buffer]",
+          nvim_lsp = "[LSP]",
+          luasnip = "[LuaSnip]",
+          nvim_lua = "[Lua]",
+          latex_symbols = "[LaTeX]",
+        })[entry.source.name]
+
+        return item
       end,
     },
     snippet = {

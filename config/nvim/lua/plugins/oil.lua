@@ -1,13 +1,20 @@
 return {
   {
-    'stevearc/oil.nvim',
-    ---@module 'oil'
+    "stevearc/oil.nvim",
+    ---@module "oil"
     ---@type oil.SetupOpts
     opts = {
       lsp_file_methods = {
         enabled = true,
       },
       show_hidden = false,
+      keymaps = {
+        ["<C-h>"] = false,
+        ["<C-l>"] = false,
+        ["<C-r>"] = "actions.refresh",
+        ["<C-s>"] = { "actions.select", opts = { horizontal = true }},
+        ["<C-v>"] = { "actions.select", opts = { vertical = true }},
+      },
       is_hidden_file = function(name, bufnr)
         -- Debug: uncomment this line temporarily to see what names are being passed
         -- print("Oil is_hidden_file called with:", vim.inspect(name))

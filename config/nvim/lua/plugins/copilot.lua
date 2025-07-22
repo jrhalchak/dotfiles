@@ -17,7 +17,14 @@ return {
 
       require"CopilotChat".setup({
         -- debug = true,
-        -- Raw values for default settings
+        mappings = {
+          ---@diagnostic disable-next-line
+          reset = {
+            normal = "<C-r>",
+            insert = "<C-r>"
+          }
+        },
+
         -- model = "claude-sonnet-4",
         model = "gpt-4.1",
         context = { "files", "buffers" },
@@ -149,55 +156,55 @@ return {
 	-- 		},
 	-- 	},
 	-- },
-	{
-		"olimorris/codecompanion.nvim",
-		dependencies = {
-			{ "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
-			{ "nvim-lua/plenary.nvim" },
-			-- Test with blink.cmp
-			{
-				"saghen/blink.cmp",
-				lazy = false,
-				version = "*",
-				opts = {
-					keymap = {
-						preset = "enter",
-						["<S-Tab>"] = { "select_prev", "fallback" },
-						["<Tab>"] = { "select_next", "fallback" },
-					},
-					cmdline = { sources = { "cmdline" } },
-					sources = {
-						default = { "lsp", "path", "buffer", "codecompanion" },
-					},
-				},
-			},
-			-- Test with nvim-cmp
-			-- { "hrsh7th/nvim-cmp" },
-		},
-		opts = {
-			--Refer to: https://github.com/olimorris/codecompanion.nvim/blob/main/lua/codecompanion/config.lua
-			strategies = {
-				--NOTE: Change the adapter as required
-				chat = {
-					adapter = "copilot",
-					tools = {
-						["mcp"] = {
-							callback = function()
-								return require("mcphub.extensions.codecompanion")
-							end,
-							description = "Call tools and resources from the MCP Servers",
-							opts = {
-								requires_approval = true,
-							},
-						},
-					},
-				},
-				inline = { adapter = "copilot" },
-			},
-			opts = {
-				log_level = "DEBUG",
-			},
-		},
-	},
+	-- {
+	-- 	"olimorris/codecompanion.nvim",
+	-- 	dependencies = {
+	-- 		{ "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
+	-- 		{ "nvim-lua/plenary.nvim" },
+	-- 		-- Test with blink.cmp
+	-- 		{
+	-- 			"saghen/blink.cmp",
+	-- 			lazy = false,
+	-- 			version = "*",
+	-- 			opts = {
+	-- 				keymap = {
+	-- 					preset = "enter",
+	-- 					["<S-Tab>"] = { "select_prev", "fallback" },
+	-- 					["<Tab>"] = { "select_next", "fallback" },
+	-- 				},
+	-- 				cmdline = { sources = { "cmdline" } },
+	-- 				sources = {
+	-- 					default = { "lsp", "path", "buffer", "codecompanion" },
+	-- 				},
+	-- 			},
+	-- 		},
+	-- 		-- Test with nvim-cmp
+	-- 		-- { "hrsh7th/nvim-cmp" },
+	-- 	},
+	-- 	opts = {
+	-- 		--Refer to: https://github.com/olimorris/codecompanion.nvim/blob/main/lua/codecompanion/config.lua
+	-- 		strategies = {
+	-- 			--NOTE: Change the adapter as required
+	-- 			chat = {
+	-- 				adapter = "copilot",
+	-- 				tools = {
+	-- 					["mcp"] = {
+	-- 						callback = function()
+	-- 							return require("mcphub.extensions.codecompanion")
+	-- 						end,
+	-- 						description = "Call tools and resources from the MCP Servers",
+	-- 						opts = {
+	-- 							requires_approval = true,
+	-- 						},
+	-- 					},
+	-- 				},
+	-- 			},
+	-- 			inline = { adapter = "copilot" },
+	-- 		},
+	-- 		opts = {
+	-- 			log_level = "DEBUG",
+	-- 		},
+	-- 	},
+	-- },
 }
 

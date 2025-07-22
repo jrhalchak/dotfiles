@@ -1,5 +1,25 @@
 local M = {}
 
+M.update_cmp_sel = function()
+  local cmp = require('cmp')
+  local entry = cmp.get_selected_entry()
+  if not entry then return end
+
+  local kind = entry:get_kind()
+  local kind_name = vim.lsp.protocol.CompletionItemKind[kind]
+  local hl = "CmpItemKind" .. kind_name
+
+  -- Extract bg color from kind group
+  local ok, kind_def = pcall(vim.api.nvim_get_hl_by_name, hl, true)
+  if not ok or not kind_def.background then return end
+
+  vim.api.nvim_set_hl(0, "CmpSel", {
+    background = kind_def.background,
+    foreground = kind_def.foreground or kind_def.bg or 0x000000,
+    bold = true,
+  })
+end
+
 -- @tparam mode string which vim mode
 -- @tparam lhs string a key combination
 -- @tparam rhs string command to run

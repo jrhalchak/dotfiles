@@ -189,7 +189,6 @@ state.inactive_status = {
 function M.setup()
   local augroup = vim.api.nvim_create_augroup('statusline_cmds', {clear = true})
   local autocmd = vim.api.nvim_create_autocmd
-  vim.opt.showmode = false
 
   apply_hl()
   local pattern = M.get_status('full')

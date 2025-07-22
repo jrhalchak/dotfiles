@@ -1,3 +1,5 @@
+local constants = require('config.constants')
+
 return {
   {
     'folke/tokyonight.nvim',
@@ -22,8 +24,20 @@ return {
         --   colors.error = '#ff0000'
         -- end
         on_highlights = function(hl, c)
-          -- hl['@some.treesitter.hlgroup'] = { undercurl = true, strikethrough = true, sp = '#ffffff', fg = c.fg_dark, bg = c.bg_dark }
-          hl['netrwTreeBar'] = { fg = c.dark3 }
+          for kind, options in pairs(constants.CMP_KINDS) do
+            hl["CmpItemKind" .. kind] = {
+              fg = c[options.fg],
+              bg = c[options.bg]
+            }
+          end
+
+          hl.CmpBorder = { bg = "none", fg = c.fg_float }
+
+          hl.CmpSel = {
+            bg = c.fg_float,
+            fg = c.bg_dark,
+            bold = true,
+          }
         end,
       }
       vim.cmd('colorscheme tokyonight-night')

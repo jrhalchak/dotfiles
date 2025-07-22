@@ -25,7 +25,6 @@ M.setup = function()
   opt.mouse = "a"                                -- Enable mouse support
   opt.clipboard = "unnamedplus"                  -- Use system clipboard
   opt.swapfile = false                           -- Don"t use swapfile
-  opt.completeopt = "menuone,noinsert,noselect"  -- Autocomplete options
 
   -- ============================================================
   -- Neovim UI
@@ -110,12 +109,16 @@ M.setup = function()
   opt.backup = false                           -- creates a backup file
   opt.background = "dark"                      -- set background for colorscheme
   opt.cmdheight = 1                            -- more space in the neovim command line for displaying messages
-  opt.completeopt = { "menuone", "noselect" }  -- mostly just for cmp
+  opt.completeopt = {                          -- mostly just for cmp
+    "menuone",
+    "noselect",
+    "noinsert",
+  }
   opt.conceallevel = 0                         -- so that `` is visible in markdown files
   opt.fileencoding = "utf-8"                   -- the encoding written to a file
   opt.hlsearch = true                          -- highlight all matches on previous search pattern
   opt.pumheight = 10                           -- pop up menu height
-  opt.showmode = false                         -- we don"t need to see things like -- INSERT -- anymore
+  opt.showmode = true                         -- we don"t need to see things like -- INSERT -- anymore
   opt.showtabline = 1                          -- show tabs when there's >1
   opt.timeoutlen = 1000                        -- time to wait for a mapped sequence to complete (in milliseconds)
   opt.undofile = true                          -- enable persistent undo
@@ -137,6 +140,7 @@ M.setup = function()
   -- Sub options
   opt.fillchars.eob=" "                        -- show empty lines at the end of a buffer as ` ` {default `~`}
   opt.shortmess:append "c"                     -- hide all the completion messages, e.g. "-- XXX completion (YYY)", "match 1 of 2", "The only match", "Pattern not found"
+  -- opt.shortmess = "filnxtToOFc"             -- minimal UI experience
   opt.whichwrap:append("<,>,[,],h,l")          -- keys allowed to move to the previous/next line when the beginning/end of line is reached
   opt.iskeyword:append("-")                    -- treats words with `-` as single words
   opt.formatoptions:remove({ "c", "r", "o" })  -- This is a sequence of letters which describes how automatic formatting is to be done
@@ -155,9 +159,6 @@ M.setup = function()
   -- ============================================================
   -- Startup
   -- ============================================================
-  -- Disable nvim intro
-  -- opt.shortmess:append "sI"
-
   -- Disable builtin plugins
   local disabled_built_ins = {
     "2html_plugin",

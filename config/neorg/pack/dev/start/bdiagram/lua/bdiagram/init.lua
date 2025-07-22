@@ -3,9 +3,14 @@ local M = {}
 M.options = {
   conceal_on_move = true,
   conceal_on_change = true,
+  conceal_insert_toggle = true,
 }
 
 local conceal = require("bdiagram.conceal")
+
+local function clear_bdiagram_conceal(bufnr, start_row, end_row)
+  vim.api.nvim_buf_clear_namespace(bufnr, conceal.namespace, start_row, end_row+1)
+end
 
 local function conceal_visible_bdiagrams()
   local bufnr = vim.api.nvim_get_current_buf()
@@ -42,6 +47,30 @@ require'nvim-treesitter.parsers'.get_parser_configs().bdiagram = {
       pattern = "*.norg",
       callback = function()
         conceal_visible_bdiagrams()
+      end,
+    })
+  end
+
+  if M.options.conceal_insert_toggle then
+    vim.api.nvim_create_autocmd("FileType", {
+      pattern = "norg",
+      callback = function(args)
+        local bufnr = args.buf
+
+        vim.api.nvim_create_autocmd({"InsertEnter"}, {
+          buffer = bufnr,
+          callback = function()
+            clear_bdiagram_conceal(bufnr, 0, vim.api.nvim_buf_line_count(bufnr)-1)
+          end,
+          desc = "Clear bdiagram conceals in insert mode"
+        })
+        vim.api.nvim_create_autocmd({"InsertLeave"}, {
+          buffer = bufnr,
+          callback = function()
+            require("bdiagram.conceal").conceal_bdiagram(bufnr, 0, vim.api.nvim_buf_line_count(bufnr)-1)
+          end,
+          desc = "Restore bdiagram conceals after insert mode"
+        })
       end,
     })
   end
