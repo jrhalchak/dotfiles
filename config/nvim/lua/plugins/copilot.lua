@@ -26,7 +26,7 @@ return {
         },
 
         -- model = "claude-sonnet-4",
-        model = "gpt-4.1",
+        model = "gpt-4o",
         context = { "files", "buffers" },
         system_prompt = [[# Professional Coding Assistant
 

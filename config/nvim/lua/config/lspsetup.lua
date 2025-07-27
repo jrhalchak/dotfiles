@@ -68,6 +68,10 @@ M.setup = function()
               client.stop()
               return false
             end
+
+            if server_name == "custom_elements_ls" and not is_real_file(bufnr) then
+              return false
+            end
           end,
         })
       end,
