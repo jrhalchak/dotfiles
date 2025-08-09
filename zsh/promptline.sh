@@ -1,3 +1,5 @@
+# Prevent default (venv) prompt from Python venv
+export VIRTUAL_ENV_DISABLE_PROMPT=1
 # Original Tokyo Night colors
 TOKYO_BLUE='#7aa2f7'
 # TOKYO_PURPLE='#bb9af7'
@@ -55,6 +57,15 @@ TOKYO_FG_MUTED='#565f89'   # Muted foreground
 BLINKON=$'\033[5m'
 BLINKOFF=$'\033[25m'
 
+# Custom venv prompt element
+venv_prompt() {
+  if [[ -n "$VIRTUAL_ENV" ]]; then
+    local venv_name="${VIRTUAL_ENV##*/}"
+    # Use a unique color/icon for venv
+    echo "%K{$TOKYO_DARK_BLUE}%F{$TOKYO_BG_DARK}  %B$venv_name%b %f%k"
+  fi
+}
+
 function preexec() {
   timer=${timer:-$SECONDS}
 }
@@ -111,6 +122,7 @@ get_git_branch() {
 
     # Get the change counts (staged, unstaged, untracked)
     changes=$(git status --porcelain 2>/dev/null | wc -l | tr -d ' ')
+    staged=$(git diff --cached --name-status 2>/dev/null | wc -l | tr -d ' ')
 
     local preamble="%F{$TOKYO_DEEP_PURPLE}%K{$TOKYO_BG_MEDIUM}%f"
 
@@ -131,13 +143,17 @@ get_git_branch() {
 
     # Format output based on changes
     if [[ $changes -gt 0 ]]; then
-      indicator=" %F{$TOKYO_DARK_RED}%f%K{$TOKYO_DARK_RED}%F{$TOKYO_FG_BRIGHT} $sync_char%f%k%F{$TOKYO_DARK_RED}"
-
-      # Red and bold when there are changes
-      echo "$preamble %F{$TOKYO_BRIGHT_RED}%B  $branch $indicator%F{$TOKYO_FG_BRIGHT}%K{$TOKYO_DARK_RED}  $changes %k%f%F{$TOKYO_DARK_RED}%f %b%f%k"
+      if [[ $staged -gt 0 ]]; then
+        # Yellow if staged changes
+        indicator=" %F{$TOKYO_YELLOW}%f%K{$TOKYO_YELLOW}%F{$TOKYO_BG_DARK} $sync_char%f%k%F{$TOKYO_YELLOW}"
+        echo "$preamble %F{$TOKYO_YELLOW}%B  $branch $indicator%F{$TOKYO_BG_DARK}%K{$TOKYO_YELLOW}  $changes %k%f%F{$TOKYO_YELLOW}%f %b%f%k"
+      else
+        # Red and bold when there are unstaged/untracked changes only
+        indicator=" %F{$TOKYO_DARK_RED}%f%K{$TOKYO_DARK_RED}%F{$TOKYO_FG_BRIGHT} $sync_char%f%k%F{$TOKYO_DARK_RED}"
+        echo "$preamble %F{$TOKYO_BRIGHT_RED}%B  $branch $indicator%F{$TOKYO_FG_BRIGHT}%K{$TOKYO_DARK_RED}  $changes %k%f%F{$TOKYO_DARK_RED}%f %b%f%k"
+      fi
     else
       indicator=" %F{$TOKYO_DARK_GREEN}%f%K{$TOKYO_DARK_GREEN}%F{$TOKYO_BG_DARK} $sync_char%f%k%F{$TOKYO_DARK_GREEN}"
-
       # Green when clean
       echo "$preamble %F{$TOKYO_BRIGHT_GREEN}%B  $branch $indicator%F{$TOKYO_BG_DARK}%K{$TOKYO_DARK_GREEN}  󰔓 %k%f%F{$TOKYO_DARK_GREEN}%f %b%f%k"
     fi
@@ -212,7 +228,8 @@ binary_clock() {
 setopt PROMPT_SUBST
 
 # PROMPT=$'%K{$TOKYO_BLUE}%F{$TOKYO_BG_DARK} %B󰅏%b %f%k' # Icon segment
-PROMPT=$'%K{$TOKYO_BLUE}%F{$TOKYO_BG_DARK} %B󰥋%b %f%k' # Icon segment
+PROMPT=$'$(venv_prompt)' # Python venv prompt (if active)
+PROMPT+=$'%K{$TOKYO_BLUE}%F{$TOKYO_BG_DARK} %B󰥋%b %f%k' # Icon segment
 PROMPT+=$'%K{$TOKYO_BG_MEDIUM}%F{$TOKYO_BLUE}%f' # First separator
 PROMPT+=$'$(binary_clock)' # Binary clock
 PROMPT+=$'%F{$TOKYO_DEEP_PURPLE}%f%k' # Second separator
