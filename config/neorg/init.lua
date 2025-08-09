@@ -82,10 +82,6 @@ require('lazy').setup({
     },
     version = "*",
     config = function()
-      -- local neorg_todos = require("neorg_todos")
-
-      -- vim.api.nvim_create_user_command('OpenTodos', neorg_todos.open, {})
-
       local dirman_config = {
         config = {
           workspaces = {
@@ -166,6 +162,8 @@ require('lazy').setup({
       }
 
       require('neorg').setup(opts)
+
+      require("neorg_todos")
 
       vim.wo.foldlevel = 99
       vim.wo.conceallevel = 3

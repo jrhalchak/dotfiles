@@ -20,6 +20,7 @@ function M.open()
   ui.render()
 end
 
+print("NEORG TODOS MODULE BODY")
 vim.api.nvim_create_user_command('OpenTodos', M.open, {})
 
 -- vim.api.nvim_create_autocmd({ 'BufWritePost', 'FileWritePost'}, {
