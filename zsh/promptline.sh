@@ -227,13 +227,26 @@ binary_clock() {
 
 setopt PROMPT_SUBST
 
-# PROMPT=$'%K{$TOKYO_BLUE}%F{$TOKYO_BG_DARK} %B󰅏%b %f%k' # Icon segment
-PROMPT=$'$(venv_prompt)' # Python venv prompt (if active)
-PROMPT+=$'%K{$TOKYO_BLUE}%F{$TOKYO_BG_DARK} %B󰥋%b %f%k' # Icon segment
-PROMPT+=$'%K{$TOKYO_BG_MEDIUM}%F{$TOKYO_BLUE}%f' # First separator
-PROMPT+=$'$(binary_clock)' # Binary clock
-PROMPT+=$'%F{$TOKYO_DEEP_PURPLE}%f%k' # Second separator
-PROMPT+=$'%K{$TOKYO_DEEP_PURPLE} %F{$TOKYO_FG_BRIGHT} %B%(5~|%-1~/…/%3~|%4~)%b%f %k' # Directory path
-PROMPT+=$'$(get_git_branch)' # Git status
+function update_prompt() {
+  if (( $COLUMNS >= 150 )); then
+    # PROMPT=$'%K{$TOKYO_BLUE}%F{$TOKYO_BG_DARK} %B󰅏%b %f%k' # Icon segment
+    PROMPT=$'$(venv_prompt)' # Python venv prompt (if active)
+    PROMPT+=$'%K{$TOKYO_BLUE}%F{$TOKYO_BG_DARK} %B󰥋%b %f%k' # Icon segment
+    PROMPT+=$'%K{$TOKYO_BG_MEDIUM}%F{$TOKYO_BLUE}%f' # First separator
+    PROMPT+=$'$(binary_clock)' # Binary clock
+    PROMPT+=$'%F{$TOKYO_DEEP_PURPLE}%f%k' # Second separator
+    PROMPT+=$'%K{$TOKYO_DEEP_PURPLE} %F{$TOKYO_FG_BRIGHT} %B%(5~|%-1~/…/%3~|%4~)%b%f %k' # Directory path
+    PROMPT+=$'$(get_git_branch)' # Git status
+  else
+    # PROMPT=$'%K{$TOKYO_BLUE}%F{$TOKYO_BG_DARK} %B󰅏%b %f%k' # Icon segment
+    PROMPT=$'$(venv_prompt)' # Python venv prompt (if active)
+    PROMPT+=$'%K{$TOKYO_BLUE}%F{$TOKYO_BG_DARK} %B󰥋%b %f%k' # Icon segment
+    PROMPT+=$'%K{$TOKYO_BG_MEDIUM}%F{$TOKYO_BLUE}%f' # First separator
+    PROMPT+=$'%F{$TOKYO_DEEP_PURPLE}%f%k' # Second separator
+    PROMPT+=$'%K{$TOKYO_DEEP_PURPLE} %F{$TOKYO_FG_BRIGHT} %B%(5~|%-1~/…/%3~|%4~)%b%f %k' # Directory path
+    PROMPT+=$'$(get_git_branch)' # Git status
+  fi
+}
 
-
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd update_prompt
