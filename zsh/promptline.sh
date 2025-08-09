@@ -228,25 +228,37 @@ binary_clock() {
 setopt PROMPT_SUBST
 
 function update_prompt() {
-  if (( $COLUMNS >= 150 )); then
-    # PROMPT=$'%K{$TOKYO_BLUE}%F{$TOKYO_BG_DARK} %B󰅏%b %f%k' # Icon segment
-    PROMPT=$'$(venv_prompt)' # Python venv prompt (if active)
-    PROMPT+=$'%K{$TOKYO_BLUE}%F{$TOKYO_BG_DARK} %B󰥋%b %f%k' # Icon segment
-    PROMPT+=$'%K{$TOKYO_BG_MEDIUM}%F{$TOKYO_BLUE}%f' # First separator
-    PROMPT+=$'$(binary_clock)' # Binary clock
-    PROMPT+=$'%F{$TOKYO_DEEP_PURPLE}%f%k' # Second separator
-    PROMPT+=$'%K{$TOKYO_DEEP_PURPLE} %F{$TOKYO_FG_BRIGHT} %B%(5~|%-1~/…/%3~|%4~)%b%f %k' # Directory path
-    PROMPT+=$'$(get_git_branch)' # Git status
+  # PROMPT=$'%K{$TOKYO_BLUE}%F{$TOKYO_BG_DARK} %B󰅏%b %f%k' # Icon segment
+  local base_prompt=$'$(venv_prompt)' # Python venv prompt (if active)
+  base_prompt+=$'%K{$TOKYO_BLUE}%F{$TOKYO_BG_DARK} %B󰥋%b %f%k' # Icon segment
+  base_prompt+=$'%K{$TOKYO_BG_MEDIUM}%F{$TOKYO_BLUE}%f' # First separator
+
+  local end_prompt=$'%F{$TOKYO_DEEP_PURPLE}%f%k' # Second separator
+  end_prompt+=$'%K{$TOKYO_DEEP_PURPLE} %F{$TOKYO_FG_BRIGHT} %B%(5~|%-1~/…/%3~|%4~)%b%f %k' # Directory path
+  end_prompt+=$'$(get_git_branch)' # Git status
+
+  # Calculate actual rendered lengths (strip color codes and expand prompt sequences)
+  local left_length=$(print -P "${base_prompt}${end_prompt}" | sed 's/\x1b\[[0-9;]*m//g' | wc -c)
+  local right_length=$(print -P "$RPROMPT" | sed 's/\x1b\[[0-9;]*m//g' | wc -c)
+
+  # Calculate binary clock width dynamically - expand and strip zsh color codes
+  local binary_clock_width=$(print -P "$(binary_clock)" | sed 's/\x1b\[[0-9;]*m//g' | wc -m)
+
+  # Check if there's enough space for binary clock (at least 50 chars between prompts)
+  local available_space=$((COLUMNS - left_length - right_length))
+  local required_space=$((binary_clock_width + 50))  # desired gap
+
+  if (( available_space >= required_space )); then
+    PROMPT="${base_prompt}"'$(binary_clock)'"${end_prompt}"
   else
-    # PROMPT=$'%K{$TOKYO_BLUE}%F{$TOKYO_BG_DARK} %B󰅏%b %f%k' # Icon segment
-    PROMPT=$'$(venv_prompt)' # Python venv prompt (if active)
-    PROMPT+=$'%K{$TOKYO_BLUE}%F{$TOKYO_BG_DARK} %B󰥋%b %f%k' # Icon segment
-    PROMPT+=$'%K{$TOKYO_BG_MEDIUM}%F{$TOKYO_BLUE}%f' # First separator
-    PROMPT+=$'%F{$TOKYO_DEEP_PURPLE}%f%k' # Second separator
-    PROMPT+=$'%K{$TOKYO_DEEP_PURPLE} %F{$TOKYO_FG_BRIGHT} %B%(5~|%-1~/…/%3~|%4~)%b%f %k' # Directory path
-    PROMPT+=$'$(get_git_branch)' # Git status
+    PROMPT="${base_prompt}${end_prompt}"
   fi
 }
 
 autoload -Uz add-zsh-hook
 add-zsh-hook precmd update_prompt
+
+# Add this function to handle window resize
+TRAPWINCH() {
+  update_prompt
+}
