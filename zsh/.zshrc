@@ -72,6 +72,8 @@ alias vim="vi"
 alias ctags='/usr/local/bin/ctags'
 alias vidc="nvim -u \"NONE\""
 
+alias ssh-all='ssh-add $(find ~/.ssh -type f ! -name "*.*" -not -name "config" -not -name "known_hosts" -exec realpath {} \;)'
+
 if [[ "$(uname)" == "Darwin" ]]; then
   source ~/dotfiles/zsh/mac-linux-utils.sh
 
