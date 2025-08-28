@@ -82,7 +82,8 @@ M.setup = function()
     -- Misc
     { "<leader>u", group = "Utilities" },
     { "<leader>uh", ":nohl<CR>", desc = "UTIL: Clear highlights" },
-    { "<leader>up", utils.open_plugin_url, desc = "UTIL: Open Github Plugin URL" },
+    { "<leader>ug", utils.open_plugin_url, desc = "UTIL: Open Github Plugin URL" },
+    { "<leader>ut", utils.toggle_coverage_filter, desc = "UTIL: Toggle a filter for test coverage with < 60% in any column" },
 
     -- Splits
     { "<leader>tk", "<C-w>t<C-w>K", desc = "Split Orientation V to H" },

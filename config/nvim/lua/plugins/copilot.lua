@@ -25,9 +25,9 @@ return {
           }
         },
 
-        -- model = "claude-sonnet-4",
-        model = "gpt-4o",
-        context = { "files", "buffers" },
+        -- model = "gpt-4o",
+        model = "claude-sonnet-4",
+        context = { "buffers" }, -- "files"
         system_prompt = [[# Professional Coding Assistant
 
           You are an elite software engineering assistant specializing in web development. Generate production-ready code following these strict guidelines:
