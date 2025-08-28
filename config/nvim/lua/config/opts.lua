@@ -149,10 +149,11 @@ M.setup = function()
   -- ============================================================
   -- Filetypes
   -- ============================================================
-  -- See Treesitter config for mdx registration
+  -- See Treesitter config for file registrations
   vim.filetype.add({
     extension = {
       mdx = 'mdx',
+      ejs = 'embedded_template',
     }
   })
 
