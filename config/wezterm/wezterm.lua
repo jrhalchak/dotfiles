@@ -1,6 +1,8 @@
 local w = require 'wezterm'
 local act = w.action
 
+local weather = require 'weather'
+
 -- Allow working with both the current release and the nightly
 local cfg = {}
 if w.config_builder then
@@ -192,110 +194,204 @@ w.on('update-right-status', function(window, pane)
       end
       return bin
     end
-    return to_bin(hour) .. "  " .. to_bin(min) .. "  " .. to_bin(sec)
+    return to_bin(hour) .. "  " .. to_bin(min) .. "  " .. to_bin(sec)
   end
 
-  -- The filled in variant of the < symbol
-  local SOLID_LEFT_ARROW = w.nerdfonts.ple_right_hard_divider
-  local RIGHT_BOTTOM_TRIANGLE = w.nerdfonts.ple_lower_right_triangle
+  local INVERSE_RIGHT_ANGLE_DIVIDER = w.nerdfonts.pl_left_hard_divider
 
-  -- Each element holds the text for a cell in a "powerline" style << fade
-  local cells = {
-    { Text = SOLID_LEFT_ARROW },
-    binary_clock()
+  local colors = {
+    "#2e1850",
+    "#4a2072",
+    "#5c3886",
+    "#6e4290",
+    "#7c5295",
+    -- "#9a72b0",
+    "#b491c8",
   }
+  local text_fg = "#c0c0c0"
+  local tab_bar_bg = cfg.colors.tab_bar.background
 
-  -- Figure out the cwd and host of the current pane.
-  -- This will pick up the hostname for the remote host if your
-  -- shell is using OSC 7 on the remote host.
+  -- Collect all valid status cells first
+  local status_cells = {}
+
+  -- Helper function to safely add cells
+  local function add_cell(content)
+    if content and not (type(content) == "string" and content == "") then
+      w.log_info("Adding cell #" .. (#status_cells + 1) .. ": " .. (type(content) == "table" and (content.Text or "table") or tostring(content)))
+      table.insert(status_cells, content)
+    else
+      w.log_info("Rejected empty cell")
+    end
+  end
+
+  -- Add clock
+  add_cell(binary_clock())
+
+  -- Add working directory and hostname
   local cwd_uri = pane:get_current_working_dir()
   if cwd_uri then
     local cwd = ''
     local hostname = ''
-
     if type(cwd_uri) == 'userdata' then
-      -- Running on a newer version of wezterm and we have
-      -- a URL object here, making this simple!
-
-      cwd = cwd_uri.file_path
-      hostname = cwd_uri.host or w.hostname()
+      cwd = cwd_uri.file_path or ""
+      hostname = cwd_uri.host or w.hostname() or ""
     else
-      -- an older version of wezterm, 20230712-072601-f4abf8fd or earlier,
-      -- which doesn't have the Url object
       cwd_uri = cwd_uri:sub(8)
       local slash = cwd_uri:find '/'
       if slash then
         hostname = cwd_uri:sub(1, slash - 1)
-        -- and extract the cwd from the uri, decoding %-encoding
         cwd = cwd_uri:sub(slash):gsub('%%(%x%x)', function(hex)
           return string.char(tonumber(hex, 16))
         end)
       end
     end
-
-    -- Remove the domain name portion of the hostname
     local dot = hostname:find '[.]'
     if dot then
       hostname = hostname:sub(1, dot - 1)
     end
     if hostname == '' then
-      hostname = w.hostname()
+      hostname = w.hostname() or ""
     end
 
-    table.insert(cells, cwd)
-    table.insert(cells, hostname)
+    -- Replace home directory with ~
+    local home = os.getenv("HOME")
+    if home and cwd:sub(1, #home) == home then
+      cwd = "~" .. cwd:sub(#home + 1)
+    end
+
+    add_cell(cwd)
+    
+    -- Only add hostname cell if it's remote
+    local local_hostname = w.hostname() or ""
+    if hostname and hostname ~= "" and hostname ~= local_hostname then
+      add_cell(hostname)
+    end
   end
 
-  -- I like my date/time in this style: "Wed Mar 3 08:14"
-  local date = w.strftime '%a %b %-d %H:%M'
-  table.insert(cells, date)
+  -- Add date info
+  local day_of_week = w.strftime('%a')
+  if day_of_week and day_of_week ~= "" then
+    add_cell(tostring(w.nerdfonts.md_calendar_today) .. " " .. day_of_week)
+  end
+  
+  local iso_date = w.strftime('%Y-%m-%d')
+  if iso_date and iso_date ~= "" then
+    add_cell(tostring(w.nerdfonts.md_calendar_month) .. " " .. iso_date)
+  end
 
-  -- An entry for each battery (typically 0 or 1 battery)
+  -- Add battery info
+  local function get_battery_icon(percent)
+    if percent >= 95 then
+      return w.nerdfonts.fa_battery_full
+    elseif percent >= 75 then
+      return w.nerdfonts.fa_battery_three_quarters
+    elseif percent >= 50 then
+      return w.nerdfonts.fa_battery_half
+    elseif percent >= 25 then
+      return w.nerdfonts.fa_battery_quarter
+    else
+      return w.nerdfonts.fa_battery_empty
+    end
+  end
+
   for _, b in ipairs(w.battery_info()) do
-    table.insert(cells, string.format('%.0f%%', b.state_of_charge * 100))
+    local percent_val = b.state_of_charge and (b.state_of_charge * 100) or nil
+    local percent_str = percent_val and string.format('%.0f%%', percent_val) or ""
+    local icon = percent_val and get_battery_icon(percent_val) or w.nerdfonts.fa_battery_empty
+    local battery_cell = percent_str ~= "" and (tostring(icon) .. " " .. percent_str) or nil
+    add_cell(battery_cell)
   end
 
-  -- Color palette for the backgrounds of each cell
-  local colors = {
-    '#3c1361',
-    '#52307c',
-    '#663a82',
-    '#7c5295',
-    '#b491c8',
-  }
-
-  -- Foreground color for the text across the fade
-  local text_fg = '#c0c0c0'
-
-  -- The elements to be formatted
-  local elements = {}
-  -- How many cells have been formatted
-  local num_cells = 0
-
-  -- Translate a cell into elements
-  function push(text, is_last)
-    local cell_no = num_cells + 1
-    table.insert(elements, { Foreground = { Color = text_fg } })
-    table.insert(elements, { Background = { Color = colors[cell_no] } })
-    table.insert(elements, { Text = ' ' .. text .. ' ' })
-    if not is_last then
-      table.insert(elements, { Foreground = { Color = colors[cell_no + 1] } })
-      table.insert(elements, { Text = SOLID_LEFT_ARROW })
+  -- Add weather info (as a single formatted unit, not individual cells)
+  local weather_section_index = #status_cells + 1
+  local weather_fg = text_fg
+  if weather_section_index >= #colors - 1 then
+    weather_fg = tab_bar_bg
+  end
+  
+  local weather_items = weather.get_weather_cached(weather_fg)
+  w.log_info("Weather returned " .. #weather_items .. " items")
+  if weather_items and #weather_items > 0 then
+    -- Prepend default foreground color to weather items
+    local weather_with_defaults = {
+      { Foreground = { Color = weather_fg } }
+    }
+    for _, item in ipairs(weather_items) do
+      table.insert(weather_with_defaults, item)
     end
-    num_cells = num_cells + 1
+    
+    local formatted_weather = w.format(weather_with_defaults)
+    add_cell(formatted_weather)
   end
 
-  while #cells > 0 do
-    local cell = table.remove(cells, 1)
-    push(cell, #cells == 0)
+  -- Now build the elements with proper dividers
+  local elements = {}
+  
+  for i, cell in ipairs(status_cells) do
+    local bg = colors[i] or colors[#colors]
+    local fg = text_fg
+
+    -- Swap the background on the lightest colors
+    if i >= #colors then
+      fg = tab_bar_bg
+    end
+
+    -- Add initial divider for first cell
+    if i == 1 then
+      table.insert(elements, { Background = { Color = bg } })
+      table.insert(elements, { Foreground = { Color = tab_bar_bg } })
+      table.insert(elements, { Attribute = { Intensity = "Bold" } })
+      table.insert(elements, { Text = INVERSE_RIGHT_ANGLE_DIVIDER .. " " })
+    end
+
+    -- Add the cell content
+    if type(cell) == "table" and cell.Text then
+      table.insert(elements, { Foreground = { Color = fg } })
+      table.insert(elements, { Background = { Color = bg } })
+      table.insert(elements, { Attribute = { Intensity = "Bold" } })
+      table.insert(elements, cell)
+    elseif type(cell) == "table" then
+      table.insert(elements, { Background = { Color = bg } })
+      table.insert(elements, { Attribute = { Intensity = "Bold" } })
+      table.insert(elements, cell)
+    else
+      -- For formatted strings (like weather), we need to prepend the section colors
+      -- so that text without explicit colors gets the right foreground
+      table.insert(elements, { Foreground = { Color = fg } })
+      table.insert(elements, { Background = { Color = bg } })
+      table.insert(elements, { Attribute = { Intensity = "Bold" } })
+      table.insert(elements, { Text = ' ' .. tostring(cell) .. ' ' })
+    end
+
+    -- Add divider between cells (but not after the last one)
+    if i < #status_cells then
+      local next_bg = colors[i+1] or colors[#colors]
+      table.insert(elements, { Foreground = { Color = bg } })
+      table.insert(elements, { Background = { Color = next_bg } })
+      table.insert(elements, { Attribute = { Intensity = "Bold" } })
+      table.insert(elements, { Text = INVERSE_RIGHT_ANGLE_DIVIDER })
+    end
   end
 
-  window:set_right_status(w.format(elements))
+  -- Remove any malformed FormatItems (empty tables or tables with more than one key)
+  local valid_elements = {}
+  for _, item in ipairs(elements) do
+    print(item)
+    if type(item) == "table" then
+      local count = 0
+      for _ in pairs(item) do print(_) count = count + 1 end
+      if count == 1 then
+        table.insert(valid_elements, item)
+      end
+    end
+  end
+
+  window:set_right_status(w.format(valid_elements))
 end)
 -- ========================
 -- Fonts
 -- ========================
-cfg.font_size = 10
+cfg.font_size = 11
 cfg.font = w.font_with_fallback({
   {
     family = "VictorMono Nerd Font Mono",
