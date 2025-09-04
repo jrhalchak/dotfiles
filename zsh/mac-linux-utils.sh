@@ -3,8 +3,8 @@
 # ------------------------------------------------------------
 
 # If you need to have util-linux first in your PATH, run:
-echo 'export PATH="/opt/homebrew/opt/util-linux/bin:$PATH"' >> ~/.zshrc
-echo 'export PATH="/opt/homebrew/opt/util-linux/sbin:$PATH"' >> ~/.zshrc
+# echo 'export PATH="/opt/homebrew/opt/util-linux/bin:$PATH"' >> ~/.zshrc
+# echo 'export PATH="/opt/homebrew/opt/util-linux/sbin:$PATH"' >> ~/.zshrc
 
 # For compilers to find util-linux you may need to set:
 export LDFLAGS="-L/opt/homebrew/opt/util-linux/lib"
