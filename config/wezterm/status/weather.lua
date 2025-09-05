@@ -1,12 +1,13 @@
 local w = require 'wezterm'
+local M = {}
 
 -- Weather cache variables
-local last_weather = ""
-local last_weather_time = 0
-local weather_update_interval = 1800 -- 30 minut    local handle = io.popen('curl -s "wttr.in/AKC?format=%C+%t+/+%f+%w"')
+M.last_weather = ""
+M.last_weather_time = 0
+M.weather_update_interval = 1800 -- 30 minutes in seconds
 
 -- Mapping from condition keywords to Wezterm nerdfont icons
-local weather_icons = {
+M.weather_icons = {
   ["Clear/Sunny"] = { day = w.nerdfonts.weather_day_sunny, night = w.nerdfonts.weather_night_clear },
   ["Sunny"] = { day = w.nerdfonts.weather_day_sunny, night = w.nerdfonts.weather_night_clear },
   ["Clear"] = { day = w.nerdfonts.weather_day_sunny, night = w.nerdfonts.weather_night_clear },
@@ -74,16 +75,16 @@ local weather_icons = {
   ["N/A"] = { day = w.nerdfonts.weather_na, night = w.nerdfonts.weather_na },
 }
 
-local function get_weather_icon(condition)
+function M.get_weather_icon(condition)
   local hour = tonumber(os.date("%H"))
   local is_night = hour < 6 or hour >= 18
   -- Try exact match first
-  local entry = weather_icons[condition]
+  local entry = M.weather_icons[condition]
   if entry then
     return is_night and entry.night or entry.day
   end
   -- Try partial match (case-insensitive)
-  for k, v in pairs(weather_icons) do
+  for k, v in pairs(M.weather_icons) do
     if condition:lower():find(k:lower(), 1, true) then
       return is_night and v.night or v.day
     end
@@ -92,7 +93,7 @@ local function get_weather_icon(condition)
 end
 
 -- Temperature icon/color mapping
-local function get_temp_icon(temp)
+function M.get_temp_icon(temp)
   if type(temp) ~= "number" then
     return w.nerdfonts.md_thermometer, "#00FFFF"
   elseif temp > 90 then
@@ -113,7 +114,7 @@ local function get_temp_icon(temp)
 end
 
 -- Feels-like icon/color mapping
-local function get_feels_icon(feels)
+function M.get_feels_icon(feels)
   if type(feels) ~= "number" then
     return w.nerdfonts.md_emoticon, "#FFFFFF"
   elseif feels > 95 or feels < 10 then
@@ -136,7 +137,7 @@ local function get_feels_icon(feels)
 end
 
 -- Wind direction icon mapping - using direct Unicode values
-local wind_icons = {
+M.wind_icons = {
   ["↑"] = w.nerdfonts.weather_direction_up,
   ["↓"] = w.nerdfonts.weather_direction_down,
   ["→"] = w.nerdfonts.weather_direction_right,
@@ -147,39 +148,57 @@ local wind_icons = {
   ["↙"] = w.nerdfonts.weather_direction_down_left
 }
 
-local function get_weather_cached(default_fg_color)
+local function split_weather(str)
+  local fields = {}
+  local pattern = "(.-)  " -- non-greedy up to double space
+  local last_end = 1
+  for field, endpos in function() 
+    local s, e = str:find(pattern, last_end)
+    if s then
+      last_end = e + 1
+      return str:sub(s, e - 2), e
+    end
+  end do
+    table.insert(fields, field)
+  end
+  -- Add the last field (wind), which may not be followed by double space
+  local last_field = str:match(".*  (.+)$")
+  if last_field then
+    table.insert(fields, last_field)
+  end
+  return fields
+end
+
+function M.get_weather_cached(default_fg_color)
   default_fg_color = default_fg_color or "#c0c0c0" -- fallback default
   local now = os.time()
-  if now - last_weather_time > weather_update_interval or last_weather == "" then
-    local handle = io.popen('LANG=en_US.UTF-8 curl -s "wttr.in/AKC?format=%C+%t+/+%f+%w"')
+  if now - M.last_weather_time > M.weather_update_interval or M.last_weather == "" then
+    local handle = io.popen('LANG=en_US.UTF-8 curl -s "wttr.in/AKC?format=%C++%t++%f++%w"')
     if handle then
       local result = handle:read("*a")
       handle:close()
       result = result and result:gsub("^%s*(.-)%s*$", "%1") or ""
-      last_weather = result
-      last_weather_time = now
+      M.last_weather = result
+      M.last_weather_time = now
     end
   end
 
   -- Robust parsing: extract each value independently
-  local condition = last_weather:match("^([^%+]+)")
-  local temp = last_weather:match("%+([%d%.]+)°F")
-  local feels = last_weather:match("/%s*%+([%d%.]+)°F")
-  local wind = last_weather:match("([^%s]+%d+mph)$") -- Match non-space chars followed by digits and mph
-
-  condition = condition and condition:gsub("%s+$", "") or "N/A"
-  temp = temp and tonumber(temp) or nil
-  feels = feels and tonumber(feels) or nil
+  local condition, temp, feels, wind = table.unpack(split_weather(M.last_weather))
+  condition = condition or "N/A"
+  temp = temp and temp:match("([%+%-]%d+)%D*") or temp
+feels = feels and feels:match("([%+%-]%d+)%D*") or feels
   wind = wind or ""
+
   -- Condition icon
-  local condition_icon = get_weather_icon(condition)
+  local condition_icon = M.get_weather_icon(condition)
   local items = {
     { Text = tostring(condition_icon) .. " " },
     { Text = (condition or "") .. " " .. w.nerdfonts.pl_left_soft_divider .. " " },
   }
 
   -- Temperature icon and value
-  local temp_icon, temp_color = get_temp_icon(temp)
+  local temp_icon, temp_color = M.get_temp_icon(temp)
   table.insert(items, { Foreground = { Color = temp_color } })
   table.insert(items, { Text = tostring(temp_icon) .. " "})
   table.insert(items, { Foreground = { Color = default_fg_color } }) -- Reset to default section color
@@ -188,7 +207,7 @@ local function get_weather_cached(default_fg_color)
   table.insert(items, { Text = temp_display .. w.nerdfonts.pl_left_soft_divider .. " " })
 
   -- Feels-like icon and value
-  local feels_icon, feels_color = get_feels_icon(feels)
+  local feels_icon, feels_color = M.get_feels_icon(feels)
   table.insert(items, { Foreground = { Color = feels_color } })
   table.insert(items, { Text = tostring(feels_icon) .. " " })
   table.insert(items, { Foreground = { Color = default_fg_color } }) -- Reset to default section color
@@ -207,10 +226,10 @@ local function get_weather_cached(default_fg_color)
   local wind_icon = ""
   -- Use the directional wind icon mapping
   if wind_dir_part ~= "" and wind_icon == "" then
-    wind_icon = wind_icons[wind_dir_part] -- fallback for other directions
+    wind_icon = M.wind_icons[wind_dir_part] -- fallback for other directions
   end
 
-  if wind_icon and wind_icon ~= "" then
+  if wind_icon then
     table.insert(items, { Text = tostring(wind_icon) .. " " })
   end
 
@@ -221,6 +240,4 @@ local function get_weather_cached(default_fg_color)
   return items
 end
 
-return {
-  get_weather_cached = get_weather_cached
-}
+return M
