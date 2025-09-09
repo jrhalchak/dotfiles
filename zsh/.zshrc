@@ -247,6 +247,22 @@ function qr() {
   curl "qrenco.de/$1"
 }
 
+# tnf: Telnet to various fun services and games
+# Arguments:
+#   $1 - Service name (starwars, maps, doom, horizons, chess, btc, 1984, wiki, bofh, trek, telehack, abin)
+# Available services:
+#   starwars  - (Deprecated) Star Wars ASCII animation
+#   maps      - ASCII world map viewer
+#   doom      - Play DOOM multiplayer
+#   horizons  - NASA JPL Horizons ephemeris system
+#   chess     - Free Internet Chess Server
+#   btc       - Bitcoin ticker
+#   1984      - George Orwell's 1984 book
+#   wiki      - Wikipedia live search
+#   bofh      - Bastard Operator From Hell excuse server
+#   trek      - Multi-Trek game
+#   telehack  - Simulated 1980s computer system
+#   abin      - Archaic Binary BBS
 function tnf() {
   if ! command -v telnet >/dev/null 2>&1; then
     echo "telnet is not installed. Please install it first."
