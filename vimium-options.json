@@ -2,7 +2,8 @@
   "keyMappings": "# Insert your preferred key mappings here.\nmap e LinkHints.activateMode action=hover\nmap <a-M> toggleMuteTab all\nmap <a-m> toggleMuteTab other\nmap R reload hard\nmap <c-d> scrollFullPageDown\nmap <c-u> scrollFullPageUp\nmap ] nextTab\nmap [ previousTab",
   "regexFindMode": true,
   "grabBackFocus": true,
-  "settingsVersion": "2.2.1",
+  "settingsVersion": "2.3",
+  "userDefinedLinkHintCss": ".vimiumHintMarker.internal-vimium-hint-marker {\n  /* linkhint boxes */\n  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#222222af),\n    color-stop(100%,#555555af)) !important;\n  outline: 3px solid #FFC54277 !important;\n  border-radius: 4px !important;\n  padding: 3px !important;\n  transform: translate(-15%, -15%) !important;\n  box-shadow: 0 0 10px 5px #777 !important;\n}\n\n.vimiumHintMarker.internal-vimium-hint-marker span {\n/* linkhint text */\n  color: #ffffff !important;\n  font-weight: bold !important;\n  font-size: 14px !important;\n  text-shadow: 0 0 5px #000 !important;\n}\n\n.vimiumHintMarker.internal-vimium-hint-marker > .matchingCharacter {\n  color: #FFC542ff !important;\n  text-shadow: 0 0 5px #000 !important;\n}",
   "exclusionRules": [
     {
       "passKeys": "",
