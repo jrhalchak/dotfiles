@@ -1,4 +1,6 @@
 local w = require 'wezterm'
+local utils = require 'utils'
+
 local M = {}
 
 -- Weather cache variables
@@ -152,7 +154,7 @@ local function split_weather(str)
   local fields = {}
   local pattern = "(.-)  " -- non-greedy up to double space
   local last_end = 1
-  for field, endpos in function() 
+  for field, endpos in function()
     local s, e = str:find(pattern, last_end)
     if s then
       last_end = e + 1
@@ -170,6 +172,9 @@ local function split_weather(str)
 end
 
 function M.get_weather_cached(default_fg_color)
+  -- TODO : test and fix/optimize this
+  if not utils.is_focused() then return end
+
   default_fg_color = default_fg_color or "#c0c0c0" -- fallback default
   local now = os.time()
   if now - M.last_weather_time > M.weather_update_interval or M.last_weather == "" then
@@ -217,11 +222,11 @@ feels = feels and feels:match("([%+%-]%d+)%D*") or feels
 
   -- Wind icon and value
   local wind_speed = wind and wind:match("(%d+mph)") or ""
-  
+
   -- Try to extract wind direction by removing the speed part
   local wind_dir_part = wind and wind:gsub("%d+mph", "") or ""
   wind_dir_part = wind_dir_part:gsub("^%s+", ""):gsub("%s+$", "") -- trim whitespace
-  
+
   -- Map the corrupted character to the correct icon
   local wind_icon = ""
   -- Use the directional wind icon mapping

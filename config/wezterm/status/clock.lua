@@ -1,4 +1,6 @@
 local w = require("wezterm")
+local utils = require("utils")
+
 local M = {}
 
 -- Number to binary string with icons

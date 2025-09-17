@@ -2,6 +2,20 @@ local M = {}
 
 local w = require "wezterm"
 
+-- Tracking
+local is_focused = true
+
+w.on('window-focused-change', function(window)
+  is_focused = window:is_focused()
+end)
+
+---
+-- Check whether the window is focused for conditional functionality
+---@return boolean: Whether the window is focused
+function M.is_focused()
+  return is_focused
+end
+
 ---
 -- Recursively inspects a Lua value, returning a string representation.
 -- Useful for debugging tables and nested structures.
