@@ -88,6 +88,21 @@ if [[ "$(uname)" == "Darwin" ]]; then
   source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
   source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
+  # fnm
+  FNM_PATH="/opt/homebrew/opt/fnm/bin"
+  if [ -d "$FNM_PATH" ]; then
+    eval "`fnm env`"
+  fi
+
+  export REQUESTS_CA_BUNDLE="/Library/Application Support/Netskope/STAgent/data/nscacert_combined.pem"
+  export NODE_EXTRA_CA_CERTS="/Library/Application Support/Netskope/STAgent/data/nscacert_combined.pem"
+  export GIT_SSL_CAPATH="/Library/Application Support/Netskope/STAgent/data/nscacert_combined.pem"
+  export CURL_CA_BUNDLE="/Library/Application Support/Netskope/STAgent/data/nscacert_combined.pem"
+  export AWS_CA_BUNDLE="/Library/Application Support/Netskope/STAgent/data/nscacert_combined.pem"
+
+  export PATH="/opt/homebrew/opt/util-linux/bin:$PATH"
+  export PATH="/opt/homebrew/opt/util-linux/sbin:$PATH"
+
   # TODO: Check whether this is necessary *here*, and whether the aliases on the bat repo are helpful
   # Hard-coded from `fdellwing/zsh-bat`, requires `bat` from *https://github.com/sharkdp/bat?tab=readme-ov-file#how-to-use*
   if command -v batcat >/dev/null 2>&1; then
@@ -348,18 +363,3 @@ source ~/dotfiles/zsh/promptline.sh
 
 # For a nice loading-time output (see beginning of file)
 # zprof
-
-
-# fnm
-FNM_PATH="/opt/homebrew/opt/fnm/bin"
-if [ -d "$FNM_PATH" ]; then
-  eval "`fnm env`"
-fi
-export REQUESTS_CA_BUNDLE="/Library/Application Support/Netskope/STAgent/data/nscacert_combined.pem"
-export NODE_EXTRA_CA_CERTS="/Library/Application Support/Netskope/STAgent/data/nscacert_combined.pem"
-export GIT_SSL_CAPATH="/Library/Application Support/Netskope/STAgent/data/nscacert_combined.pem"
-export CURL_CA_BUNDLE="/Library/Application Support/Netskope/STAgent/data/nscacert_combined.pem"
-export AWS_CA_BUNDLE="/Library/Application Support/Netskope/STAgent/data/nscacert_combined.pem"
-
-export PATH="/opt/homebrew/opt/util-linux/bin:$PATH"
-export PATH="/opt/homebrew/opt/util-linux/sbin:$PATH"
