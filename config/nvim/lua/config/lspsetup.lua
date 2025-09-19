@@ -41,7 +41,7 @@ M.setup = function()
       'dockerls', 'jinja_lsp', 'ast_grep', 'html', 'biome', -- 'denols',
       'eslint', 'yamlls', 'lwc_ls', 'jsonls', 'lua_ls',
       'marksman', 'perlnavigator', 'pyright', 'ruff', 'sqls', 'vimls',
-      'custom_elements_ls',
+      -- 'custom_elements_ls',
 
       -- test which to use
       -- 'harper_ls',
