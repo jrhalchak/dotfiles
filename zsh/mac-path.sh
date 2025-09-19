@@ -13,3 +13,16 @@ export PATH="$PATH:/Users/jonathan.halchak/.local/bin"
 
 # Golang
 export PATH="$PATH:/Users/jonathan.halchak/go/bin"
+
+export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
+export CPPFLAGS="-I/opt/homebrew/opt/openjdk/include"
+
+export REQUESTS_CA_BUNDLE="/Library/Application Support/Netskope/STAgent/data/nscacert_combined.pem"
+export NODE_EXTRA_CA_CERTS="/Library/Application Support/Netskope/STAgent/data/nscacert_combined.pem"
+export GIT_SSL_CAPATH="/Library/Application Support/Netskope/STAgent/data/nscacert_combined.pem"
+export CURL_CA_BUNDLE="/Library/Application Support/Netskope/STAgent/data/nscacert_combined.pem"
+export AWS_CA_BUNDLE="/Library/Application Support/Netskope/STAgent/data/nscacert_combined.pem"
+
+export PATH="/opt/homebrew/opt/util-linux/bin:$PATH"
+export PATH="/opt/homebrew/opt/util-linux/sbin:$PATH"
+
