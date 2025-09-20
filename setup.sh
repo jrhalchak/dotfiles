@@ -46,6 +46,10 @@ if [ "$(uname)" = "Darwin" ]; then
   exit 0
 fi
 
+# TODO : Handle different platforms better in this file
+# Linux-only
+link "$DOTFILES_DIR/linux/config/fastfetch" "$HOME/.config/fastfetch"
+
 # Bins
 for bin_file in "$DOTFILES_DIR/apps/bin"/*; do
   [ -f "$bin_file" ] && link "$bin_file" "$HOME/.local/bin/$(basename "$bin_file")"

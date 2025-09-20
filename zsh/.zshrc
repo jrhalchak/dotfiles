@@ -119,8 +119,32 @@ if [[ "$(uname)" == "Darwin" ]]; then
 else
   export NEORG_DW="notes"
 
+  source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+  source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
   # Setup PATH for linux
   source ~/dotfiles/zsh/linux-path.sh
+fi
+
+# TODO: Check whether this is necessary *here*, and whether the aliases on the bat repo are helpful
+# Hard-coded from `fdellwing/zsh-bat`, requires `bat` from *https://github.com/sharkdp/bat?tab=readme-ov-file#how-to-use*
+if command -v batcat >/dev/null 2>&1; then
+  # Save the original system `cat` under `rcat`
+  alias rcat="$(which cat)"
+
+  # For Ubuntu and Debian-based `bat` packages
+  # the `bat` program is named `batcat` on these systems
+  alias cat="$(which batcat)"
+  export MANPAGER="sh -c 'col -bx | batcat -l man -p'"
+  export MANROFFOPT="-c"
+elif command -v bat >/dev/null 2>&1; then
+  # Save the original system `cat` under `rcat`
+  alias rcat="$(which cat)"
+
+  # For all other systems
+  alias cat="$(which bat)"
+  export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+  export MANROFFOPT="-c"
 fi
 
 # alias neorg="nvim -u ~/neorg/.config/init.lua"
