@@ -122,6 +122,8 @@ else
   source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
   source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
+  alias m="$HOME/dotfiles/scripts/utils/launcher.sh"
+
   # Setup PATH for linux
   source ~/dotfiles/zsh/linux-path.sh
 fi

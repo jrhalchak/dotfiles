@@ -31,6 +31,11 @@ end
 
 M.setup = function()
   local wk = require"which-key"
+  local opencode = require"opencode"
+
+
+  local opencode_select = { '<leader>os', opencode.select, desc = 'Select opencode prompt' }
+
   local which_keymaps = {
     -- Arrow keys disabled
     mode = { "n" },
@@ -92,6 +97,19 @@ M.setup = function()
     -- Diffing
     { "<leader>wv", ":set scb<CR>", desc = "Mark buf for sync view" },
     { "<leader>wd", ":diffthis<CR>", desc = "Mark buf for diff" },
+
+    -- Opencode
+    { '<leader>ot', opencode.toggle, desc = 'Toggle opencode' },
+    { '<leader>oA', opencode.ask, desc = 'Ask opencode' },
+    { '<leader>oa', function() opencode.ask('@cursor: ') end, desc = 'Ask opencode about this' },
+    { '<leader>on', function() opencode.command('session_new') end, desc = 'New opencode session' },
+    { '<leader>oy', function() opencode.command('messages_copy') end, desc = 'Copy last opencode response' },
+    { '<S-C-u>',    function() opencode.command('messages_half_page_up') end, desc = 'Messages half page up' },
+    { '<S-C-d>',    function() opencode.command('messages_half_page_down') end, desc = 'Messages half page down' },
+
+    -- Example: keymap for custom prompt
+    { '<leader>oe', function() opencode.prompt('Explain @cursor and its context') end, desc = 'Explain this code' },
+    opencode_select
   }
 
   -- Add window traversal keys
@@ -109,6 +127,8 @@ M.setup = function()
     { "<", "<gv", desc = "Better decrease indent" },
     { ">", ">gv", desc = "Better increase indent" },
     { ";", ":", desc = "Command in visual mode" },
+    { '<leader>oa', function() opencode.ask('@selection: ') end, desc = 'Ask opencode about selection' },
+    opencode_select
   }
 
   for _, v in ipairs(genfoldkeys_whichkey()) do
