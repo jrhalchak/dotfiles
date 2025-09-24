@@ -2,6 +2,7 @@ local M = {}
 
 local utils = require "utils"
 local constants = require "constants"
+local w = require "wezterm"
 
 function M.format_tab_title(tab, tabs, panes, config, hover, max_width)
   local is_active = tab.is_active
@@ -18,7 +19,7 @@ function M.format_tab_title(tab, tabs, panes, config, hover, max_width)
   local left_arrow = {
     { Background = { Color = edge_bg } },
     { Foreground = { Color = is_active and active_fg or inactive_fg } },
-    { Text = prefix .. constants.RIGHT_BOTTOM_TRIANGLE },
+    { Text = prefix .. constants.ICONS.RIGHT_BOTTOM_TRIANGLE },
   }
 
   local title = {
@@ -30,7 +31,7 @@ function M.format_tab_title(tab, tabs, panes, config, hover, max_width)
   local right_arrow = {
     { Background = { Color = edge_bg } },
     { Foreground = { Color = is_active and active_fg or inactive_fg } },
-    { Text = constants.LEFT_TOP_TRIANGLE },
+    { Text = constants.ICONS.LEFT_TOP_TRIANGLE },
   }
 
   return w.format(left_arrow) .. w.format(title) .. w.format(right_arrow)

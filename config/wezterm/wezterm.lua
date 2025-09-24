@@ -57,7 +57,7 @@ cfg.colors = {
 cfg.show_new_tab_button_in_tab_bar = false
 
 w.on("format-tab-title", tabs.format_tab_title)
-w.on('update-right-status', status.render)
+w.on("update-right-status", status.render)
 
 -- ========================
 -- Fonts

@@ -172,75 +172,74 @@ local function split_weather(str)
 end
 
 function M.get_weather_cached(default_fg_color)
-  -- TODO : test and fix/optimize this
   if not utils.is_focused() then return end
+  default_fg_color = default_fg_color or "#c0c0c0"
 
-  default_fg_color = default_fg_color or "#c0c0c0" -- fallback default
-  local now = os.time()
-  if now - M.last_weather_time > M.weather_update_interval or M.last_weather == "" then
-    local handle = io.popen('LANG=en_US.UTF-8 curl -s "wttr.in/AKC?format=%C++%t++%f++%w"')
-    if handle then
-      local result = handle:read("*a")
-      handle:close()
-      result = result and result:gsub("^%s*(.-)%s*$", "%1") or ""
-      M.last_weather = result
-      M.last_weather_time = now
-    end
+  -- Ensure async task is registered (idempotent)
+  if not M._async_registered then
+    utils.periodic_async('weather', {
+      interval = M.weather_update_interval,
+      skip_when_unfocused = true,
+      timeout = 4,
+      spawn = function(tmp)
+        return 'LANG=en_US.UTF-8 curl -s --max-time 3 "wttr.in/AKC?format=%C++%t++%f++%w" > ' .. string.format('%q', tmp)
+      end,
+      process = function(raw)
+        raw = raw and raw:gsub('^%s*(.-)%s*$', '%1') or ''
+        if raw == '' or raw:match('<html') then return nil end
+        return raw
+      end,
+    })
+    M._async_registered = true
+  end
+
+  local raw, ts = utils.get_async('weather')
+  if not raw or raw == '' then
+    return { { Text = utils.spinner() .. ' weather' } }
   end
 
   -- Robust parsing: extract each value independently
-  local condition, temp, feels, wind = table.unpack(split_weather(M.last_weather))
-  condition = condition or "N/A"
-  temp = temp and temp:match("([%+%-]%d+)%D*") or temp
-feels = feels and feels:match("([%+%-]%d+)%D*") or feels
-  wind = wind or ""
+  local condition, temp, feels, wind = table.unpack(split_weather(raw))
+  condition = condition or 'N/A'
+  temp = temp and temp:match('([%+%-]%d+)%D*') or temp
+  feels = feels and feels:match('([%+%-]%d+)%D*') or feels
+  wind = wind or ''
 
-  -- Condition icon
   local condition_icon = M.get_weather_icon(condition)
   local items = {
-    { Text = tostring(condition_icon) .. " " },
-    { Text = (condition or "") .. " " .. w.nerdfonts.pl_left_soft_divider .. " " },
+    { Text = tostring(condition_icon) .. ' ' },
+    { Text = (condition or '') .. ' ' .. w.nerdfonts.pl_left_soft_divider .. ' ' },
   }
 
   -- Temperature icon and value
-  local temp_icon, temp_color = M.get_temp_icon(temp)
+  local temp_icon, temp_color = M.get_temp_icon(tonumber(temp))
   table.insert(items, { Foreground = { Color = temp_color } })
-  table.insert(items, { Text = tostring(temp_icon) .. " "})
+  table.insert(items, { Text = tostring(temp_icon) .. ' ' })
   table.insert(items, { Foreground = { Color = default_fg_color } }) -- Reset to default section color
 
-  local temp_display = temp and (tostring(temp) .. "°F ") or " N/A "
-  table.insert(items, { Text = temp_display .. w.nerdfonts.pl_left_soft_divider .. " " })
+  local temp_display = temp and (tostring(temp) .. '°F ') or ' N/A '
+  table.insert(items, { Text = temp_display .. w.nerdfonts.pl_left_soft_divider .. ' ' })
 
   -- Feels-like icon and value
-  local feels_icon, feels_color = M.get_feels_icon(feels)
+  local feels_icon, feels_color = M.get_feels_icon(tonumber(feels))
   table.insert(items, { Foreground = { Color = feels_color } })
-  table.insert(items, { Text = tostring(feels_icon) .. " " })
+  table.insert(items, { Text = tostring(feels_icon) .. ' ' })
   table.insert(items, { Foreground = { Color = default_fg_color } }) -- Reset to default section color
 
-  local feels_display = feels and (tostring(feels) .. "°F ") or " N/A "
-  table.insert(items, { Text = feels_display .. w.nerdfonts.pl_left_soft_divider .. " " })
+  local feels_display = feels and (tostring(feels) .. '°F ') or ' N/A '
+  table.insert(items, { Text = feels_display .. w.nerdfonts.pl_left_soft_divider .. ' ' })
 
   -- Wind icon and value
-  local wind_speed = wind and wind:match("(%d+mph)") or ""
+  local wind_speed = wind and wind:match('(%d+mph)') or ''
 
   -- Try to extract wind direction by removing the speed part
-  local wind_dir_part = wind and wind:gsub("%d+mph", "") or ""
-  wind_dir_part = wind_dir_part:gsub("^%s+", ""):gsub("%s+$", "") -- trim whitespace
+  local wind_dir_part = wind and wind:gsub('%d+mph','') or ''
+  wind_dir_part = wind_dir_part:gsub('^%s+',''):gsub('%s+$','') -- trim whitespace
 
-  -- Map the corrupted character to the correct icon
-  local wind_icon = ""
-  -- Use the directional wind icon mapping
-  if wind_dir_part ~= "" and wind_icon == "" then
-    wind_icon = M.wind_icons[wind_dir_part] -- fallback for other directions
-  end
-
-  if wind_icon then
-    table.insert(items, { Text = tostring(wind_icon) .. " " })
-  end
-
-  if wind_speed ~= "" then
-    table.insert(items, { Text = wind_speed })
-  end
+  -- Use the directional wind icon mapping w/ fallback
+  local wind_icon = wind_dir_part ~= '' and M.wind_icons[wind_dir_part] or nil
+  if wind_icon then table.insert(items, { Text = tostring(wind_icon) .. ' ' }) end
+  if wind_speed ~= '' then table.insert(items, { Text = wind_speed }) end
 
   return items
 end
