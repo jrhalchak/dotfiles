@@ -1,5 +1,6 @@
 # Prevent default (venv) prompt from Python venv
 export VIRTUAL_ENV_DISABLE_PROMPT=1
+
 # Original Tokyo Night colors
 TOKYO_BLUE='#7aa2f7'
 # TOKYO_PURPLE='#bb9af7'

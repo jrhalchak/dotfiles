@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 source ~/dotfiles/zsh/installs.sh
 
@@ -37,23 +37,31 @@ link "$DOTFILES_DIR/config/nvim" "$HOME/.config/nvim"
 link "$DOTFILES_DIR/config/neorg" "$HOME/.config/neorg"
 link "$DOTFILES_DIR/config/wezterm" "$HOME/.config/wezterm"
 
-# ====================
-# Linux Bin Mgmgt
-# ====================
-
-# Exit this script early if running on macOS (Darwin)
+#--
+#- Exit this script early if running on macOS (Darwin)
+# TODO : Handle different platforms better in this file
+#--
 if [ "$(uname)" = "Darwin" ]; then
   exit 0
 fi
 
-# TODO : Handle different platforms better in this file
-# Linux-only
+# ====================
+# Linux Bin Mgmgt
+# ====================
+
 link "$DOTFILES_DIR/linux/config/fastfetch" "$HOME/.config/fastfetch"
+link "$DOTFILES_DIR/linux/config/i3" "$HOME/.config/i3"
+link "$DOTFILES_DIR/linux/config/polybar" "$HOME/.config/polybar"
 
 # Bins
 for bin_file in "$DOTFILES_DIR/apps/bin"/*; do
   [ -f "$bin_file" ] && link "$bin_file" "$HOME/.local/bin/$(basename "$bin_file")"
 done
+
+# xborder special case (it's a directory with executable inside)
+if [ -d "$DOTFILES_DIR/apps/bin/xborder" ]; then
+  link "$DOTFILES_DIR/apps/bin/xborder/xborders" "$HOME/.local/bin/xborders"
+fi
 
 # Icons
 mkdir -p "$HOME/.icons/custom/"
@@ -66,3 +74,23 @@ for desktop_file in "$DOTFILES_DIR/apps/desktop"/*; do
   [ -f "$desktop_file" ] && link "$desktop_file" "$HOME/.local/share/applications/$(basename "$desktop_file")"
 done
 
+#--
+#- Keybaord/mouse automatic binding via udev
+#
+# Setup input service for use by `udev` (see end of `setup.sh`).
+#
+# NOTE : Alternatively you can have a sudo-less setup by using `udevmon` from `interception-tools` and create a watcher script, use `acpi_listen` or build an `autostart` listener loop in the i3 startup (or via a `systemd` timer)
+#--
+link "$DOTFILES_DIR/linux/config/systemd/user/input_watcher.service" "$HOME/.config/systemd/user/input_watcher.service"
+
+echo "Setting up input watcher service..."
+systemctl --user daemon-reload
+systemctl --user enable --now input_watcher.service || true
+
+# System-level service config (requires `sudo`)
+sudo cp "$DOTFILES_DIR/linux/lightdm/99-monitor-setup.conf" /etc/lightdm/lightdm.conf.d/99-monitor-setup.conf
+
+sudo cp "$DOTFILES_DIR/linux/udev/99-input-hook.rules" /etc/udev/rules.d/99-input-hook.rules
+
+sudo udevadm control --reload-rules
+sudo udevadm trigger

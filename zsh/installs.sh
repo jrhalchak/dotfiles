@@ -35,6 +35,40 @@ installed=false
 #   return 1
 # fi
 
+# Some common utils I install with every fresh install
+## NOTE: This presupposes you're using `apt`, won't work on
+## non-apt distroes
+sudo apt update && sudo apt install ripgrep xclip xdotool jq pipx
+
+# Install xborder dependencies
+if ! command -v xborders >/dev/null 2>&1; then
+  echo "Installing xborder dependencies and script..."
+
+  # Install system dependencies
+  sudo apt install -y libwnck-3-0 libwnck-3-dev libnotify-bin python3-gi gir1.2-gtk-3.0 python3-venv
+
+  # Clone xborder to apps/bin
+  if [ ! -d "$HOME/dotfiles/apps/bin/xborder" ]; then
+    git clone https://github.com/deter0/xborder "$HOME/dotfiles/apps/bin/xborder"
+    chmod +x "$HOME/dotfiles/apps/bin/xborder/xborders"
+  fi
+
+  # Create venv and install Python dependencies
+  if [ ! -d "$HOME/dotfiles/apps/bin/xborder/venv" ]; then
+    python3 -m venv "$HOME/dotfiles/apps/bin/xborder/venv"
+    "$HOME/dotfiles/apps/bin/xborder/venv/bin/pip" install -r "$HOME/dotfiles/apps/bin/xborder/requirements.txt"
+  fi
+
+  installed=true
+fi
+
+# Create wrapper for the bin folder
+cat << 'EOF' > "$HOME/dotfiles/apps/bin/xborders"
+#!/bin/bash
+exec "$HOME/dotfiles/apps/bin/xborder/venv/bin/python3" "$HOME/dotfiles/apps/bin/xborder/xborders" "$@"
+EOF
+
+
 # Install Go v1.24.3
 if ! command -v go >/dev/null 2>&1; then
   echo "Installing Go v1.24.3..."

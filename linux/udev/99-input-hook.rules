@@ -1,0 +1,1 @@
+ACTION=="add|change", SUBSYSTEM=="input", ENV{ID_INPUT_MOUSE}=="1", RUN+="/usr/bin/touch /tmp/input_trigger"

@@ -43,45 +43,6 @@ colors['on_purple']='\033[45m'      # Purple
 colors['on_cyan']='\033[46m'        # Cyan
 colors['on_white']='\033[47m'       # White
 
-function gwta() {
-  BRANCH_NAME=$1
-  POINTER=${2:=develop}
-  FOLDER_NAME=$BRANCH_NAME
-
-  if [[ $BRANCH_NAME  == *"/"* ]]; then
-    FOLDER_NAME="${BRANCH_NAME##*/}"
-  fi
-
-  TS_NOTE="${colors['white']}${colors['on_black']}"
-  TS_BRANCH="${colors['ugreen']}${colors['bgreen']}"
-  TS_CHUNK1="${colors['black']}${colors['on_green']}"
-  TS_CHUNK2="${colors['black']}${colors['on_yellow']}"
-  TS_CHUNK3="${colors['black']}${colors['on_blue']}"
-  TS_WARN="${colors['yellow']}${colors['on_black']}"
-  TS_RESET="${colors['reset']}"
-
-  echo -e "$TS_NOTE Preparing to add a worktree for $TS_BRANCH$BRANCH_NAME$TS_RESET${colors['on_black']}. $TS_RESET"
-  echo -e "$TS_WARN Make sure you are in the folder you store worktrees in and that, if you have a prefix, the ending won't conflict with existing folders $TS_RESET"
-  echo -e " "
-  echo -e "--- "
-  echo -e " "
-  while true; do
-    echo "$TS_NOTE git worktree add -b $TS_CHUNK1  $BRANCH_NAME $TS_NOTE $TS_CHUNK2  $FOLDER_NAME $TS_NOTE $TS_CHUNK3  $POINTER $TS_RESET"
-    echo "$TS_NOTE Do you wish to create the branch? $TS_RESET"
-    # "?" prefix is for zsh read, similar to bash's "-p" flag
-    read "?[y/N]:" BRANCH_CONFIRMED
-    BRANCH_CONFIRMED=${BRANCH_CONFIRMED:-N}
-
-    if [[ $BRANCH_CONFIRMED == 'n' || $BRANCH_CONFIRMED == 'N' ]]; then
-      echo "Okay, exiting now."
-      break
-    elif [[ $BRANCH_CONFIRMED  == 'y' || $BRANCH_CONFIRMED  == 'Y' ]]; then
-      git worktree add -b $BRANCH_NAME ./$FOLDER_NAME $POINTER
-      break
-    fi
-  done
-}
-
 function gwth() {
   TS_NOTE="${colors['white']}${colors['on_black']}"
   TS_CHUNK1="${colors['black']}${colors['on_green']}"
