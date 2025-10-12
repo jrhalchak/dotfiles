@@ -63,17 +63,40 @@ w.on("update-right-status", status.render)
 -- Fonts
 -- ========================
 cfg.font_size = 11
-cfg.font = w.font_with_fallback({
-  {
-    family = "VictorMono Nerd Font Mono",
-    weight = "Medium",
-  },
-  {
-    -- Fallback font with all the Netd Font Symbols
-    family = "Symbols Nerd Font Mono",
-    scale = 0.9,
-  },
-})
+
+-- Platform-specific font configuration
+local is_macos = string.find(w.target_triple, "apple")
+local is_linux = string.find(w.target_triple, "linux")
+
+if is_linux then
+  -- On Linux, be more explicit about font selection
+  cfg.font = w.font_with_fallback({
+    {
+      family = "VictorMono Nerd Font Mono",
+      weight = "Medium",
+      harfbuzz_features = {"calt=1", "liga=1"},
+    },
+    {
+      family = "Symbols Nerd Font Mono",
+      scale = 0.9,
+    },
+  })
+  -- Linux-specific font rendering tweaks
+  cfg.freetype_load_target = "Normal"
+  cfg.freetype_render_target = "Normal"
+else
+  -- macOS and other platforms
+  cfg.font = w.font_with_fallback({
+    {
+      family = "VictorMono Nerd Font Mono",
+      weight = "Medium",
+    },
+    {
+      family = "Symbols Nerd Font Mono",
+      scale = 0.9,
+    },
+  })
+end
 cfg.allow_square_glyphs_to_overflow_width = 'Always'
 
 cfg.leader = { key = "s", mods = "CTRL", timeout_milliseconds = 2000 }

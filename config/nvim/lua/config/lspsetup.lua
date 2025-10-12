@@ -108,19 +108,139 @@ M.setup = function()
           },
         })
       end,
+      cssls = function()
+        require('lspconfig').cssls.setup({
+          capabilities = lsp_capabilities,
+          settings = {
+            css = {
+              validate = true,
+              lint = {
+                unknownAtRules = "ignore",
+                unknownProperties = "ignore"
+              },
+              completion = {
+                triggerPropertyValueCompletion = true,
+                completePropertyWithSemicolon = true
+              },
+              customData = {
+                vim.fn.getcwd() .. "/.vscode/css-custom-data.json"
+              }
+            },
+            scss = {
+              validate = true,
+              completion = {
+                triggerPropertyValueCompletion = true,
+                completePropertyWithSemicolon = true
+              }
+            },
+            less = {
+              validate = true,
+              completion = {
+                triggerPropertyValueCompletion = true,
+                completePropertyWithSemicolon = true
+              }
+            }
+          }
+        })
+      end,
+
+      html = function()
+        require('lspconfig').html.setup({
+          capabilities = lsp_capabilities,
+          settings = {
+            html = {
+              format = {
+                enable = true
+              },
+              hover = {
+                documentation = true,
+                references = true
+              },
+              completion = {
+                attributeDefaultValue = "doublequotes"
+              },
+              customData = {
+                vim.fn.getcwd() .. "/.vscode/html-custom-data.json"
+              }
+            }
+          }
+        })
+      end,
     }
   })
 
   local cmp = require('cmp')
-  local cmp_select = {behavior = cmp.SelectBehavior.Select}
+  -- local cmp_select = {behavior = cmp.SelectBehavior.Select}
   local constants = require('config.constants')
+
+  -- Setup CSS classes completion source
+  local function setup_css_classes_source()
+    local function load_css_classes()
+      local css_data_path = vim.fn.getcwd() .. '/.vscode/css-completions.json'
+      local ok, data = pcall(function()
+        local file = io.open(css_data_path, 'r')
+        if not file then return nil end
+        local content = file:read('*all')
+        file:close()
+        return vim.json.decode(content)
+      end)
+
+      if ok and data then
+        return data.classes or {}, data.variables or {}
+      end
+      return {}, {}
+    end
+
+    local css_classes, css_variables = load_css_classes()
+
+    local source = {}
+    source.name = 'css_classes'
+
+    function source:complete(request, callback)
+      local line_to_cursor = request.context.cursor_before_line
+      local items = {}
+
+      -- Check if we're in a class attribute
+      if line_to_cursor:match('class=["\']?[^"\']*$') or
+        line_to_cursor:match('className=["\']?[^"\']*$') then
+
+        for _, class_item in ipairs(css_classes) do
+          table.insert(items, {
+            label = class_item.label,
+            kind = cmp.lsp.CompletionItemKind.Class,
+            detail = class_item.detail,
+            documentation = class_item.documentation
+          })
+        end
+
+      elseif line_to_cursor:match('var%(%-%-[^)]*$') then
+        -- CSS variable completion
+        for _, var_item in ipairs(css_variables) do
+          table.insert(items, {
+            label = var_item.label,
+            kind = cmp.lsp.CompletionItemKind.Variable,
+            detail = var_item.detail,
+            documentation = var_item.documentation
+          })
+        end
+      end
+
+      callback({ items = items })
+    end
+
+    cmp.register_source('css_classes', source)
+  end
+
+  setup_css_classes_source()
 
   cmp.setup({
     sources = cmp.config.sources({
       {name = 'nvim_lsp'},
+      {name = 'css_classes'},
       {name = 'luasnip'},
       {name = 'buffer'},
       {name = 'codecompanion'},
+      {name = 'emoji' },
     }, {
       {
         name="lazydev",
@@ -208,6 +328,7 @@ M.setup = function()
 
         item.menu = ({
           buffer = "[Buffer]",
+          css_classes = "[CSS]",
           nvim_lsp = "[LSP]",
           luasnip = "[LuaSnip]",
           nvim_lua = "[Lua]",

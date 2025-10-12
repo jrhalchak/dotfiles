@@ -69,6 +69,7 @@ M.setup = function()
     { "<leader>fr", ":Telescope oldfiles<CR>", desc = "Old files" },
     { "<leader>fp", ":Telescope projects<CR>", desc = "Projects" },
     { "<leader>fb", ":Telescope buffers<CR>", desc = "Buffers" },
+    { "<leader>fe", ":Telescope emoji<CR>", desc = "Emojis" },
 
     -- Netrw
     -- { "<leader>et", ":20Vex<CR>", desc = "Netrw side panel" },
