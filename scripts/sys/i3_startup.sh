@@ -93,9 +93,12 @@ if [[ "$MONITOR_CONFIG" == "dual" ]]; then
   sed "s/{{HDMI_OUTPUT}}/$HDMI_OUTPUT/g; s/{{EDP_OUTPUT}}/$EDP_OUTPUT/g; \
        s/{{WS1_HDMI}}/$WS1_HDMI_ESC/g; s/{{WS2_HDMI}}/$WS2_HDMI_ESC/g; s/{{WS3_HDMI}}/$WS3_HDMI_ESC/g; s/{{WS4_HDMI}}/$WS4_HDMI_ESC/g; s/{{WS5_HDMI}}/$WS5_HDMI_ESC/g; \
        s/{{WS1_EDP}}/$WS1_EDP_ESC/g; s/{{WS2_EDP}}/$WS2_EDP_ESC/g; s/{{WS3_EDP}}/$WS3_EDP_ESC/g; \
-       s/{{GAP_INNER_DUAL}}/$GAP_INNER_DUAL/g; s/{{GAP_OUTER_DUAL}}/$GAP_OUTER_DUAL/g; \
-       s/{{GAP_TOP_DUAL_HDMI}}/$GAP_TOP_DUAL_HDMI/g; s/{{GAP_TOP_DUAL_EDP}}/$GAP_TOP_DUAL_EDP/g; \
-       s/{{GAP_RIGHT_DUAL}}/$GAP_RIGHT_DUAL/g; s/{{GAP_BOTTOM_DUAL}}/$GAP_BOTTOM_DUAL/g; s/{{GAP_LEFT_DUAL}}/$GAP_LEFT_DUAL/g" \
+       s/{{GAP_INNER_DUAL_HDMI}}/$GAP_INNER_DUAL_HDMI/g; s/{{GAP_OUTER_DUAL_HDMI}}/$GAP_OUTER_DUAL_HDMI/g; \
+       s/{{GAP_TOP_DUAL_HDMI}}/$GAP_TOP_DUAL_HDMI/g; s/{{GAP_RIGHT_DUAL_HDMI}}/$GAP_RIGHT_DUAL_HDMI/g; \
+       s/{{GAP_BOTTOM_DUAL_HDMI}}/$GAP_BOTTOM_DUAL_HDMI/g; s/{{GAP_LEFT_DUAL_HDMI}}/$GAP_LEFT_DUAL_HDMI/g; \
+       s/{{GAP_INNER_DUAL_EDP}}/$GAP_INNER_DUAL_EDP/g; s/{{GAP_OUTER_DUAL_EDP}}/$GAP_OUTER_DUAL_EDP/g; \
+       s/{{GAP_TOP_DUAL_EDP}}/$GAP_TOP_DUAL_EDP/g; s/{{GAP_RIGHT_DUAL_EDP}}/$GAP_RIGHT_DUAL_EDP/g; \
+       s/{{GAP_BOTTOM_DUAL_EDP}}/$GAP_BOTTOM_DUAL_EDP/g; s/{{GAP_LEFT_DUAL_EDP}}/$GAP_LEFT_DUAL_EDP/g" \
       ~/.config/i3/workspaces.dual > ~/.config/i3/generated.bindings
 else
   # Single monitor - substitute variables in template with escaped values

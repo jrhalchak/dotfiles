@@ -22,14 +22,21 @@ export WS3_SINGLE="3:web"
 export WS4_SINGLE="4:misc"
 export WS5_SINGLE="5:shed"
 
-# Gap configuration - dual monitor (laptop+hdmi)
-export GAP_INNER_DUAL=16
-export GAP_OUTER_DUAL=8
+# Gap configuration - dual monitor HDMI workspaces
+export GAP_INNER_DUAL_HDMI=16
+export GAP_OUTER_DUAL_HDMI=8
 export GAP_TOP_DUAL_HDMI=56
+export GAP_RIGHT_DUAL_HDMI=8
+export GAP_BOTTOM_DUAL_HDMI=8
+export GAP_LEFT_DUAL_HDMI=8
+
+# Gap configuration - dual monitor EDP workspaces
+export GAP_INNER_DUAL_EDP=16
+export GAP_OUTER_DUAL_EDP=8
 export GAP_TOP_DUAL_EDP=48
-export GAP_RIGHT_DUAL=8
-export GAP_BOTTOM_DUAL=8
-export GAP_LEFT_DUAL=8
+export GAP_RIGHT_DUAL_EDP=8
+export GAP_BOTTOM_DUAL_EDP=8
+export GAP_LEFT_DUAL_EDP=8
 
 # Gap configuration - hdmi only
 export GAP_INNER_HDMI_ONLY=16

@@ -57,59 +57,59 @@ workspace $ws2e output {{EDP_OUTPUT}}
 workspace $ws3e output {{EDP_OUTPUT}}
 
 # Gaps for all HDMI workspaces
-workspace $ws1h gaps inner {{GAP_INNER_DUAL}}
-workspace $ws1h gaps outer {{GAP_OUTER_DUAL}}
+workspace $ws1h gaps inner {{GAP_INNER_DUAL_HDMI}}
+workspace $ws1h gaps outer {{GAP_OUTER_DUAL_HDMI}}
 workspace $ws1h gaps top {{GAP_TOP_DUAL_HDMI}}
-workspace $ws1h gaps right {{GAP_RIGHT_DUAL}}
-workspace $ws1h gaps bottom {{GAP_BOTTOM_DUAL}}
-workspace $ws1h gaps left {{GAP_LEFT_DUAL}}
+workspace $ws1h gaps right {{GAP_RIGHT_DUAL_HDMI}}
+workspace $ws1h gaps bottom {{GAP_BOTTOM_DUAL_HDMI}}
+workspace $ws1h gaps left {{GAP_LEFT_DUAL_HDMI}}
 
-workspace $ws2h gaps inner {{GAP_INNER_DUAL}}
-workspace $ws2h gaps outer {{GAP_OUTER_DUAL}}
+workspace $ws2h gaps inner {{GAP_INNER_DUAL_HDMI}}
+workspace $ws2h gaps outer {{GAP_OUTER_DUAL_HDMI}}
 workspace $ws2h gaps top {{GAP_TOP_DUAL_HDMI}}
-workspace $ws2h gaps right {{GAP_RIGHT_DUAL}}
-workspace $ws2h gaps bottom {{GAP_BOTTOM_DUAL}}
-workspace $ws2h gaps left {{GAP_LEFT_DUAL}}
+workspace $ws2h gaps right {{GAP_RIGHT_DUAL_HDMI}}
+workspace $ws2h gaps bottom {{GAP_BOTTOM_DUAL_HDMI}}
+workspace $ws2h gaps left {{GAP_LEFT_DUAL_HDMI}}
 
-workspace $ws3h gaps inner {{GAP_INNER_DUAL}}
-workspace $ws3h gaps outer {{GAP_OUTER_DUAL}}
+workspace $ws3h gaps inner {{GAP_INNER_DUAL_HDMI}}
+workspace $ws3h gaps outer {{GAP_OUTER_DUAL_HDMI}}
 workspace $ws3h gaps top {{GAP_TOP_DUAL_HDMI}}
-workspace $ws3h gaps right {{GAP_RIGHT_DUAL}}
-workspace $ws3h gaps bottom {{GAP_BOTTOM_DUAL}}
-workspace $ws3h gaps left {{GAP_LEFT_DUAL}}
+workspace $ws3h gaps right {{GAP_RIGHT_DUAL_HDMI}}
+workspace $ws3h gaps bottom {{GAP_BOTTOM_DUAL_HDMI}}
+workspace $ws3h gaps left {{GAP_LEFT_DUAL_HDMI}}
 
-workspace $ws4h gaps inner {{GAP_INNER_DUAL}}
-workspace $ws4h gaps outer {{GAP_OUTER_DUAL}}
+workspace $ws4h gaps inner {{GAP_INNER_DUAL_HDMI}}
+workspace $ws4h gaps outer {{GAP_OUTER_DUAL_HDMI}}
 workspace $ws4h gaps top {{GAP_TOP_DUAL_HDMI}}
-workspace $ws4h gaps right {{GAP_RIGHT_DUAL}}
-workspace $ws4h gaps bottom {{GAP_BOTTOM_DUAL}}
-workspace $ws4h gaps left {{GAP_LEFT_DUAL}}
+workspace $ws4h gaps right {{GAP_RIGHT_DUAL_HDMI}}
+workspace $ws4h gaps bottom {{GAP_BOTTOM_DUAL_HDMI}}
+workspace $ws4h gaps left {{GAP_LEFT_DUAL_HDMI}}
 
-workspace $ws5h gaps inner {{GAP_INNER_DUAL}}
-workspace $ws5h gaps outer {{GAP_OUTER_DUAL}}
+workspace $ws5h gaps inner {{GAP_INNER_DUAL_HDMI}}
+workspace $ws5h gaps outer {{GAP_OUTER_DUAL_HDMI}}
 workspace $ws5h gaps top {{GAP_TOP_DUAL_HDMI}}
-workspace $ws5h gaps right {{GAP_RIGHT_DUAL}}
-workspace $ws5h gaps bottom {{GAP_BOTTOM_DUAL}}
-workspace $ws5h gaps left {{GAP_LEFT_DUAL}}
+workspace $ws5h gaps right {{GAP_RIGHT_DUAL_HDMI}}
+workspace $ws5h gaps bottom {{GAP_BOTTOM_DUAL_HDMI}}
+workspace $ws5h gaps left {{GAP_LEFT_DUAL_HDMI}}
 
 # Gaps for all EDP workspaces
-workspace $ws1e gaps inner {{GAP_INNER_DUAL}}
-workspace $ws1e gaps outer {{GAP_OUTER_DUAL}}
+workspace $ws1e gaps inner {{GAP_INNER_DUAL_EDP}}
+workspace $ws1e gaps outer {{GAP_OUTER_DUAL_EDP}}
 workspace $ws1e gaps top {{GAP_TOP_DUAL_EDP}}
-workspace $ws1e gaps right {{GAP_RIGHT_DUAL}}
-workspace $ws1e gaps bottom {{GAP_BOTTOM_DUAL}}
-workspace $ws1e gaps left {{GAP_LEFT_DUAL}}
+workspace $ws1e gaps right {{GAP_RIGHT_DUAL_EDP}}
+workspace $ws1e gaps bottom {{GAP_BOTTOM_DUAL_EDP}}
+workspace $ws1e gaps left {{GAP_LEFT_DUAL_EDP}}
 
-workspace $ws2e gaps inner {{GAP_INNER_DUAL}}
-workspace $ws2e gaps outer {{GAP_OUTER_DUAL}}
+workspace $ws2e gaps inner {{GAP_INNER_DUAL_EDP}}
+workspace $ws2e gaps outer {{GAP_OUTER_DUAL_EDP}}
 workspace $ws2e gaps top {{GAP_TOP_DUAL_EDP}}
-workspace $ws2e gaps right {{GAP_RIGHT_DUAL}}
-workspace $ws2e gaps bottom {{GAP_BOTTOM_DUAL}}
-workspace $ws2e gaps left {{GAP_LEFT_DUAL}}
+workspace $ws2e gaps right {{GAP_RIGHT_DUAL_EDP}}
+workspace $ws2e gaps bottom {{GAP_BOTTOM_DUAL_EDP}}
+workspace $ws2e gaps left {{GAP_LEFT_DUAL_EDP}}
 
-workspace $ws3e gaps inner {{GAP_INNER_DUAL}}
-workspace $ws3e gaps outer {{GAP_OUTER_DUAL}}
+workspace $ws3e gaps inner {{GAP_INNER_DUAL_EDP}}
+workspace $ws3e gaps outer {{GAP_OUTER_DUAL_EDP}}
 workspace $ws3e gaps top {{GAP_TOP_DUAL_EDP}}
-workspace $ws3e gaps right {{GAP_RIGHT_DUAL}}
-workspace $ws3e gaps bottom {{GAP_BOTTOM_DUAL}}
-workspace $ws3e gaps left {{GAP_LEFT_DUAL}}
+workspace $ws3e gaps right {{GAP_RIGHT_DUAL_EDP}}
+workspace $ws3e gaps bottom {{GAP_BOTTOM_DUAL_EDP}}
+workspace $ws3e gaps left {{GAP_LEFT_DUAL_EDP}}
