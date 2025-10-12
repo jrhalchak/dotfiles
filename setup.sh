@@ -51,6 +51,7 @@ fi
 
 link "$DOTFILES_DIR/linux/config/fastfetch" "$HOME/.config/fastfetch"
 link "$DOTFILES_DIR/linux/config/i3" "$HOME/.config/i3"
+link "$DOTFILES_DIR/linux/config/picom" "$HOME/.config/picom"
 link "$DOTFILES_DIR/linux/config/polybar" "$HOME/.config/polybar"
 
 # Bins

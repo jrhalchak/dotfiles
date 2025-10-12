@@ -47,13 +47,10 @@ tiling_drag modifier titlebar
 
 focus_follows_mouse yes
 
-# remove title bars
-for_window [class="^.*"] border pixel 3
-default_border pixel 3
-default_floating_border pixel 3
-
-# Hide borders at the edge of the screen
-hide_edge_borders smart
+# remove title bars - disable i3 borders since we use xborders
+for_window [class="^.*"] border pixel 0
+default_border pixel 0
+default_floating_border pixel 0
 
 # window state colors
 client.focused           #9aa5ce #364A82 #c0caf5 #9aa5ce   #9aa5ce

@@ -4,12 +4,56 @@
 # Replaces setup_monitors.sh, set_gaps.sh, and individual service launches
 #
 
+# Wait functions that check for actual readiness instead of arbitrary sleeps
+
+wait_for_picom() {
+    local max_attempts=50
+    local attempt=0
+    echo "Waiting for picom compositor..."
+    
+    while [ $attempt -lt $max_attempts ]; do
+        # Check if picom process exists
+        if pgrep -x picom > /dev/null; then
+            # Check if compositor is detected by X
+            if xprop -root _NET_WM_CM_S0 > /dev/null 2>&1; then
+                echo "Picom compositor ready"
+                return 0
+            fi
+        fi
+        attempt=$((attempt + 1))
+        sleep 0.1
+    done
+    
+    echo "Warning: Picom not ready after ${max_attempts} attempts"
+    return 1
+}
+
+wait_for_polybar() {
+    local max_attempts=30
+    local attempt=0
+    echo "Waiting for polybar..."
+    
+    while [ $attempt -lt $max_attempts ]; do
+        if pgrep -x polybar > /dev/null; then
+            # Give polybar a moment to create its windows
+            sleep 0.2
+            echo "Polybar ready"
+            return 0
+        fi
+        attempt=$((attempt + 1))
+        sleep 0.1
+    done
+    
+    echo "Warning: Polybar not ready after ${max_attempts} attempts"
+    return 1
+}
+
 # Source central configuration and xrandr functions
 source ~/.config/i3/monitor_config.sh
 source ~/dotfiles/scripts/sys/monitor_xrandr.sh
 
-# Wait just in case displays aren't setup
-sleep 2
+# Brief wait for displays to be ready
+sleep 0.5
 
 #
 # 1. Configure displays with xrandr
@@ -18,7 +62,7 @@ echo "i3_startup: Configuring displays..."
 setup_displays
 
 # Wait for xrandr changes to fully take effect
-sleep 0.5
+sleep 0.3
 
 #
 # 2. Wait for expected display configuration to be active
@@ -69,39 +113,41 @@ echo "i3_startup: Setting wallpaper..."
 feh --bg-fill $WALLPAPER_PATH
 
 #
-# 5. Start picom after wallpaper is set
+# 5. Start/restart picom after wallpaper is set
 #
 echo "i3_startup: Starting picom..."
 if pgrep -x picom > /dev/null; then
     killall picom
-    sleep 0.5
+    # Wait for picom to actually terminate
+    while pgrep -x picom > /dev/null; do
+        sleep 0.1
+    done
 fi
 picom --backend glx --config ~/.config/picom/picom.conf --daemon
-
-# Wait for picom to start
-sleep 0.3
+wait_for_picom
 
 #
-# 5. Start polybar
+# 6. Start polybar
 #
 echo "i3_startup: Starting polybar..."
 
-# Aggressively kill all polybars
+# Kill existing polybars
 killall -q polybar 2>/dev/null
-killall -9 polybar 2>/dev/null
 
-# Wait for polybars to terminate
-for i in {1..5}; do
-  if ! pgrep -u $UID -x polybar >/dev/null; then
-    break
-  fi
-  sleep 0.5
+# Wait for polybars to actually terminate
+local max_wait=20
+local count=0
+while pgrep -u $UID -x polybar >/dev/null && [ $count -lt $max_wait ]; do
+    sleep 0.1
+    count=$((count + 1))
 done
 
-# Force kill any remaining
+# Force kill if still running
 if pgrep -u $UID -x polybar >/dev/null; then
-  pkill -9 -u $UID polybar
-  sleep 0.5
+    pkill -9 -u $UID polybar
+    while pgrep -u $UID -x polybar >/dev/null; do
+        sleep 0.1
+    done
 fi
 
 # Start appropriate polybars based on monitor configuration
@@ -121,8 +167,7 @@ case $MONITOR_CONFIG in
     ;;
 esac
 
-# Wait for polybars to start
-sleep 0.5
+wait_for_polybar
 
 #
 # 8. Set wallpaper again to ensure it's properly composited
@@ -170,6 +215,11 @@ if [[ "$MONITOR_CONFIG" == "dual" ]]; then
   i3-msg "workspace \"$WS1_EDP\"; gaps top current set $GAP_TOP_1080P"
   i3-msg "workspace \"$WS2_EDP\"; gaps top current set $GAP_TOP_1080P"
   i3-msg "workspace \"$WS3_EDP\"; gaps top current set $GAP_TOP_1080P"
+  
+  # Return to primary workspaces on both displays
+  # Focus eDP first so HDMI ends up with actual focus
+  i3-msg "workspace \"$WS1_EDP\""
+  i3-msg "workspace \"$WS1_HDMI\""
 else
   # Single monitor gaps
   if [[ "$MONITOR_CONFIG" == "hdmi_only" ]]; then
@@ -184,5 +234,17 @@ else
   i3-msg "workspace \"$WS4_SINGLE\"; gaps top current set $GAP_TOP"
   i3-msg "workspace \"$WS5_SINGLE\"; gaps top current set $GAP_TOP"
 fi
+
+#
+# 11. Start xborders (LAST - after compositor, polybar, workspaces, and gaps are ready)
+#
+echo "i3_startup: Starting xborders..."
+if pgrep -f xborders > /dev/null; then
+    pkill -f xborders
+    sleep 0.3
+fi
+# Tokyo Night blue color: #7aa2f7 with slight transparency
+# Use wrapper script that waits for compositor to be fully ready
+nohup ~/dotfiles/scripts/sys/start-xborders.sh --border-width 2 --border-radius 16 --border-rgba '#7aa2f7dd' >/dev/null 2>&1 &
 
 echo "i3_startup: Startup sequence complete (config: $MONITOR_CONFIG)"
