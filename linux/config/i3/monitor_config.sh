@@ -22,11 +22,30 @@ export WS3_SINGLE="3:web"
 export WS4_SINGLE="4:misc"
 export WS5_SINGLE="5:shed"
 
-# Gap configuration
-export GAP_INNER=16
-export GAP_OUTER=8
-export GAP_TOP_4K=56    # For 4K HDMI display (polybar height + margin)
-export GAP_TOP_1080P=48 # For 1080p laptop display (polybar height + margin)
+# Gap configuration - dual monitor (laptop+hdmi)
+export GAP_INNER_DUAL=16
+export GAP_OUTER_DUAL=8
+export GAP_TOP_DUAL_HDMI=56
+export GAP_TOP_DUAL_EDP=48
+export GAP_RIGHT_DUAL=8
+export GAP_BOTTOM_DUAL=8
+export GAP_LEFT_DUAL=8
+
+# Gap configuration - hdmi only
+export GAP_INNER_HDMI_ONLY=16
+export GAP_OUTER_HDMI_ONLY=8
+export GAP_TOP_HDMI_ONLY=56
+export GAP_RIGHT_HDMI_ONLY=8
+export GAP_BOTTOM_HDMI_ONLY=8
+export GAP_LEFT_HDMI_ONLY=8
+
+# Gap configuration - laptop only
+export GAP_INNER_EDP_ONLY=16
+export GAP_OUTER_EDP_ONLY=8
+export GAP_TOP_EDP_ONLY=48
+export GAP_RIGHT_EDP_ONLY=8
+export GAP_BOTTOM_EDP_ONLY=8
+export GAP_LEFT_EDP_ONLY=8
 
 # Display settings
 export HDMI_MODE="3840x2160"

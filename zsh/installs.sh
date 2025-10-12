@@ -104,7 +104,7 @@ fi
 
 # Install Neovim AppImage if not present
 nvim_version="v0.11.1"
-nvim_appimage="$HOME/dotfiles/apps/bin"
+nvim_appimage="$HOME/dotfiles/apps/bin/nvim"
 
 if [ ! -f "$nvim_appimage" ]; then
   echo "Installing Neovim AppImage $nvim_version..."

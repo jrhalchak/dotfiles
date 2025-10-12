@@ -92,7 +92,10 @@ if [[ "$MONITOR_CONFIG" == "dual" ]]; then
   
   sed "s/{{HDMI_OUTPUT}}/$HDMI_OUTPUT/g; s/{{EDP_OUTPUT}}/$EDP_OUTPUT/g; \
        s/{{WS1_HDMI}}/$WS1_HDMI_ESC/g; s/{{WS2_HDMI}}/$WS2_HDMI_ESC/g; s/{{WS3_HDMI}}/$WS3_HDMI_ESC/g; s/{{WS4_HDMI}}/$WS4_HDMI_ESC/g; s/{{WS5_HDMI}}/$WS5_HDMI_ESC/g; \
-       s/{{WS1_EDP}}/$WS1_EDP_ESC/g; s/{{WS2_EDP}}/$WS2_EDP_ESC/g; s/{{WS3_EDP}}/$WS3_EDP_ESC/g" \
+       s/{{WS1_EDP}}/$WS1_EDP_ESC/g; s/{{WS2_EDP}}/$WS2_EDP_ESC/g; s/{{WS3_EDP}}/$WS3_EDP_ESC/g; \
+       s/{{GAP_INNER_DUAL}}/$GAP_INNER_DUAL/g; s/{{GAP_OUTER_DUAL}}/$GAP_OUTER_DUAL/g; \
+       s/{{GAP_TOP_DUAL_HDMI}}/$GAP_TOP_DUAL_HDMI/g; s/{{GAP_TOP_DUAL_EDP}}/$GAP_TOP_DUAL_EDP/g; \
+       s/{{GAP_RIGHT_DUAL}}/$GAP_RIGHT_DUAL/g; s/{{GAP_BOTTOM_DUAL}}/$GAP_BOTTOM_DUAL/g; s/{{GAP_LEFT_DUAL}}/$GAP_LEFT_DUAL/g" \
       ~/.config/i3/workspaces.dual > ~/.config/i3/generated.bindings
 else
   # Single monitor - substitute variables in template with escaped values
@@ -102,8 +105,19 @@ else
   WS4_SINGLE_ESC=$(escape_sed "$WS4_SINGLE")
   WS5_SINGLE_ESC=$(escape_sed "$WS5_SINGLE")
   
-  sed "s/{{WS1_SINGLE}}/$WS1_SINGLE_ESC/g; s/{{WS2_SINGLE}}/$WS2_SINGLE_ESC/g; s/{{WS3_SINGLE}}/$WS3_SINGLE_ESC/g; s/{{WS4_SINGLE}}/$WS4_SINGLE_ESC/g; s/{{WS5_SINGLE}}/$WS5_SINGLE_ESC/g" \
-      ~/.config/i3/workspaces.single > ~/.config/i3/generated.bindings
+  if [[ "$MONITOR_CONFIG" == "hdmi_only" ]]; then
+    sed "s/{{WS1_SINGLE}}/$WS1_SINGLE_ESC/g; s/{{WS2_SINGLE}}/$WS2_SINGLE_ESC/g; s/{{WS3_SINGLE}}/$WS3_SINGLE_ESC/g; s/{{WS4_SINGLE}}/$WS4_SINGLE_ESC/g; s/{{WS5_SINGLE}}/$WS5_SINGLE_ESC/g; \
+         s/{{GAP_INNER_SINGLE}}/$GAP_INNER_HDMI_ONLY/g; s/{{GAP_OUTER_SINGLE}}/$GAP_OUTER_HDMI_ONLY/g; \
+         s/{{GAP_TOP_SINGLE}}/$GAP_TOP_HDMI_ONLY/g; s/{{GAP_RIGHT_SINGLE}}/$GAP_RIGHT_HDMI_ONLY/g; \
+         s/{{GAP_BOTTOM_SINGLE}}/$GAP_BOTTOM_HDMI_ONLY/g; s/{{GAP_LEFT_SINGLE}}/$GAP_LEFT_HDMI_ONLY/g" \
+        ~/.config/i3/workspaces.single > ~/.config/i3/generated.bindings
+  else
+    sed "s/{{WS1_SINGLE}}/$WS1_SINGLE_ESC/g; s/{{WS2_SINGLE}}/$WS2_SINGLE_ESC/g; s/{{WS3_SINGLE}}/$WS3_SINGLE_ESC/g; s/{{WS4_SINGLE}}/$WS4_SINGLE_ESC/g; s/{{WS5_SINGLE}}/$WS5_SINGLE_ESC/g; \
+         s/{{GAP_INNER_SINGLE}}/$GAP_INNER_EDP_ONLY/g; s/{{GAP_OUTER_SINGLE}}/$GAP_OUTER_EDP_ONLY/g; \
+         s/{{GAP_TOP_SINGLE}}/$GAP_TOP_EDP_ONLY/g; s/{{GAP_RIGHT_SINGLE}}/$GAP_RIGHT_EDP_ONLY/g; \
+         s/{{GAP_BOTTOM_SINGLE}}/$GAP_BOTTOM_EDP_ONLY/g; s/{{GAP_LEFT_SINGLE}}/$GAP_LEFT_EDP_ONLY/g" \
+        ~/.config/i3/workspaces.single > ~/.config/i3/generated.bindings
+  fi
 fi
 
 #
@@ -192,48 +206,9 @@ if [[ "$MONITOR_CONFIG" == "dual" ]]; then
       "5:shed") i3-msg "rename workspace \"$ws\" to \"$WS5_HDMI\"" ;;
     esac
   done
-  
-  # Initialize primary workspaces
-  i3-msg "workspace \"$WS1_HDMI\""
-  i3-msg "workspace \"$WS1_EDP\""
-else
-  i3-msg "workspace \"$WS1_SINGLE\""
 fi
 
-#
-# 10. Set gaps after polybar is running
-#
-echo "i3_startup: Setting gaps..."
-if [[ "$MONITOR_CONFIG" == "dual" ]]; then
-  # Dual monitor gaps - switch to each workspace and set gaps
-  i3-msg "gaps inner all set $GAP_INNER; gaps outer all set $GAP_OUTER"
-  i3-msg "workspace \"$WS1_HDMI\"; gaps top current set $GAP_TOP_4K"
-  i3-msg "workspace \"$WS2_HDMI\"; gaps top current set $GAP_TOP_4K"
-  i3-msg "workspace \"$WS3_HDMI\"; gaps top current set $GAP_TOP_4K"
-  i3-msg "workspace \"$WS4_HDMI\"; gaps top current set $GAP_TOP_4K"
-  i3-msg "workspace \"$WS5_HDMI\"; gaps top current set $GAP_TOP_4K"
-  i3-msg "workspace \"$WS1_EDP\"; gaps top current set $GAP_TOP_1080P"
-  i3-msg "workspace \"$WS2_EDP\"; gaps top current set $GAP_TOP_1080P"
-  i3-msg "workspace \"$WS3_EDP\"; gaps top current set $GAP_TOP_1080P"
-  
-  # Return to primary workspaces on both displays
-  # Focus eDP first so HDMI ends up with actual focus
-  i3-msg "workspace \"$WS1_EDP\""
-  i3-msg "workspace \"$WS1_HDMI\""
-else
-  # Single monitor gaps
-  if [[ "$MONITOR_CONFIG" == "hdmi_only" ]]; then
-    GAP_TOP=$GAP_TOP_4K
-  else
-    GAP_TOP=$GAP_TOP_1080P
-  fi
-  i3-msg "gaps inner all set $GAP_INNER; gaps outer all set 0"
-  i3-msg "workspace \"$WS1_SINGLE\"; gaps top current set $GAP_TOP"
-  i3-msg "workspace \"$WS2_SINGLE\"; gaps top current set $GAP_TOP"
-  i3-msg "workspace \"$WS3_SINGLE\"; gaps top current set $GAP_TOP"
-  i3-msg "workspace \"$WS4_SINGLE\"; gaps top current set $GAP_TOP"
-  i3-msg "workspace \"$WS5_SINGLE\"; gaps top current set $GAP_TOP"
-fi
+
 
 #
 # 11. Start xborders (LAST - after compositor, polybar, workspaces, and gaps are ready)
@@ -246,5 +221,11 @@ fi
 # Tokyo Night blue color: #7aa2f7 with slight transparency
 # Use wrapper script that waits for compositor to be fully ready
 nohup ~/dotfiles/scripts/sys/start-xborders.sh --border-width 2 --border-radius 16 --border-rgba '#7aa2f7dd' >/dev/null 2>&1 &
+
+#
+# 12. Reload i3 config to apply gap configuration
+#
+echo "i3_startup: Reloading i3 config to apply gaps..."
+i3-msg reload
 
 echo "i3_startup: Startup sequence complete (config: $MONITOR_CONFIG)"
