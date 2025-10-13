@@ -6,7 +6,7 @@
 set $mod Mod4
 
 # Setup displays, workspaces, gaps, polybar, and wallpaper  
-exec_always --no-startup-id ~/dotfiles/scripts/sys/i3_startup.sh
+exec_always --no-startup-id ~/dotfiles/linux/scripts/i3_startup.sh
 
 # Dynamic workspaces based on monitor connections/states
 include ~/.config/i3/generated.bindings
@@ -16,7 +16,7 @@ include ~/.config/i3/generated.bindings
 font pango:VictorMono Nerd Font Mono Bold 10
 
 # Always run input for reversing mouse direction and remapping ESC to CAPS-LOCK
-exec_always --no-startup-id ~/dotfiles/scripts/sys/input.sh
+exec_always --no-startup-id ~/dotfiles/linux/scripts/input.sh
 
 # Always run keynav for keyboard (mouse) pointer navigation with splits
 exec_always --no-startup-id keynav 'loadconfig ~/.config/keynav/keynavrc,daemonize'
@@ -32,7 +32,7 @@ exec --no-startup-id dex --autostart --environment i3
 
 # xss-lock grabs a logind suspend inhibit lock and will use i3lock to lock the
 # screen before suspend. Use loginctl lock-session to lock your screen.
-exec --no-startup-id xss-lock --transfer-sleep-lock -- ~/dotfiles/scripts/sys/lock_and_input.sh
+exec --no-startup-id xss-lock --transfer-sleep-lock -- ~/dotfiles/linux/scripts/lock_and_input.sh
 
 # NetworkManager is the most popular way to manage wireless networks on Linux,
 # and nm-applet is a desktop environment-independent system tray GUI for it.
@@ -64,7 +64,7 @@ set $term wezterm
 bindsym $mod+Return exec wezterm
 
 # Backup for if the keybindings/mouse get messed up
-bindsym $mod+Shift+i exec --no-startup-id ~/dotfiles/scripts/sys/input.sh
+bindsym $mod+Shift+i exec --no-startup-id ~/dotfiles/linux/scripts/input.sh
 
 # Scroll up with $mod+alt+k (for keynav)
 bindsym $mod+Mod1+k exec --no-startup-id xdotool click 5

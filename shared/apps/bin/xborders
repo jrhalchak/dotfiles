@@ -1,0 +1,2 @@
+#!/bin/bash
+exec "$HOME/dotfiles/apps/bin/xborder/venv/bin/python3" "$HOME/dotfiles/apps/bin/xborder/xborders" "$@"

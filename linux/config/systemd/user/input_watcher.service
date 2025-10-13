@@ -3,7 +3,7 @@ Description=Watch for input trigger and reapply remaps
 After=graphical-session.target
 
 [Service]
-ExecStart=/home/jrh/dotfiles/scripts/sys/input_watcher.sh
+ExecStart=/home/jrh/dotfiles/linux/scripts/input_watcher.sh
 Restart=always
 Environment=DISPLAY=:0
 Environment=XAUTHORITY=%h/.Xauthority

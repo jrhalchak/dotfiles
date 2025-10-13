@@ -33,9 +33,11 @@ link() {
 }
 
 link "$DOTFILES_DIR/zsh/.zshrc" "$HOME/.zshrc"
-link "$DOTFILES_DIR/config/nvim" "$HOME/.config/nvim"
-link "$DOTFILES_DIR/config/neorg" "$HOME/.config/neorg"
-link "$DOTFILES_DIR/config/wezterm" "$HOME/.config/wezterm"
+link "$DOTFILES_DIR/shared/config/nvim" "$HOME/.config/nvim"
+link "$DOTFILES_DIR/shared/config/neorg" "$HOME/.config/neorg"
+link "$DOTFILES_DIR/shared/config/wezterm" "$HOME/.config/wezterm"
+link "$DOTFILES_DIR/shared/config/kitty" "$HOME/.config/kitty"
+link "$DOTFILES_DIR/config/.tmux.conf" "$HOME/.tmux.conf"
 
 #--
 #- Exit this script early if running on macOS (Darwin)
@@ -55,23 +57,23 @@ link "$DOTFILES_DIR/linux/config/picom" "$HOME/.config/picom"
 link "$DOTFILES_DIR/linux/config/polybar" "$HOME/.config/polybar"
 
 # Bins
-for bin_file in "$DOTFILES_DIR/apps/bin"/*; do
+for bin_file in "$DOTFILES_DIR/shared/apps/bin"/*; do
   [ -f "$bin_file" ] && link "$bin_file" "$HOME/.local/bin/$(basename "$bin_file")"
 done
 
 # xborder special case (it's a directory with executable inside)
-if [ -d "$DOTFILES_DIR/apps/bin/xborder" ]; then
-  link "$DOTFILES_DIR/apps/bin/xborder/xborders" "$HOME/.local/bin/xborders"
+if [ -d "$DOTFILES_DIR/shared/apps/bin/xborder" ]; then
+  link "$DOTFILES_DIR/shared/apps/bin/xborder/xborders" "$HOME/.local/bin/xborders"
 fi
 
 # Icons
 mkdir -p "$HOME/.icons/custom/"
-for icon_file in "$DOTFILES_DIR/apps/icons"/*; do
+for icon_file in "$DOTFILES_DIR/shared/apps/icons"/*; do
   [ -f "$icon_file" ] && link "$icon_file" "$HOME/.icons/custom/$(basename "$icon_file")"
 done
 
 # Desktop / Shortcuts
-for desktop_file in "$DOTFILES_DIR/apps/desktop"/*; do
+for desktop_file in "$DOTFILES_DIR/shared/apps/desktop"/*; do
   [ -f "$desktop_file" ] && link "$desktop_file" "$HOME/.local/share/applications/$(basename "$desktop_file")"
 done
 
