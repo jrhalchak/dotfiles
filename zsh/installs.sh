@@ -38,7 +38,7 @@ installed=false
 # Some common utils I install with every fresh install
 ## NOTE: This presupposes you're using `apt`, won't work on
 ## non-apt distroes
-sudo apt update && sudo apt install ripgrep xclip xdotool jq pipx
+sudo apt update && sudo apt install ripgrep xclip xdotool jq pipx inotify-tools
 
 # Install xborder dependencies
 if ! command -v xborders >/dev/null 2>&1; then
