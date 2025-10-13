@@ -91,6 +91,3 @@ The author says he sets the delay to two seconds, so he can still get to the Doc
 
 **Command for service**: `skhd --start-service`
 (The service should be added to autostart if it's not present)
-
-### Kitty windowbar hide
-`hide_window_decorations titlebar-only`

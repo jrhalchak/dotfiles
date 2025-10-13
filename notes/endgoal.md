@@ -22,8 +22,6 @@
 ### Shared
 - Use nix package manager
   - (eventually use NixOS)
-- Kitty w/ tabs & splits disabled
-  - tmux
 - DavMail
   - plus Mutt, or Himalaya
   - with Khal

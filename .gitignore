@@ -1,4 +1,15 @@
+# macOS artifacts
 .DS_Store
+
+# Local private
 private.sh
-apps/bin/*
-!apps/bin/.gitkeep
+
+# Generic build/env caches (any depth)
+venv/
+.venv/
+__pycache__/
+.idea/
+idea/
+
+# Generated / runtime
+generated.bindings

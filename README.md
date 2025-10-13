@@ -4,7 +4,7 @@ Configs, set
 
 ## Overview
 
-- Purpose: Opinionated Linux/macOS dotfiles with i3, Polybar, Kitty/WezTerm, Neovim, and sensible input/display handling.
+- Purpose: Opinionated Linux/macOS dotfiles with i3, Polybar, WezTerm, Neovim, and sensible input/display handling.
 - Structure: Linux-specific configs and scripts live under `linux/`; shared app configs under `shared/`; shell setup in `zsh/`.
 
 ## Bootstrap

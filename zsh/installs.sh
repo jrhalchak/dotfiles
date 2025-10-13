@@ -18,25 +18,33 @@ if ! command -v xborders >/dev/null 2>&1; then
   # Install system dependencies
   sudo apt install -y libwnck-3-0 libwnck-3-dev libnotify-bin python3-gi gir1.2-gtk-3.0 python3-venv
 
-  # Clone xborder to apps/bin
-  if [ ! -d "$HOME/dotfiles/apps/bin/xborder" ]; then
-    git clone https://github.com/deter0/xborder "$HOME/dotfiles/apps/bin/xborder"
-    chmod +x "$HOME/dotfiles/apps/bin/xborder/xborders"
+  # Clone xborder to shared/apps/bin
+  if [ ! -d "$HOME/dotfiles/shared/apps/bin/xborder" ]; then
+    git clone https://github.com/deter0/xborder "$HOME/dotfiles/shared/apps/bin/xborder"
+    chmod +x "$HOME/dotfiles/shared/apps/bin/xborder/xborders"
   fi
 
-  # Create venv and install Python dependencies
-  if [ ! -d "$HOME/dotfiles/apps/bin/xborder/venv" ]; then
-    python3 -m venv "$HOME/dotfiles/apps/bin/xborder/venv"
-    "$HOME/dotfiles/apps/bin/xborder/venv/bin/pip" install -r "$HOME/dotfiles/apps/bin/xborder/requirements.txt"
+  # Create or repair venv and install Python dependencies
+  venv_dir="$HOME/dotfiles/shared/apps/bin/xborder/venv"
+  if [ ! -d "$venv_dir" ]; then
+    python3 -m venv "$venv_dir"
+    "$venv_dir/bin/pip" install -r "$HOME/dotfiles/shared/apps/bin/xborder/requirements.txt"
+  else
+    if grep -q "/dotfiles/apps/bin/xborder/venv" "$venv_dir/bin/activate" 2>/dev/null; then
+      echo "Rebuilding xborder venv under shared path..."
+      rm -rf "$venv_dir"
+      python3 -m venv "$venv_dir"
+      "$venv_dir/bin/pip" install -r "$HOME/dotfiles/shared/apps/bin/xborder/requirements.txt"
+    fi
   fi
 
   installed=true
 fi
 
 # Create wrapper for the bin folder
-cat << 'EOF' > "$HOME/dotfiles/apps/bin/xborders"
+cat << 'EOF' > "$HOME/dotfiles/shared/apps/bin/xborders"
 #!/bin/bash
-exec "$HOME/dotfiles/apps/bin/xborder/venv/bin/python3" "$HOME/dotfiles/apps/bin/xborder/xborders" "$@"
+exec "$HOME/dotfiles/shared/apps/bin/xborder/venv/bin/python3" "$HOME/dotfiles/shared/apps/bin/xborder/xborders" "$@"
 EOF
 
 
@@ -75,11 +83,11 @@ fi
 
 # Install Neovim AppImage if not present
 nvim_version="v0.11.1"
-nvim_appimage="$HOME/dotfiles/apps/bin/nvim"
+nvim_appimage="$HOME/dotfiles/shared/apps/bin/nvim"
 
 if [ ! -f "$nvim_appimage" ]; then
   echo "Installing Neovim AppImage $nvim_version..."
-  mkdir -p "$HOME/dotfiles/apps/bin"
+  mkdir -p "$HOME/dotfiles/shared/apps/bin"
   curl -fsSL "https://github.com/neovim/neovim/releases/download/${nvim_version}/nvim-linux-x86_64.appimage" -o "nvim"
   chmod +x "nvim"
   installed=true
@@ -88,22 +96,24 @@ fi
 # Wezterm if not installed
 # Filename from wezterm site, make version variable for latest if desired
 WEZTERM_FILENAME="WezTerm-20240203-110809-5046fc22-Ubuntu20.04.AppImage"
-WEZTERM_APPIMAGE="$HOME/dotfiles/apps/bin/wezterm"
+WEZTERM_APPIMAGE="$HOME/dotfiles/shared/apps/bin/wezterm"
 alias wezterm="$WEZTERM_APPIMAGE"
 
 if [ ! -f "$WEZTERM_APPIMAGE" ]; then
   echo "Installing Wezterm"
-  curl -fsSL -o "$HOME/dotfiles/apps/bin/wezterm" "https://github.com/wezterm/wezterm/releases/download/20240203-110809-5046fc22/$WEZTERM_FILENAME" chmod +x "$HOME/dotfiles/apps/bin/wezterm"
+  mkdir -p "$HOME/dotfiles/shared/apps/bin"
+  curl -fsSL -o "$HOME/dotfiles/shared/apps/bin/wezterm" "https://github.com/wezterm/wezterm/releases/download/20240203-110809-5046fc22/$WEZTERM_FILENAME"
+  chmod +x "$HOME/dotfiles/shared/apps/bin/wezterm"
   installed=true
 fi
 
 # Install Vifm AppImage if not present
 VIFM_VERSION="v0.14.2"
-VIFM_APPIMAGE="$HOME/dotfiles/apps/bin/vifm"
+VIFM_APPIMAGE="$HOME/dotfiles/shared/apps/bin/vifm"
 
 if [ ! -f "$VIFM_APPIMAGE" ]; then
   echo "Installing Vifm AppImage $VIFM_VERSION..."
-  mkdir -p "$HOME/dotfiles/apps/bin/"
+  mkdir -p "$HOME/dotfiles/shared/apps/bin/"
   curl -fsSL "https://prdownloads.sourceforge.net/vifm/vifm-${VIFM_VERSION}-x86_64.AppImage?download" -o "$VIFM_APPIMAGE"
   chmod +x "$VIFM_APPIMAGE"
   installed=true
