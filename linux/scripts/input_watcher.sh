@@ -39,8 +39,29 @@ apply() {
 # Apply once on start so settings are in place even before hotplug
 apply
 
-# Watch for udev-triggered touches to /tmp/input_trigger
-inotifywait -m -e create,modify,attrib,close_write /tmp | while read -r path action file; do
+# Fallback poller: re-apply when X input device list changes (handles BT/receiver reconnects)
+(
+  last=""
+  while sleep 2; do
+    # derive a working DISPLAY/XAUTH from the session
+    detected=$(get_session_env)
+    d=$(printf "%s" "$detected" | awk -F'::' '{print $1}')
+    a=$(printf "%s" "$detected" | awk -F'::' '{print $2}')
+    d=${d:-${DISPLAY:-:0}}
+    a=${a:-${XAUTHORITY:-$HOME/.Xauthority}}
+    out=$(DISPLAY="$d" XAUTHORITY="$a" xinput list --name-only 2>/dev/null | sort || true)
+    [ -n "$out" ] || continue
+    sum=$(printf "%s\n" "$out" | md5sum | awk '{print $1}')
+    if [ "$sum" != "$last" ]; then
+      log "device list changed; reapplying"
+      apply
+      last="$sum"
+    fi
+  done
+) &
+
+# Watch for udev-triggered touches to /run/input_trigger
+inotifywait -m -e create,modify,attrib,close_write /run | while read -r path action file; do
   [ "$file" = "input_trigger" ] || continue
   apply
 done

@@ -17,6 +17,7 @@ font pango:VictorMono Nerd Font Mono Bold 10
 
 # Always run input for reversing mouse direction and remapping ESC to CAPS-LOCK
 exec_always --no-startup-id ~/dotfiles/linux/scripts/input.sh
+exec_always --no-startup-id sh -c 'stdbuf -oL i3-msg -t subscribe "[\"output\"]" | while read -r _; do ~/dotfiles/linux/scripts/monitor_xrandr.sh; ~/dotfiles/linux/scripts/input.sh; done'
 
 # Always run keynav for keyboard (mouse) pointer navigation with splits
 exec_always --no-startup-id keynav 'loadconfig ~/.config/keynav/keynavrc,daemonize'

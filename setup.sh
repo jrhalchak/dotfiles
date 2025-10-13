@@ -87,13 +87,13 @@ done
 link "$DOTFILES_DIR/linux/config/systemd/user/input_watcher.service" "$HOME/.config/systemd/user/input_watcher.service"
 
 echo "Setting up input watcher service..."
-systemctl --user daemon-reload
-systemctl --user enable --now input_watcher.service || true
+"$DOTFILES_DIR/linux/scripts/bootstrap_input_hotplug.sh"
 
 # System-level service config (requires `sudo`)
-sudo cp "$DOTFILES_DIR/linux/lightdm/99-monitor-setup.conf" /etc/lightdm/lightdm.conf.d/99-monitor-setup.conf
+sudo install -d -m 755 /etc/lightdm/lightdm.conf.d
+sudo install -o root -g root -m 644 "$DOTFILES_DIR/linux/lightdm/99-monitor-setup.conf" /etc/lightdm/lightdm.conf.d/99-monitor-setup.conf
 
-sudo cp "$DOTFILES_DIR/linux/udev/99-input-hook.rules" /etc/udev/rules.d/99-input-hook.rules
+sudo install -o root -g root -m 644 "$DOTFILES_DIR/linux/udev/99-input-hook.rules" /etc/udev/rules.d/99-input-hook.rules
 
 sudo udevadm control --reload-rules
-sudo udevadm trigger
+sudo udevadm trigger -s input

@@ -6,39 +6,10 @@ fi
 # Track whether we've installed anything for notification
 installed=false
 
-# TODO Maybe install VictorMono and setup kitty/wezterm?
-# This would be getting more into system initialization though...
-# Maybe hold out until I'm using nix or have a big system install script
-
-# Check for required packages for AppImage integrator
-# missing=""
-#
-# for pkg in inotifywait git wget; do
-#   if ! command -v "$pkg" >/dev/null 2>&1; then
-#     missing="$missing $pkg"
-#   fi
-# done
-
-# TODO Import colors for fun w/ Nerdfont
-# if [ -n "$missing" ]; then
-#   echo ""
-#   echo "-----------------------------------------------------------"
-#   echo " The following packages are required but missing:$missing"
-#   echo ""
-#   echo " Please install them with:"
-#   echo "   sudo apt update && sudo apt install$missing"
-#   echo ""
-#   echo " Then restart zsh with:"
-#   echo "   exec zsh"
-#   echo "-----------------------------------------------------------"
-#   echo ""
-#   return 1
-# fi
-
 # Some common utils I install with every fresh install
 ## NOTE: This presupposes you're using `apt`, won't work on
 ## non-apt distroes
-sudo apt update && sudo apt install ripgrep xclip xdotool jq pipx inotify-tools
+sudo apt update && sudo apt install ripgrep xclip xdotool jq pipx inotify-tools x11-xkb-utils xinput
 
 # Install xborder dependencies
 if ! command -v xborders >/dev/null 2>&1; then
