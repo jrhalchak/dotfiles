@@ -10,7 +10,7 @@ wait_for_picom() {
     local max_attempts=50
     local attempt=0
     echo "Waiting for picom compositor..."
-    
+
     while [ $attempt -lt $max_attempts ]; do
         # Check if picom process exists
         if pgrep -x picom > /dev/null; then
@@ -23,7 +23,7 @@ wait_for_picom() {
         attempt=$((attempt + 1))
         sleep 0.1
     done
-    
+
     echo "Warning: Picom not ready after ${max_attempts} attempts"
     return 1
 }
@@ -32,7 +32,7 @@ wait_for_polybar() {
     local max_attempts=30
     local attempt=0
     echo "Waiting for polybar..."
-    
+
     while [ $attempt -lt $max_attempts ]; do
         if pgrep -x polybar > /dev/null; then
             # Give polybar a moment to create its windows
@@ -43,7 +43,7 @@ wait_for_polybar() {
         attempt=$((attempt + 1))
         sleep 0.1
     done
-    
+
     echo "Warning: Polybar not ready after ${max_attempts} attempts"
     return 1
 }
@@ -89,7 +89,7 @@ if [[ "$MONITOR_CONFIG" == "dual" ]]; then
   WS1_EDP_ESC=$(escape_sed "$WS1_EDP")
   WS2_EDP_ESC=$(escape_sed "$WS2_EDP")
   WS3_EDP_ESC=$(escape_sed "$WS3_EDP")
-  
+
   sed "s/{{HDMI_OUTPUT}}/$HDMI_OUTPUT/g; s/{{EDP_OUTPUT}}/$EDP_OUTPUT/g; \
        s/{{WS1_HDMI}}/$WS1_HDMI_ESC/g; s/{{WS2_HDMI}}/$WS2_HDMI_ESC/g; s/{{WS3_HDMI}}/$WS3_HDMI_ESC/g; s/{{WS4_HDMI}}/$WS4_HDMI_ESC/g; s/{{WS5_HDMI}}/$WS5_HDMI_ESC/g; \
        s/{{WS1_EDP}}/$WS1_EDP_ESC/g; s/{{WS2_EDP}}/$WS2_EDP_ESC/g; s/{{WS3_EDP}}/$WS3_EDP_ESC/g; \
@@ -107,7 +107,7 @@ else
   WS3_SINGLE_ESC=$(escape_sed "$WS3_SINGLE")
   WS4_SINGLE_ESC=$(escape_sed "$WS4_SINGLE")
   WS5_SINGLE_ESC=$(escape_sed "$WS5_SINGLE")
-  
+
   if [[ "$MONITOR_CONFIG" == "hdmi_only" ]]; then
     sed "s/{{WS1_SINGLE}}/$WS1_SINGLE_ESC/g; s/{{WS2_SINGLE}}/$WS2_SINGLE_ESC/g; s/{{WS3_SINGLE}}/$WS3_SINGLE_ESC/g; s/{{WS4_SINGLE}}/$WS4_SINGLE_ESC/g; s/{{WS5_SINGLE}}/$WS5_SINGLE_ESC/g; \
          s/{{GAP_INNER_SINGLE}}/$GAP_INNER_HDMI_ONLY/g; s/{{GAP_OUTER_SINGLE}}/$GAP_OUTER_HDMI_ONLY/g; \
@@ -179,8 +179,9 @@ case $MONITOR_CONFIG in
     MONITOR=$EDP_OUTPUT polybar minimal_1080p &
     ;;
   edp_only)
-    MONITOR=$EDP_OUTPUT polybar left_1080p &
-    MONITOR=$EDP_OUTPUT polybar right_1080p &
+    MONITOR=$EDP_OUTPUT polybar minimal_1080p &
+    #MONITOR=$EDP_OUTPUT polybar left_1080p &
+    #MONITOR=$EDP_OUTPUT polybar right_1080p &
     ;;
 esac
 
@@ -223,7 +224,7 @@ if pgrep -f xborders > /dev/null; then
 fi
 # Tokyo Night blue color: #7aa2f7 with slight transparency
 # Use wrapper script that waits for compositor to be fully ready
-nohup ~/dotfiles/linux/scripts/start-xborders.sh --border-width 2 --border-radius 16 --border-rgba '#7aa2f7dd' >/dev/null 2>&1 &
+nohup ~/dotfiles/linux/scripts/start-xborders.sh --border-width 1 --border-radius 16 --border-rgba '#7aa2f7dd' >/dev/null 2>&1 &
 
 #
 # 12. Reload i3 config to apply gap configuration

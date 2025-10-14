@@ -47,12 +47,12 @@ export GAP_BOTTOM_HDMI_ONLY=8
 export GAP_LEFT_HDMI_ONLY=8
 
 # Gap configuration - laptop only
-export GAP_INNER_EDP_ONLY=16
-export GAP_OUTER_EDP_ONLY=8
-export GAP_TOP_EDP_ONLY=48
-export GAP_RIGHT_EDP_ONLY=8
-export GAP_BOTTOM_EDP_ONLY=8
-export GAP_LEFT_EDP_ONLY=8
+export GAP_INNER_EDP_ONLY=8
+export GAP_OUTER_EDP_ONLY=4
+export GAP_TOP_EDP_ONLY=40
+export GAP_RIGHT_EDP_ONLY=4
+export GAP_BOTTOM_EDP_ONLY=4
+export GAP_LEFT_EDP_ONLY=4
 
 # Display settings
 export HDMI_MODE="3840x2160"

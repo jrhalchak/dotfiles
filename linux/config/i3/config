@@ -5,7 +5,7 @@
 # Set Meta/cmd as mod (if keyboard layout changes, you must update bindings)
 set $mod Mod4
 
-# Setup displays, workspaces, gaps, polybar, and wallpaper  
+# Setup displays, workspaces, gaps, polybar, and wallpaper
 exec_always --no-startup-id ~/dotfiles/linux/scripts/i3_startup.sh
 
 # Dynamic workspaces based on monitor connections/states
