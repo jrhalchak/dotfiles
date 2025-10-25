@@ -13,3 +13,6 @@ idea/
 
 # Generated / runtime
 generated.bindings
+
+# Linux bins
+shared/apps/bin/*

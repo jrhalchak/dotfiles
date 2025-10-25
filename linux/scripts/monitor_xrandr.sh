@@ -40,7 +40,7 @@ setup_displays() {
 
     # Export variables for caller to use
     export HDMI_OUTPUT EDP_OUTPUT LID_STATE HDMI_CONNECTED MONITOR_CONFIG
-    
+
     echo "monitor_xrandr: Display configuration complete (config: $MONITOR_CONFIG)"
 }
 
@@ -48,12 +48,12 @@ setup_displays() {
 wait_for_displays() {
     echo "monitor_xrandr: Waiting for display configuration to be active..."
     timeout=10
-    
+
     case $MONITOR_CONFIG in
         hdmi_only)
             while ! xrandr | grep -q "$HDMI_OUTPUT.*$HDMI_MODE.*\*"; do
                 sleep 0.2; timeout=$((timeout - 1))
-                if [ $timeout -eq 0 ]; then 
+                if [ $timeout -eq 0 ]; then
                     echo "monitor_xrandr: Timeout waiting for HDMI display"
                     break
                 fi
@@ -62,7 +62,7 @@ wait_for_displays() {
         dual)
             while ! (xrandr | grep -q "$HDMI_OUTPUT.*$HDMI_MODE.*\*" && xrandr | grep -q "$EDP_OUTPUT.*$EDP_MODE.*\*"); do
                 sleep 0.2; timeout=$((timeout - 1))
-                if [ $timeout -eq 0 ]; then 
+                if [ $timeout -eq 0 ]; then
                     echo "monitor_xrandr: Timeout waiting for dual displays"
                     break
                 fi
@@ -71,13 +71,39 @@ wait_for_displays() {
         edp_only)
             while ! xrandr | grep -q "$EDP_OUTPUT.*$EDP_MODE.*\*"; do
                 sleep 0.2; timeout=$((timeout - 1))
-                if [ $timeout -eq 0 ]; then 
+                if [ $timeout -eq 0 ]; then
                     echo "monitor_xrandr: Timeout waiting for EDP display"
                     break
                 fi
             done
             ;;
     esac
-    
+
     echo "monitor_xrandr: Display wait complete"
 }
+
+# If executed directly, perform display setup and workspace relocation
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  setup_displays
+  wait_for_displays
+
+  # Workspace relocation (requires i3 and jq)
+  if command -v i3-msg >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
+    if [[ "$MONITOR_CONFIG" == "dual" ]]; then
+      # In dual mode, move WS 1-3 to HDMI, WS 4-5 to EDP
+      for w in "$WS1" "$WS2" "$WS3"; do
+        cur_out=$(i3-msg -t get_workspaces | jq -r '.[] | select(.name=="'"$w"'") | .output')
+        if [ -n "$cur_out" ] && [ "$cur_out" != "$HDMI_OUTPUT" ]; then
+          i3-msg "workspace '$w'; move workspace to output $HDMI_OUTPUT" >/dev/null
+        fi
+      done
+
+      for w in "$WS4" "$WS5"; do
+        cur_out=$(i3-msg -t get_workspaces | jq -r '.[] | select(.name=="'"$w"'") | .output')
+        if [ -n "$cur_out" ] && [ "$cur_out" != "$EDP_OUTPUT" ]; then
+          i3-msg "workspace '$w'; move workspace to output $EDP_OUTPUT" >/dev/null
+        fi
+      done
+    fi
+  fi
+fi

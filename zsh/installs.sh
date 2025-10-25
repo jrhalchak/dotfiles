@@ -9,7 +9,11 @@ installed=false
 # Some common utils I install with every fresh install
 ## NOTE: This presupposes you're using `apt`, won't work on
 ## non-apt distroes
-sudo apt update && sudo apt install ripgrep xclip xdotool jq pipx inotify-tools x11-xkb-utils xinput
+sudo apt update && sudo apt install ripgrep xclip xdotool jq pipx inotify-tools x11-xkb-utils xinput dunst
+
+# Ensure dunst config is linked
+mkdir -p "$HOME/.config/dunst"
+ln -sf "$HOME/dotfiles/linux/config/dunst/dunstrc" "$HOME/.config/dunst/dunstrc"
 
 # Install xborder dependencies
 if ! command -v xborders >/dev/null 2>&1; then

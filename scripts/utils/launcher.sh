@@ -40,7 +40,7 @@ case "$CATEGORY" in
   "⚙️  Dotfile Scripts")
     ACTION=$(gum choose "🚀 Setup Dotfiles" "⌨️ Fix Inputs (Esc remap + Inverse Scroll)" "🕵️ Show Git Status" "🔙 Back")
     case "$ACTION" in
-      "⌨️ Fix Inputs (Esc remap + Inverse Scroll)" bash ~/dotfiles/linux/scripts/input.sh ;;
+      "⌨️ Fix Inputs (Esc remap + Inverse Scroll)") bash ~/dotfiles/linux/scripts/input.sh ;;
       "🚀 Setup Dotfiles") bash ~/dotfiles/setup.sh ;;
       "🕵️ Show Git Status") git -C ~/dotfiles status ;;
       "🔙 Back") exec "$0" ;;

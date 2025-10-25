@@ -75,53 +75,128 @@ wait_for_displays
 echo "i3_startup: Generating workspace configuration..."
 
 # Escape special sed characters in workspace names (parentheses, slashes, etc.)
+# Also convert newlines to literal \n for sed
 escape_sed() {
-  echo "$1" | sed 's/[&/\()]/\\&/g'
+  echo "$1" | sed 's/[&/\()]/\\&/g' | sed ':a;N;$!ba;s/\n/\\n/g'
 }
 
+# Escape workspace names
+WS1_ESC=$(escape_sed "$WS1")
+WS2_ESC=$(escape_sed "$WS2")
+WS3_ESC=$(escape_sed "$WS3")
+WS4_ESC=$(escape_sed "$WS4")
+WS5_ESC=$(escape_sed "$WS5")
+
+# Build sed substitution based on monitor configuration
 if [[ "$MONITOR_CONFIG" == "dual" ]]; then
-  # Dual monitor - substitute variables in template with escaped values
-  WS1_HDMI_ESC=$(escape_sed "$WS1_HDMI")
-  WS2_HDMI_ESC=$(escape_sed "$WS2_HDMI")
-  WS3_HDMI_ESC=$(escape_sed "$WS3_HDMI")
-  WS4_HDMI_ESC=$(escape_sed "$WS4_HDMI")
-  WS5_HDMI_ESC=$(escape_sed "$WS5_HDMI")
-  WS1_EDP_ESC=$(escape_sed "$WS1_EDP")
-  WS2_EDP_ESC=$(escape_sed "$WS2_EDP")
-  WS3_EDP_ESC=$(escape_sed "$WS3_EDP")
+  # Dual monitor: WS 1-3 on HDMI, WS 4-5 on EDP
+  OUTPUT_1="$HDMI_OUTPUT"
+  OUTPUT_2="$HDMI_OUTPUT"
+  OUTPUT_3="$HDMI_OUTPUT"
+  OUTPUT_4="$EDP_OUTPUT"
+  OUTPUT_5="$EDP_OUTPUT"
 
-  sed "s/{{HDMI_OUTPUT}}/$HDMI_OUTPUT/g; s/{{EDP_OUTPUT}}/$EDP_OUTPUT/g; \
-       s/{{WS1_HDMI}}/$WS1_HDMI_ESC/g; s/{{WS2_HDMI}}/$WS2_HDMI_ESC/g; s/{{WS3_HDMI}}/$WS3_HDMI_ESC/g; s/{{WS4_HDMI}}/$WS4_HDMI_ESC/g; s/{{WS5_HDMI}}/$WS5_HDMI_ESC/g; \
-       s/{{WS1_EDP}}/$WS1_EDP_ESC/g; s/{{WS2_EDP}}/$WS2_EDP_ESC/g; s/{{WS3_EDP}}/$WS3_EDP_ESC/g; \
-       s/{{GAP_INNER_DUAL_HDMI}}/$GAP_INNER_DUAL_HDMI/g; s/{{GAP_OUTER_DUAL_HDMI}}/$GAP_OUTER_DUAL_HDMI/g; \
-       s/{{GAP_TOP_DUAL_HDMI}}/$GAP_TOP_DUAL_HDMI/g; s/{{GAP_RIGHT_DUAL_HDMI}}/$GAP_RIGHT_DUAL_HDMI/g; \
-       s/{{GAP_BOTTOM_DUAL_HDMI}}/$GAP_BOTTOM_DUAL_HDMI/g; s/{{GAP_LEFT_DUAL_HDMI}}/$GAP_LEFT_DUAL_HDMI/g; \
-       s/{{GAP_INNER_DUAL_EDP}}/$GAP_INNER_DUAL_EDP/g; s/{{GAP_OUTER_DUAL_EDP}}/$GAP_OUTER_DUAL_EDP/g; \
-       s/{{GAP_TOP_DUAL_EDP}}/$GAP_TOP_DUAL_EDP/g; s/{{GAP_RIGHT_DUAL_EDP}}/$GAP_RIGHT_DUAL_EDP/g; \
-       s/{{GAP_BOTTOM_DUAL_EDP}}/$GAP_BOTTOM_DUAL_EDP/g; s/{{GAP_LEFT_DUAL_EDP}}/$GAP_LEFT_DUAL_EDP/g" \
-      ~/.config/i3/workspaces.dual > ~/.config/i3/generated.bindings
+  # Gaps for WS 1-3 (HDMI)
+  GAP_INNER_WS1="$GAP_INNER_DUAL_HDMI"
+  GAP_OUTER_WS1="$GAP_OUTER_DUAL_HDMI"
+  GAP_TOP_WS1="$GAP_TOP_DUAL_HDMI"
+  GAP_RIGHT_WS1="$GAP_RIGHT_DUAL_HDMI"
+  GAP_BOTTOM_WS1="$GAP_BOTTOM_DUAL_HDMI"
+  GAP_LEFT_WS1="$GAP_LEFT_DUAL_HDMI"
+
+  GAP_INNER_WS2="$GAP_INNER_DUAL_HDMI"
+  GAP_OUTER_WS2="$GAP_OUTER_DUAL_HDMI"
+  GAP_TOP_WS2="$GAP_TOP_DUAL_HDMI"
+  GAP_RIGHT_WS2="$GAP_RIGHT_DUAL_HDMI"
+  GAP_BOTTOM_WS2="$GAP_BOTTOM_DUAL_HDMI"
+  GAP_LEFT_WS2="$GAP_LEFT_DUAL_HDMI"
+
+  GAP_INNER_WS3="$GAP_INNER_DUAL_HDMI"
+  GAP_OUTER_WS3="$GAP_OUTER_DUAL_HDMI"
+  GAP_TOP_WS3="$GAP_TOP_DUAL_HDMI"
+  GAP_RIGHT_WS3="$GAP_RIGHT_DUAL_HDMI"
+  GAP_BOTTOM_WS3="$GAP_BOTTOM_DUAL_HDMI"
+  GAP_LEFT_WS3="$GAP_LEFT_DUAL_HDMI"
+
+  # Gaps for WS 4-5 (EDP)
+  GAP_INNER_WS4="$GAP_INNER_DUAL_EDP"
+  GAP_OUTER_WS4="$GAP_OUTER_DUAL_EDP"
+  GAP_TOP_WS4="$GAP_TOP_DUAL_EDP"
+  GAP_RIGHT_WS4="$GAP_RIGHT_DUAL_EDP"
+  GAP_BOTTOM_WS4="$GAP_BOTTOM_DUAL_EDP"
+  GAP_LEFT_WS4="$GAP_LEFT_DUAL_EDP"
+
+  GAP_INNER_WS5="$GAP_INNER_DUAL_EDP"
+  GAP_OUTER_WS5="$GAP_OUTER_DUAL_EDP"
+  GAP_TOP_WS5="$GAP_TOP_DUAL_EDP"
+  GAP_RIGHT_WS5="$GAP_RIGHT_DUAL_EDP"
+  GAP_BOTTOM_WS5="$GAP_BOTTOM_DUAL_EDP"
+  GAP_LEFT_WS5="$GAP_LEFT_DUAL_EDP"
+
+  # Add output navigation bindings for dual mode
+  DUAL_OUTPUT_NAVIGATION="# Move focused container to the next output
+bindsym \$mod+Shift+period move workspace to output right
+bindsym \$mod+Shift+comma move workspace to output left
+
+# Move focus to the next output
+bindsym \$mod+period focus output right
+bindsym \$mod+comma focus output left"
+
+elif [[ "$MONITOR_CONFIG" == "hdmi_only" ]]; then
+  # HDMI only: All workspaces on HDMI
+  OUTPUT_1="$HDMI_OUTPUT"
+  OUTPUT_2="$HDMI_OUTPUT"
+  OUTPUT_3="$HDMI_OUTPUT"
+  OUTPUT_4="$HDMI_OUTPUT"
+  OUTPUT_5="$HDMI_OUTPUT"
+
+  # Use HDMI-only gaps for all workspaces
+  for i in 1 2 3 4 5; do
+    eval "GAP_INNER_WS${i}=$GAP_INNER_HDMI_ONLY"
+    eval "GAP_OUTER_WS${i}=$GAP_OUTER_HDMI_ONLY"
+    eval "GAP_TOP_WS${i}=$GAP_TOP_HDMI_ONLY"
+    eval "GAP_RIGHT_WS${i}=$GAP_RIGHT_HDMI_ONLY"
+    eval "GAP_BOTTOM_WS${i}=$GAP_BOTTOM_HDMI_ONLY"
+    eval "GAP_LEFT_WS${i}=$GAP_LEFT_HDMI_ONLY"
+  done
+
+  DUAL_OUTPUT_NAVIGATION=""
+
 else
-  # Single monitor - substitute variables in template with escaped values
-  WS1_SINGLE_ESC=$(escape_sed "$WS1_SINGLE")
-  WS2_SINGLE_ESC=$(escape_sed "$WS2_SINGLE")
-  WS3_SINGLE_ESC=$(escape_sed "$WS3_SINGLE")
-  WS4_SINGLE_ESC=$(escape_sed "$WS4_SINGLE")
-  WS5_SINGLE_ESC=$(escape_sed "$WS5_SINGLE")
+  # EDP only: All workspaces on EDP
+  OUTPUT_1="$EDP_OUTPUT"
+  OUTPUT_2="$EDP_OUTPUT"
+  OUTPUT_3="$EDP_OUTPUT"
+  OUTPUT_4="$EDP_OUTPUT"
+  OUTPUT_5="$EDP_OUTPUT"
 
-  if [[ "$MONITOR_CONFIG" == "hdmi_only" ]]; then
-    sed "s/{{WS1_SINGLE}}/$WS1_SINGLE_ESC/g; s/{{WS2_SINGLE}}/$WS2_SINGLE_ESC/g; s/{{WS3_SINGLE}}/$WS3_SINGLE_ESC/g; s/{{WS4_SINGLE}}/$WS4_SINGLE_ESC/g; s/{{WS5_SINGLE}}/$WS5_SINGLE_ESC/g; \
-         s/{{GAP_INNER_SINGLE}}/$GAP_INNER_HDMI_ONLY/g; s/{{GAP_OUTER_SINGLE}}/$GAP_OUTER_HDMI_ONLY/g; \
-         s/{{GAP_TOP_SINGLE}}/$GAP_TOP_HDMI_ONLY/g; s/{{GAP_RIGHT_SINGLE}}/$GAP_RIGHT_HDMI_ONLY/g; \
-         s/{{GAP_BOTTOM_SINGLE}}/$GAP_BOTTOM_HDMI_ONLY/g; s/{{GAP_LEFT_SINGLE}}/$GAP_LEFT_HDMI_ONLY/g" \
-        ~/.config/i3/workspaces.single > ~/.config/i3/generated.bindings
-  else
-    sed "s/{{WS1_SINGLE}}/$WS1_SINGLE_ESC/g; s/{{WS2_SINGLE}}/$WS2_SINGLE_ESC/g; s/{{WS3_SINGLE}}/$WS3_SINGLE_ESC/g; s/{{WS4_SINGLE}}/$WS4_SINGLE_ESC/g; s/{{WS5_SINGLE}}/$WS5_SINGLE_ESC/g; \
-         s/{{GAP_INNER_SINGLE}}/$GAP_INNER_EDP_ONLY/g; s/{{GAP_OUTER_SINGLE}}/$GAP_OUTER_EDP_ONLY/g; \
-         s/{{GAP_TOP_SINGLE}}/$GAP_TOP_EDP_ONLY/g; s/{{GAP_RIGHT_SINGLE}}/$GAP_RIGHT_EDP_ONLY/g; \
-         s/{{GAP_BOTTOM_SINGLE}}/$GAP_BOTTOM_EDP_ONLY/g; s/{{GAP_LEFT_SINGLE}}/$GAP_LEFT_EDP_ONLY/g" \
-        ~/.config/i3/workspaces.single > ~/.config/i3/generated.bindings
-  fi
+  # Use EDP-only gaps for all workspaces
+  for i in 1 2 3 4 5; do
+    eval "GAP_INNER_WS${i}=$GAP_INNER_EDP_ONLY"
+    eval "GAP_OUTER_WS${i}=$GAP_OUTER_EDP_ONLY"
+    eval "GAP_TOP_WS${i}=$GAP_TOP_EDP_ONLY"
+    eval "GAP_RIGHT_WS${i}=$GAP_RIGHT_EDP_ONLY"
+    eval "GAP_BOTTOM_WS${i}=$GAP_BOTTOM_EDP_ONLY"
+    eval "GAP_LEFT_WS${i}=$GAP_LEFT_EDP_ONLY"
+  done
+
+  DUAL_OUTPUT_NAVIGATION=""
 fi
+
+# Escape DUAL_OUTPUT_NAVIGATION for sed
+DUAL_OUTPUT_NAVIGATION_ESC=$(escape_sed "$DUAL_OUTPUT_NAVIGATION")
+
+# Generate workspace bindings from unified template using piped sed commands
+cat ~/.config/i3/workspaces.unified | \
+  sed "s/{{WS1}}/$WS1_ESC/g; s/{{WS2}}/$WS2_ESC/g; s/{{WS3}}/$WS3_ESC/g; s/{{WS4}}/$WS4_ESC/g; s/{{WS5}}/$WS5_ESC/g" | \
+  sed "s/{{OUTPUT_1}}/$OUTPUT_1/g; s/{{OUTPUT_2}}/$OUTPUT_2/g; s/{{OUTPUT_3}}/$OUTPUT_3/g; s/{{OUTPUT_4}}/$OUTPUT_4/g; s/{{OUTPUT_5}}/$OUTPUT_5/g" | \
+  sed "s/{{GAP_INNER_WS1}}/$GAP_INNER_WS1/g; s/{{GAP_OUTER_WS1}}/$GAP_OUTER_WS1/g; s/{{GAP_TOP_WS1}}/$GAP_TOP_WS1/g; s/{{GAP_RIGHT_WS1}}/$GAP_RIGHT_WS1/g; s/{{GAP_BOTTOM_WS1}}/$GAP_BOTTOM_WS1/g; s/{{GAP_LEFT_WS1}}/$GAP_LEFT_WS1/g" | \
+  sed "s/{{GAP_INNER_WS2}}/$GAP_INNER_WS2/g; s/{{GAP_OUTER_WS2}}/$GAP_OUTER_WS2/g; s/{{GAP_TOP_WS2}}/$GAP_TOP_WS2/g; s/{{GAP_RIGHT_WS2}}/$GAP_RIGHT_WS2/g; s/{{GAP_BOTTOM_WS2}}/$GAP_BOTTOM_WS2/g; s/{{GAP_LEFT_WS2}}/$GAP_LEFT_WS2/g" | \
+  sed "s/{{GAP_INNER_WS3}}/$GAP_INNER_WS3/g; s/{{GAP_OUTER_WS3}}/$GAP_OUTER_WS3/g; s/{{GAP_TOP_WS3}}/$GAP_TOP_WS3/g; s/{{GAP_RIGHT_WS3}}/$GAP_RIGHT_WS3/g; s/{{GAP_BOTTOM_WS3}}/$GAP_BOTTOM_WS3/g; s/{{GAP_LEFT_WS3}}/$GAP_LEFT_WS3/g" | \
+  sed "s/{{GAP_INNER_WS4}}/$GAP_INNER_WS4/g; s/{{GAP_OUTER_WS4}}/$GAP_OUTER_WS4/g; s/{{GAP_TOP_WS4}}/$GAP_TOP_WS4/g; s/{{GAP_RIGHT_WS4}}/$GAP_RIGHT_WS4/g; s/{{GAP_BOTTOM_WS4}}/$GAP_BOTTOM_WS4/g; s/{{GAP_LEFT_WS4}}/$GAP_LEFT_WS4/g" | \
+  sed "s/{{GAP_INNER_WS5}}/$GAP_INNER_WS5/g; s/{{GAP_OUTER_WS5}}/$GAP_OUTER_WS5/g; s/{{GAP_TOP_WS5}}/$GAP_TOP_WS5/g; s/{{GAP_RIGHT_WS5}}/$GAP_RIGHT_WS5/g; s/{{GAP_BOTTOM_WS5}}/$GAP_BOTTOM_WS5/g; s/{{GAP_LEFT_WS5}}/$GAP_LEFT_WS5/g" | \
+  sed "s/{{DUAL_OUTPUT_NAVIGATION}}/$DUAL_OUTPUT_NAVIGATION_ESC/g" \
+  > ~/.config/i3/generated.bindings
 
 #
 # 4. Set wallpaper before starting picom
@@ -152,8 +227,8 @@ echo "i3_startup: Starting polybar..."
 killall -q polybar 2>/dev/null
 
 # Wait for polybars to actually terminate
-local max_wait=20
-local count=0
+max_wait=20
+count=0
 while pgrep -u $UID -x polybar >/dev/null && [ $count -lt $max_wait ]; do
     sleep 0.1
     count=$((count + 1))
@@ -170,52 +245,51 @@ fi
 # Start appropriate polybars based on monitor configuration
 case $MONITOR_CONFIG in
   hdmi_only)
-    MONITOR=$HDMI_OUTPUT polybar left_4k &
-    MONITOR=$HDMI_OUTPUT polybar right_4k &
+    # MONITOR=$HDMI_OUTPUT polybar left_4k &
+    # MONITOR=$HDMI_OUTPUT polybar right_4k &
+    MONITOR=$HDMI_OUTPUT polybar minimal_4k &
     ;;
   dual)
-    MONITOR=$HDMI_OUTPUT polybar left_4k &
-    MONITOR=$HDMI_OUTPUT polybar right_4k &
+    # MONITOR=$HDMI_OUTPUT polybar left_4k &
+    # MONITOR=$HDMI_OUTPUT polybar right_4k &
     MONITOR=$EDP_OUTPUT polybar minimal_1080p &
+    MONITOR=$HDMI_OUTPUT polybar minimal_4k &
     ;;
   edp_only)
     MONITOR=$EDP_OUTPUT polybar minimal_1080p &
-    #MONITOR=$EDP_OUTPUT polybar left_1080p &
-    #MONITOR=$EDP_OUTPUT polybar right_1080p &
+    # MONITOR=$EDP_OUTPUT polybar left_1080p &
+    # MONITOR=$EDP_OUTPUT polybar right_1080p &
     ;;
 esac
 
 wait_for_polybar
 
 #
-# 8. Set wallpaper again to ensure it's properly composited
+# 7. Relocate workspaces to correct outputs
 #
-echo "i3_startup: Final wallpaper setting..."
-feh --bg-fill $WALLPAPER_PATH
+echo "i3_startup: Relocating workspaces to correct outputs..."
 
-#
-# 9. Clean up and initialize workspaces
-#
-echo "i3_startup: Cleaning up old workspaces and initializing new ones..."
-
-# Get list of existing workspaces and move windows to new workspace names
 if [[ "$MONITOR_CONFIG" == "dual" ]]; then
-  # Rename old workspaces to new naming scheme if they exist
-  i3-msg -t get_workspaces | jq -r '.[].name' | while read -r ws; do
-    case "$ws" in
-      "1:main") i3-msg "rename workspace \"$ws\" to \"$WS1_HDMI\"" ;;
-      "2:code") i3-msg "rename workspace \"$ws\" to \"$WS2_HDMI\"" ;;
-      "3:web") i3-msg "rename workspace \"$ws\" to \"$WS3_HDMI\"" ;;
-      "4:misc") i3-msg "rename workspace \"$ws\" to \"$WS4_HDMI\"" ;;
-      "5:shed") i3-msg "rename workspace \"$ws\" to \"$WS5_HDMI\"" ;;
-    esac
+  # In dual mode, ensure WS 1-3 are on HDMI, WS 4-5 are on EDP
+  for w in "$WS1" "$WS2" "$WS3"; do
+    cur_out=$(i3-msg -t get_workspaces | jq -r '.[] | select(.name=="'"$w"'") | .output')
+    if [ -n "$cur_out" ] && [ "$cur_out" != "$HDMI_OUTPUT" ]; then
+      i3-msg "workspace \"$w\"; move workspace to output $HDMI_OUTPUT" >/dev/null
+    fi
+  done
+
+  for w in "$WS4" "$WS5"; do
+    cur_out=$(i3-msg -t get_workspaces | jq -r '.[] | select(.name=="'"$w"'") | .output')
+    if [ -n "$cur_out" ] && [ "$cur_out" != "$EDP_OUTPUT" ]; then
+      i3-msg "workspace \"$w\"; move workspace to output $EDP_OUTPUT" >/dev/null
+    fi
   done
 fi
 
 
 
 #
-# 11. Start xborders (LAST - after compositor, polybar, workspaces, and gaps are ready)
+# 8. Start xborders (LAST - after compositor, polybar, workspaces, and gaps are ready)
 #
 echo "i3_startup: Starting xborders..."
 if pgrep -f xborders > /dev/null; then
@@ -224,10 +298,10 @@ if pgrep -f xborders > /dev/null; then
 fi
 # Tokyo Night blue color: #7aa2f7 with slight transparency
 # Use wrapper script that waits for compositor to be fully ready
-nohup ~/dotfiles/linux/scripts/start-xborders.sh --border-width 1 --border-radius 16 --border-rgba '#7aa2f7dd' >/dev/null 2>&1 &
+nohup ~/dotfiles/linux/scripts/start-xborders.sh --border-width 1 --border-radius 8 --border-rgba '#7aa2f7dd' >/dev/null 2>&1 &
 
 #
-# 12. Reload i3 config to apply gap configuration
+# 9. Reload i3 config to apply gap configuration
 #
 echo "i3_startup: Reloading i3 config to apply gaps..."
 i3-msg reload

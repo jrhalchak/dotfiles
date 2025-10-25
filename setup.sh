@@ -37,6 +37,7 @@ link "$DOTFILES_DIR/shared/config/nvim" "$HOME/.config/nvim"
 link "$DOTFILES_DIR/shared/config/neorg" "$HOME/.config/neorg"
 link "$DOTFILES_DIR/shared/config/wezterm" "$HOME/.config/wezterm"
 link "$DOTFILES_DIR/shared/config/tmux/.tmux.conf" "$HOME/.tmux.conf"
+link "$DOTFILES_DIR/shared/config/opencode/opencode.json" "$HOME/.config/opencode/opencode.json"
 
 #--
 #- Exit this script early if running on macOS (Darwin)
@@ -47,13 +48,15 @@ if [ "$(uname)" = "Darwin" ]; then
 fi
 
 # ====================
-# Linux Bin Mgmgt
+# Linux
 # ====================
 
 link "$DOTFILES_DIR/linux/config/fastfetch" "$HOME/.config/fastfetch"
 link "$DOTFILES_DIR/linux/config/i3" "$HOME/.config/i3"
 link "$DOTFILES_DIR/linux/config/picom" "$HOME/.config/picom"
 link "$DOTFILES_DIR/linux/config/polybar" "$HOME/.config/polybar"
+link "$DOTFILES_DIR/linux/config/dunst" "$HOME/.config/dunst"
+link "$DOTFILES_DIR/linux/config/wofi" "$HOME/.config/wofi"
 
 # Bins
 for bin_file in "$DOTFILES_DIR/shared/apps/bin"/*; do
