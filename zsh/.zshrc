@@ -189,6 +189,37 @@ function cheat() {
   curl cheat.sh/$1
 }
 
+# Simple markdown renderer using pandoc
+function md() {
+  local filename=$(basename "$1" .md)
+  local output="/tmp/${filename}.html"
+  cat > "$output" <<EOF
+<!DOCTYPE html>
+<head>
+  <title>${filename}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kimeiga/bahunya/dist/bahunya.min.css">
+  <style>
+    main {
+      margin: 3rem auto;
+      width: 85vw;
+    }
+    main > :first-of-type:is(h1,h2,h3):not(h1 + h2, h1 + h3, h2 + h2, h2 + h3) { margin-top: 0; }
+  </style>
+</head>
+<body>
+<main>
+$(pandoc "$1")
+</main>
+</body>
+</html>
+EOF
+  if [[ "$(uname)" == "Darwin" ]]; then
+    open "$output"
+  else
+    xdg-open "$output"
+  fi
+}
+
 # Auto add/commit/push neorg notes
 # Arguments:
 #   $1 - The (optional) workspace to sync, defaults to '~/neorg/'
