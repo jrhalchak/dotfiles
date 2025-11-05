@@ -204,6 +204,16 @@ function md() {
       width: 85vw;
     }
     main > :first-of-type:is(h1,h2,h3):not(h1 + h2, h1 + h3, h2 + h2, h2 + h3) { margin-top: 0; }
+    /* Basic styles, update these */
+    code {
+      color: lightgrey;
+      .op { color: white; font-weight: bold; }
+      .bu { color: palevioletred; }
+      .kw { color: palevioletred; font-style: italic; }
+      .im { color: skyblue; }
+      .cf { color: orchid; }
+      .fu { color: lightblue; }
+    }
   </style>
 </head>
 <body>
