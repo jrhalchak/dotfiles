@@ -197,29 +197,111 @@ function md() {
 <!DOCTYPE html>
 <head>
   <title>${filename}</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kimeiga/bahunya/dist/bahunya.min.css">
   <style>
+    *, *:before, *:after { box-sizing: border-box; }
+    :root {
+      --tn-bg: #1a1b26;
+      --tn-bg-dark: #16161e;
+      --tn-bg-dark1: #0C0E14;
+      --tn-bg-highlight: #292e42;
+      --tn-blue: #7aa2f7;
+      --tn-blue0: #3d59a1;
+      --tn-blue1: #2ac3de;
+      --tn-blue2: #0db9d7;
+      --tn-blue5: #89ddff;
+      --tn-blue6: #b4f9f8;
+      --tn-blue7: #394b70;
+      --tn-comment: #565f89;
+      --tn-cyan: #7dcfff;
+      --tn-dark3: #545c7e;
+      --tn-dark5: #737aa2;
+      --tn-fg: #c0caf5;
+      --tn-fg-dark: #a9b1d6;
+      --tn-fg-gutter: #3b4261;
+      --tn-green: #9ece6a;
+      --tn-green1: #73daca;
+      --tn-green2: #41a6b5;
+      --tn-magenta: #bb9af7;
+      --tn-magenta2: #ff007c;
+      --tn-orange: #ff9e64;
+      --tn-purple: #9d7cd8;
+      --tn-red: #f7768e;
+      --tn-red1: #db4b4b;
+      --tn-teal: #1abc9c;
+      --tn-terminal-black: #414868;
+      --tn-yellow: #e0af68;
+      --tn-git-add: #449dab;
+      --tn-git-change: #6183bb;
+      --tn-git-delete: #914c54;
+    }
+
+    html, body {
+      margin: 0; padding: 0; font-family: sans-serif;
+    }
+
+    body {
+      background-color: var(--tn-bg);
+      color: var(--tn-fg);
+    }
+
     main {
-      margin: 3rem auto;
-      width: 85vw;
+      width: clamp(50vw, calc(95vw - 4rem), 100vw);
+      margin: 2rem auto;
     }
-    main > :first-of-type:is(h1,h2,h3):not(h1 + h2, h1 + h3, h2 + h2, h2 + h3) { margin-top: 0; }
-    /* Basic styles, update these */
+
+    h1, h2 { font-weight: 200; font-size: 2rem; }
+    h3, h4, h5, h6 { font-weight: 900; }
+
+    p { line-height: 1.75; margin: 1.5rem 0; }
+
     code {
-      color: lightgrey;
-      .op { color: white; font-weight: bold; }
-      .bu { color: palevioletred; }
-      .kw { color: palevioletred; font-style: italic; }
-      .im { color: skyblue; }
-      .cf { color: orchid; }
-      .fu { color: lightblue; }
+      color: var(--tn-fg);
+      font-family: 'VictorMono Nerd Font Mono' !important;
+      background-color: var(--tn-bg-dark);
+      padding: 0.125rem;
+      margin: 0.125rem 0.5rem;
+
+      &.javascript, &.typescript {
+        .op { color: var(--tn-cyan); font-weight: bold; }
+        .bu { color: var(--tn-blue2); }
+        .kw { color: var(--tn-purple); font-style: italic; }
+        .im { color: var(--tn-blue5); }
+        .cf { color: var(--tn-purple); }
+        .fu { color: var(--tn-blue); }
+        .dv, .st { color: var(--tn-green); }
+        .co { color: var(--tn-fg-dark); font-style: italic; }
+        .ch { color: var(--tn-fg); }
+      }
+
+      &.css, &.scss, &.sass {
+        .op { color: var(--tn-cyan); font-weight: bold; }
+        .bu, .kw + .ch ~ .fu { color: var(--tn-blue); }
+        .kw { color: var(--tn-cyan); }
+        .im { color: var(--tn-blue5); }
+        .cf { color: var(--tn-purple); }
+        .fu { color: var(--tn-purple); }
+
+        /* value */
+        .dv { color: var(--tn-green); }
+        .dv:has(+ .dt) { color: var(--tn-orange); }
+        /* units */
+        .dt { color: var(--tn-green); }
+
+        .st { color: var(--tn-green); }
+        .co { color: var(--tn-fg-dark); font-style: italic; }
+        .ch { color: var(--tn-fg); }
+      }
     }
+
+    pre > code { display: block; padding: 0.5rem; margin: 0.5rem 0; }
+
+    hr { background-color: var(--tn-blue7); height: 1px; border: none; margin: 3rem 0; }
   </style>
 </head>
 <body>
-<main>
-$(pandoc "$1")
-</main>
+  <main>
+  $(pandoc "$1")
+  </main>
 </body>
 </html>
 EOF
