@@ -254,24 +254,83 @@ function md() {
 
     p { line-height: 1.75; margin: 1.5rem 0; }
 
+    /* All of this only works with my PR generator... make another script */
+    table {
+      width: 100%;
+      margin: 1rem auto;
+    }
+
+    td:first-child {
+      text-align: right;
+
+      code {
+        margin-right: 0;
+        text-align: right;
+        opacity: 0.333;
+        border-radius: 1rem 0 0 1rem;
+      }
+
+      &:has(> pre > code), td code, td pre { width: 4rem; }
+    }
+    td:last-child code {
+      margin-left: 0;
+      border-radius: 0 1rem 1rem 0;
+    }
+
+    .sourceCode, td > div, td > pre, td > code { width: 100%; }
+
+    table {
+      border-spacing: collapse;
+      border-radius: 1rem;
+      box-shadow:
+        0 0.25rem 1rem 0 rgb(0, 0, 0, 0.3),
+        inset 0 0 1rem -0.25rem rgb(255, 255, 255, 0.2);
+    }
+    tr, td { padding: 0; }
+
+    blockquote {
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin: 1rem auto;
+      background: rgb(255, 255, 255, 0.05);
+      border: thin solid rgb(255, 255, 255, 0.1);
+    }
+    blockquote p:first-of-type { margin-top: 0; }
+    blockquote p:last-of-type { margin-bottom: 0; }
+
+    pre { margin: 0; }
+
+    pre > code {
+      display: block;
+      padding: 0.5rem;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: stretch;
+      align-items: flex-start;
+
+      & > span { display: block; width: 100%; }
+      & > span:nth-child(odd) { background: rgb(255, 255, 255, 0.025); }
+    }
+
     code {
       color: var(--tn-fg);
       font-family: 'VictorMono Nerd Font Mono' !important;
       background-color: var(--tn-bg-dark);
       padding: 0.125rem;
       margin: 0.125rem 0.5rem;
+      width: 100%;
 
-      &.javascript, &.typescript {
-        .op { color: var(--tn-cyan); font-weight: bold; }
-        .bu { color: var(--tn-blue2); }
-        .kw { color: var(--tn-purple); font-style: italic; }
-        .im { color: var(--tn-blue5); }
-        .cf { color: var(--tn-purple); }
-        .fu { color: var(--tn-blue); }
-        .dv, .st { color: var(--tn-green); }
-        .co { color: var(--tn-fg-dark); font-style: italic; }
-        .ch { color: var(--tn-fg); }
-      }
+      /* Styled against &.javascript, &.typescript { */
+      .op { color: var(--tn-cyan); font-weight: bold; }
+      .bu { color: var(--tn-blue2); }
+      .kw { color: var(--tn-purple); font-style: italic; }
+      .im { color: var(--tn-blue5); }
+      .cf { color: var(--tn-purple); }
+      .fu { color: var(--tn-blue); }
+      .dv, .st { color: var(--tn-green); }
+      .co { color: rgb(color from var(--tn-fg-dark) r g b / 0.5); font-style: italic; }
+      .ch { color: var(--tn-fg); }
 
       &.css, &.scss, &.sass {
         .op { color: var(--tn-cyan); font-weight: bold; }
@@ -292,8 +351,6 @@ function md() {
         .ch { color: var(--tn-fg); }
       }
     }
-
-    pre > code { display: block; padding: 0.5rem; margin: 0.5rem 0; }
 
     hr { background-color: var(--tn-blue7); height: 1px; border: none; margin: 3rem 0; }
   </style>
