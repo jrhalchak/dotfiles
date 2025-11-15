@@ -35,7 +35,12 @@ function M.move_cursor_up()
   local buffer_line = state.virtual_to_buffer_line[new_line] or new_line
   
   if buffer_line < state.topline then
-    state.topline = buffer_line
+    local prev_buffer_line = state.virtual_to_buffer_line[new_line - 1]
+    if prev_buffer_line and prev_buffer_line > 0 then
+      state.topline = prev_buffer_line
+    else
+      state.topline = buffer_line
+    end
     vim.api.nvim_win_call(state.content_win, function()
       vim.fn.winrestview({topline = state.topline})
     end)
@@ -83,6 +88,76 @@ function M.move_to_prev_group()
   end
   
   vim.api.nvim_win_set_cursor(state.content_win, {buffer_line, 0})
+end
+
+function M.jump_down()
+  if not state.content_win or not vim.api.nvim_win_is_valid(state.content_win) then
+    return
+  end
+  
+  local win_height = vim.api.nvim_win_get_height(state.content_win)
+  local jump_amount = math.floor(win_height / 2)
+  
+  local target_line = state.selected_line
+  local moved = 0
+  
+  while moved < jump_amount and target_line < #state.virtual_list do
+    local next_line = list_manager.get_next_selectable(state.virtual_list, target_line)
+    if next_line == target_line then
+      break
+    end
+    target_line = next_line
+    moved = moved + 1
+  end
+  
+  state.selected_line = target_line
+  local buffer_line = state.virtual_to_buffer_line[target_line]
+  
+  if buffer_line then
+    if buffer_line >= state.topline + win_height then
+      state.topline = buffer_line - win_height + 1
+      vim.api.nvim_win_call(state.content_win, function()
+        vim.fn.winrestview({topline = state.topline})
+      end)
+    end
+    
+    vim.api.nvim_win_set_cursor(state.content_win, {buffer_line, 0})
+  end
+end
+
+function M.jump_up()
+  if not state.content_win or not vim.api.nvim_win_is_valid(state.content_win) then
+    return
+  end
+  
+  local win_height = vim.api.nvim_win_get_height(state.content_win)
+  local jump_amount = math.floor(win_height / 2)
+  
+  local target_line = state.selected_line
+  local moved = 0
+  
+  while moved < jump_amount and target_line > 1 do
+    local prev_line = list_manager.get_prev_selectable(state.virtual_list, target_line)
+    if prev_line == target_line then
+      break
+    end
+    target_line = prev_line
+    moved = moved + 1
+  end
+  
+  state.selected_line = target_line
+  local buffer_line = state.virtual_to_buffer_line[target_line]
+  
+  if buffer_line then
+    if buffer_line < state.topline then
+      state.topline = buffer_line
+      vim.api.nvim_win_call(state.content_win, function()
+        vim.fn.winrestview({topline = state.topline})
+      end)
+    end
+    
+    vim.api.nvim_win_set_cursor(state.content_win, {buffer_line, 0})
+  end
 end
 
 function M.cycle_sort()

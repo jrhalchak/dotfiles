@@ -17,6 +17,16 @@ function M.open()
     M.setup_autocmds()
   end
   ui.render()
+  
+  local list_manager = require("neorg_todos.list_manager")
+  state.selected_line = list_manager.find_first_selectable(state.virtual_list)
+  
+  if state.content_win and vim.api.nvim_win_is_valid(state.content_win) then
+    local buffer_line = state.virtual_to_buffer_line[state.selected_line]
+    if buffer_line then
+      vim.api.nvim_win_set_cursor(state.content_win, {buffer_line, 0})
+    end
+  end
 end
 
 function M.setup_autocmds()

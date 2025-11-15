@@ -35,12 +35,13 @@ function M.get_document_headings(filepath)
     local capture_name = query.captures[id]
     if capture_name == "heading" then
       local line = node:start()
-      local text = vim.treesitter.get_node_text(node, bufnr)
-      local level = tonumber(text:match("^(%*+)")) or 1
       
-      local title_node = node:named_child(0)
+      local title_node = node:field("title")[1]
       if title_node then
         local title_text = vim.treesitter.get_node_text(title_node, bufnr)
+        local full_text = vim.treesitter.get_node_text(node, bufnr)
+        local level = #(full_text:match("^(%*+)") or "*")
+        
         table.insert(headings, {
           level = level,
           line = line,
