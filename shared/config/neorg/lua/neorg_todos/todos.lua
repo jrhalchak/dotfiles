@@ -5,27 +5,48 @@
 local ui = require("neorg_todos.ui")
 local state = require("neorg_todos.state")
 
--- lua/neorg_todos/todos.lua
 local M = {}
 
 function M.open()
-  -- This is your todos() function
   if state.win and vim.api.nvim_win_is_valid(state.win) then
     vim.api.nvim_set_current_win(state.win)
   else
+    ui.create_highlights()
     ui.create_win()
-    -- TODO move this out?
     ui.set_mappings()
+    M.setup_autocmds()
   end
   ui.render()
 end
 
-print("NEORG TODOS MODULE BODY")
-vim.api.nvim_create_user_command('OpenTodos', M.open, {})
+function M.setup_autocmds()
+  local augroup = vim.api.nvim_create_augroup("NeorgTodos", { clear = true })
+  
+  vim.api.nvim_create_autocmd({"BufWritePost"}, {
+    group = augroup,
+    pattern = "*.norg",
+    callback = function()
+      if state.win and vim.api.nvim_win_is_valid(state.win) then
+        vim.schedule(function()
+          ui.render()
+        end)
+      end
+    end,
+  })
+  
+  if state.buf and vim.api.nvim_buf_is_valid(state.buf) then
+    vim.api.nvim_create_autocmd("BufWinLeave", {
+      group = augroup,
+      buffer = state.buf,
+      callback = function()
+        state.win = nil
+        state.buf = nil
+      end,
+    })
+  end
+end
 
--- vim.api.nvim_create_autocmd({ 'BufWritePost', 'FileWritePost'}, {
---   pattern = { '*.norg' },
---   callback = todos,
--- })
+print("NEORG TODOS MODULE LOADED")
+vim.api.nvim_create_user_command('OpenTodos', M.open, {})
 
 return M

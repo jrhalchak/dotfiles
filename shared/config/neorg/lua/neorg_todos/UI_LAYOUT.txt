@@ -1,0 +1,54 @@
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                     NEORG TODOS UI LAYOUT                      ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┌────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│                      Outstanding Todos                          │  ← Header (colored bg)
+│                                                                 │
+│        ▐ Sort: None ▌  ▐ Group: File ▌  ▐ Filter: All ▌       │  ← Control buttons
+│                                                                 │
+│                                                                 │
+│  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄  │
+│  █ 📁 journal/2025-01-15.norg                            █  │  ← Group header (colored bg)
+│  ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  │
+│      ▌Morning Planning → Tasks                                │  ← Heading context (optional)
+│       Review yesterday's notes                               │  ← Todo item with icon
+│       Plan today's priorities                                │
+│       Schedule meetings                                      │
+│                                                                 │
+│  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄  │
+│  █ 📁 projects/website-redesign.norg                     █  │
+│  ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  │
+│      ▌Backend → API                                            │
+│       Update authentication endpoints                        │
+│       Write API documentation                                │
+│      ▌Frontend → Components                                    │
+│       Refactor navigation component                          │
+│       Add loading states                                     │
+│                                                                 │
+└────────────────────────────────────────────────────────────────┘
+
+ICON LEGEND:
+   - Pending (gray)
+   - In Progress (yellow)
+   - Important (red)
+   - Unknown (blue)
+   - On Hold (orange)
+
+KEYBINDINGS:
+  j/k      - Navigate up/down through todos
+  h/l      - Jump between group headers
+  <Enter>  - Open file and jump to todo
+  s        - Cycle sort (none → modified → created)
+  g        - Cycle group (file → folder → day → week → month)
+  f        - Cycle filter (all → journal → status filters)
+  d        - Toggle heading context display
+  r        - Refresh todo list
+  q        - Close window
+
+BLOCK CHARACTERS USED:
+  ▄ ▀ - Half blocks for borders
+  ▐ ▌ - Half blocks for buttons
+  ▗ ▖ ▝ ▘ - Quadrant blocks for rounded corners
+  █ - Full block for solid backgrounds
