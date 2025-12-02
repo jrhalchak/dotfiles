@@ -44,6 +44,8 @@ link "$DOTFILES_DIR/shared/config/opencode/opencode.json" "$HOME/.config/opencod
 # TODO : Handle different platforms better in this file
 #--
 if [ "$(uname)" = "Darwin" ]; then
+  link "$DOTFILES_DIR/mac/.aerospace.toml" "$HOME/.aerospace.toml"
+
   exit 0
 fi
 
