@@ -309,7 +309,7 @@ function md() {
       justify-content: stretch;
       align-items: flex-start;
 
-      & > span { display: block; width: 100%; }
+      & > span { display: block; width: 100%; min-height: 1.5rem; }
       & > span:nth-child(odd) { background: rgb(255, 255, 255, 0.025); }
     }
 
@@ -543,6 +543,8 @@ function tnf() {
   esac
 }
 
+# VSCdoe Shell integration
+[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"
 
 # Helpers so I remember basic worktree commands, lol
 source ~/dotfiles/zsh/worktree-helpers.sh
