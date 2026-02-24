@@ -126,9 +126,16 @@ else
 
   alias m="$HOME/dotfiles/scripts/utils/launcher.sh"
 
+  # Added by flyctl installer
+  export FLYCTL_INSTALL="/home/jrh/.fly"
+  export PATH="$FLYCTL_INSTALL/bin:$PATH"
+
   # Setup PATH for linux
   source ~/dotfiles/zsh/linux-path.sh
 fi
+
+# VSCode Shell integartion
+[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"
 
 # TODO: Check whether this is necessary *here*, and whether the aliases on the bat repo are helpful
 # Hard-coded from `fdellwing/zsh-bat`, requires `bat` from *https://github.com/sharkdp/bat?tab=readme-ov-file#how-to-use*
