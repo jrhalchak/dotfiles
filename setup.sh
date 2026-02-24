@@ -38,6 +38,7 @@ link "$DOTFILES_DIR/shared/config/neorg" "$HOME/.config/neorg"
 link "$DOTFILES_DIR/shared/config/wezterm" "$HOME/.config/wezterm"
 link "$DOTFILES_DIR/shared/config/tmux/.tmux.conf" "$HOME/.tmux.conf"
 link "$DOTFILES_DIR/shared/config/opencode/opencode.json" "$HOME/.config/opencode/opencode.json"
+link "$DOTFILES_DIR/shared/config/.doom.d" "$HOME/.doom.d"
 
 #--
 #- Exit this script early if running on macOS (Darwin)

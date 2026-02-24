@@ -96,6 +96,11 @@ if [[ "$(uname)" == "Darwin" ]]; then
     eval "`fnm env`"
   fi
 
+  # VSCode Shell integartion
+  [[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"
+
+  PATH="$PATH:$HOME/.emacs.d/bin"
+
   # TODO: Check whether this is necessary *here*, and whether the aliases on the bat repo are helpful
   # Hard-coded from `fdellwing/zsh-bat`, requires `bat` from *https://github.com/sharkdp/bat?tab=readme-ov-file#how-to-use*
   if command -v batcat >/dev/null 2>&1; then
@@ -133,9 +138,6 @@ else
   # Setup PATH for linux
   source ~/dotfiles/zsh/linux-path.sh
 fi
-
-# VSCode Shell integartion
-[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"
 
 # TODO: Check whether this is necessary *here*, and whether the aliases on the bat repo are helpful
 # Hard-coded from `fdellwing/zsh-bat`, requires `bat` from *https://github.com/sharkdp/bat?tab=readme-ov-file#how-to-use*
