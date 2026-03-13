@@ -103,3 +103,21 @@
 ;; (set-face-background 'default "mac:windowBackgroundColor")
 (set-face-background 'default (face-background 'default))
 (set-face-stipple 'default "alpha:10%") ; tweak 10–60%
+
+; specify .org files:
+; (after! org
+;   (setq org-agenda-files
+;         '("~/vault/org/agenda.org"
+;           "~/vault/org/inbox.org"
+;           "~/vault/org/todo.org"
+;           "~/vault/org/areas/day-job.org"
+;           "~/vault/org/areas/finances.org"
+;           "~/vault/org/areas/learning.org"
+;           "~/vault/org/areas/life.org"
+;           "~/vault/org/areas/work.org")))
+
+; recursively include all .org files:
+(after! org
+  (setq org-agenda-files
+        (directory-files-recursively "~/vault/org" "\\.org$")))
+
