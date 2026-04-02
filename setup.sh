@@ -35,6 +35,7 @@ link() {
 link "$DOTFILES_DIR/zsh/.zshrc" "$HOME/.zshrc"
 link "$DOTFILES_DIR/shared/config/nvim" "$HOME/.config/nvim"
 link "$DOTFILES_DIR/shared/config/neorg" "$HOME/.config/neorg"
+link "$DOTFILES_DIR/shared/config/nvc" "$HOME/.config/nvc"
 link "$DOTFILES_DIR/shared/config/wezterm" "$HOME/.config/wezterm"
 link "$DOTFILES_DIR/shared/config/tmux/.tmux.conf" "$HOME/.tmux.conf"
 link "$DOTFILES_DIR/shared/config/opencode/opencode.json" "$HOME/.config/opencode/opencode.json"
