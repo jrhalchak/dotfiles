@@ -123,6 +123,13 @@ M.setup = function()
     { "<leader>nsb",  ":Telescope neorg find_backlinks<CR>",       desc = "Neorg: Find backlinks" },
     { "<leader>nsa",  ":Telescope neorg find_header_backlinks<CR>",desc = "Neorg: Find header backlinks" },
 
+    -- Table mode
+    { "<leader>T",  group = "Table mode" },
+    { "<leader>Tt", ":TableModeToggle<CR>",   desc = "Table: Toggle table mode" },
+    { "<leader>Tr", ":TableModeRealign<CR>",  desc = "Table: Realign" },
+    { "<leader>Tf", ":TableEvalFormulaLine<CR>", desc = "Table: Eval formula line" },
+    { "<leader>Ta", ":TableAddFormula<CR>",   desc = "Table: Add formula" },
+
     -- Opencode
     { '<leader>ot', opencode.toggle, desc = 'Toggle opencode' },
     { '<leader>oA', opencode.ask, desc = 'Ask opencode' },

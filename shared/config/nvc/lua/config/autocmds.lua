@@ -70,6 +70,7 @@ M.setup = function()
       vim.wo.foldlevel    = 99
       vim.wo.conceallevel = 3
       options.disable_colorcolumn()
+      require("config.norg_folds").setup()
     end,
   })
 end

@@ -98,8 +98,8 @@ local corner_map = {
   ["thin-thin-none-none"]     = "╰",
   ["double-double-none-none"] = "╚",
   ["thick-thick-none-none"]   = "┗",
-  ["double-thin-none-none"]   = "╘",
-  ["thin-double-none-none"]   = "╙",
+  ["double-thin-none-none"]   = "╙",
+  ["thin-double-none-none"]   = "╘",
   ["thick-thin-none-none"]    = "┖",
   ["thin-thick-none-none"]    = "┕",
 
@@ -107,8 +107,8 @@ local corner_map = {
   ["thin-none-none-thin"]     = "╯",
   ["double-none-none-double"] = "╝",
   ["thick-none-none-thick"]   = "┛",
-  ["double-none-none-thin"]   = "╛",
-  ["thin-none-none-double"]   = "╜",
+  ["double-none-none-thin"]   = "╜",
+  ["thin-none-none-double"]   = "╛",
   ["thick-none-none-thin"]    = "┙",
   ["thin-none-none-thick"]    = "┚",
 }
@@ -128,8 +128,6 @@ local function get_box_char(char, left, right, above, below)
     local key = table.concat({
       lt_above, lt_right, lt_below, lt_left
     }, "-")
-
-    print(key)
 
     -- Corners
     if corner_map[key] then
