@@ -53,3 +53,6 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;; (unpin! t)
 (package! doom-themes)
+(package! nodejs-repl)
+(package! org-appear)
+(package! org-fragtog)

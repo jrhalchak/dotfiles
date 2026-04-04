@@ -33,7 +33,7 @@ cfg.term = "xterm-256color"
 -- Visuals / Scheme
 -- ========================
 cfg.color_scheme = 'tokyonight'
-cfg.window_background_opacity = 0.7
+cfg.window_background_opacity = 0.8
 cfg.macos_window_background_blur = 60
 
 cfg.inactive_pane_hsb = {

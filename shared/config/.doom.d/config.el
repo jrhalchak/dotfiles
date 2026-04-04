@@ -44,6 +44,70 @@
 ;; (setq org-directory "~/org/")
 (setq org-directory "~/vault/org")
 
+(after! org
+  (setq org-hide-emphasis-markers t)
+  (custom-set-faces!
+    '(org-level-1 :inherit outline-1 :height 1.4)
+    '(org-level-2 :inherit outline-2 :height 1.3)
+    '(org-level-3 :inherit outline-3 :height 1.2)
+    '(org-level-4 :inherit outline-4 :height 1.1)
+    '(org-level-5 :inherit outline-5 :height 1.0))
+  ;; Unbind C-j/C-k from org-mode-map so global C-j/C-k window movement works,
+  ;; and remap heading navigation to C-S-j/C-S-k instead.
+  (map! :map org-mode-map
+        :n "C-j" nil
+        :n "C-k" nil
+        :n "C-S-j" #'org-forward-heading-same-level
+        :n "C-S-k" #'org-backward-heading-same-level))
+
+(after! org-appear
+  (setq org-appear-trigger 'always)
+  (add-hook 'org-mode-hook #'org-appear-mode))
+
+(after! org-fragtog
+  (add-hook 'org-mode-hook #'org-fragtog-mode))
+
+(after! org
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.3))
+  ;; Use dvisvgm for crisp SVG output instead of PNG
+  (setq org-latex-preview-process-default 'dvisvgm))
+
+;; Ligatures are enabled globally via the `ligatures' module in init.el.
+;; Doom only configures ligatures for prog-mode by default, so we copy the
+;; full set to `t' (all modes) here.
+(after! ligature
+  (ligature-set-ligatures t '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***"
+                               "||=" "||>" ":::" "::=" "=:=" "===" "==>" "=!="
+                               "=>>" "=<<" "=/=" "!==" "!!." ">=>" ">>=" ">>>"
+                               ">>-" ">->" "->>" "-->" "---" "-<<" "<~~" "<~>"
+                               "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
+                               "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###"
+                               "#_(" "..<" "..." "+++" "/==" "///" "_|_" "www"
+                               "&&" "^=" "~~" "~@" "~=" "~>" "~-" "**" "*>"
+                               "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|" "[|"
+                               "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!="
+                               "!!" ">:" ">=" ">>" ">-" "-~" "-|" "->" "--"
+                               "-<" "<~" "<*" "<|" "<:" "<$" "<=" "<>" "<-"
+                               "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!" "##"
+                               "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>"
+                               "++" "?:" "?=" "?." "??" ";;" "/*" "/=" "/>"
+                               "//" "__" "~~" "(*" "*)" "\\\\" "://")))
+
+;; To restrict ligatures to specific modes instead, replace the above with:
+;;
+;; (after! ligature
+;;   (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####"
+;;                                        "~~>" "***" "||=" "||>" ":::" "::="
+;;                                        "=:=" "===" "==>" "=!=" "=>>" "=<<"
+;;                                        "=/=" "!==" "!!." ">=>" ">>=" ">>>"
+;;                                        ">>-" ">->" "->>" "-->" "---" "-<<"
+;;                                        "<~~" "<~>" "<*>" "<||" "<|>" "<$>"
+;;                                        "<==" "<=>" "<=<" "<->" "<--" "<-<"
+;;                                        "<<=" "<<-" "<<<" "<+>" "</>" "###"
+;;                                        "#_(" "..<" "..." "+++" "/==" "///"
+;;                                        "_|_" "&&" "^=" "~~" "~=" "~>" "->"
+;;                                        "=>" "!=" ">=" "<=" "//" "/*" "*/")))
+
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `with-eval-after-load' block, otherwise Doom's defaults may override your
@@ -80,15 +144,25 @@
 (map! :n "C-h" #'evil-window-left
       :n "C-j" #'evil-window-down
       :n "C-k" #'evil-window-up
-      :n "C-l" #'evil-window-right)
+      :n "C-l" #'evil-window-right
+      ;; Restore visual-mode s to delete selection and enter insert (evil-substitute),
+      ;; since Doom remaps s to evil-snipe in normal mode.
+      :v "s" #'evil-substitute)
 
 ;; No titlebar - doesn't work with Aerospace
 ;;(add-to-list 'default-frame-alist '(undecorated . t))
 
 ;; Keep WM-manageable frame, but make the titlebar visually minimal
 (setq frame-title-format nil)                 ; already have
-(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-(add-to-list 'default-frame-alist '(ns-appearance . dark)) ; or light
+
+;; Translucent background setup
+;; - macOS: use NS frame params + face stippling for the blur-like effect
+;; - Linux: only set alpha; compositor (e.g. picom) can handle blur
+(defconst jrh/is-mac (eq system-type 'darwin))
+
+(when jrh/is-mac
+  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+  (add-to-list 'default-frame-alist '(ns-appearance . dark))) ; or light
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
@@ -97,8 +171,14 @@
 (setq doom-font (font-spec :family "VictorMono Nerd Font Mono" :size 14))
 (setq doom-variable-pitch-font (font-spec :family "VictorMono Nerd Font Mono"))
 
-(set-frame-parameter (selected-frame) 'alpha '(97 . 97))
-(add-to-list 'default-frame-alist '(alpha . (97 . 97)))
+(defun jrh/apply-frame-transparency (&optional frame)
+  "Apply frame transparency for GUI frames."
+  (let ((f (or frame (selected-frame))))
+    (when (display-graphic-p f)
+      ;; Works on X11/Cocoa; ignored where unsupported.
+      (ignore-errors (set-frame-parameter f 'alpha '(97 . 97)))
+      ;; PGTK/Wayland builds may prefer this.
+      (ignore-errors (set-frame-parameter f 'alpha-background 97)))))
 
 ;; (set-face-background 'default "mac:windowBackgroundColor")
 (set-face-background 'default (face-background 'default))
@@ -121,3 +201,17 @@
   (setq org-agenda-files
         (directory-files-recursively "~/vault/org" "\\.org$")))
 
+(add-to-list 'default-frame-alist '(alpha . (97 . 97)))
+(add-to-list 'default-frame-alist '(alpha-background . 97))
+(add-hook 'window-setup-hook #'jrh/apply-frame-transparency)
+(add-hook 'after-make-frame-functions #'jrh/apply-frame-transparency)
+
+(when jrh/is-mac
+  (defun jrh/macos-background-stipple ()
+    "Use macOS-only stippling for translucent/blurred background."
+    (when (display-graphic-p)
+      (ignore-errors (set-face-stipple 'default "alpha:10%"))))
+  ;; Re-apply after initial UI is up.
+  (add-hook 'window-setup-hook #'jrh/macos-background-stipple)
+  ;; Re-apply whenever a theme is loaded.
+  (advice-add 'load-theme :after (lambda (&rest _) (jrh/macos-background-stipple))))

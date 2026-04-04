@@ -4,3 +4,6 @@ export PATH="$HOME/.local/share/fnm:$PATH"
 
 # opencode
 export PATH=/home/jrh/.opencode/bin:$PATH
+
+# doom emacs
+export PATH=/home/jrh/.config/emacs/bin:$PATH
