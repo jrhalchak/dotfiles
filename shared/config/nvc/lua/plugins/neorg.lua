@@ -1,7 +1,7 @@
 local workspaces = {
-  omni  = '~/neorg/omni',
-  work  = '~/neorg/work',
-  notes = '~/neorg/notes',
+  omni  = '~/vault/omni',
+  work  = '~/vault/work',
+  notes = '~/vault/notes',
 }
 
 local default_workspace = os.getenv('NEORG_DW') or 'omni'
@@ -128,7 +128,8 @@ return {
     config = function()
       require('neorg').setup({
         load = {
-          ['core.defaults']     = {},
+          ['core.defaults']      = {},
+          ['core.text-objects'] = {},
           ['core.autocommands'] = {},
           ['core.neorgcmd']     = {},
           ['core.ui.calendar']  = {},
@@ -139,7 +140,7 @@ return {
             config = { norg_leader = '<localleader>' },
           },
           ['core.export'] = {
-            config = { export_dir = '~/neorg/exports/' },
+            config = { export_dir = '~/vault/exports/' },
           },
           ['core.concealer'] = {
             config = {
@@ -184,7 +185,66 @@ return {
 
       require('neorg_todos')
 
-      vim.keymap.set('n', '<leader>nw', pick_workspace, { desc = 'Neorg: Switch workspace' })
+      -- Insert a bare date string at cursor using the neorg calendar picker.
+      -- Falls back to vim.ui.input if the calendar module is unavailable.
+      local function insert_date_at_cursor()
+        local ok, calendar = pcall(
+          require('neorg.core').modules.get_module, 'core.ui.calendar'
+        )
+        if ok and calendar then
+          calendar.select_date({
+            callback = function(date)
+              local tempus = require('neorg.core').modules.get_module('core.tempus')
+              local date_str = tostring(tempus.to_date(date))
+              vim.api.nvim_put({ date_str }, 'c', true, true)
+            end,
+          })
+        else
+          vim.ui.input({ prompt = 'Date: ' }, function(input)
+            if input and input ~= '' then
+              vim.api.nvim_put({ input }, 'c', true, true)
+            end
+          end)
+        end
+      end
+
+      vim.keymap.set('n', '<leader>nd', insert_date_at_cursor, { desc = 'Neorg: Insert date' })
+      vim.keymap.set('n', '<leader>nw', pick_workspace,        { desc = 'Neorg: Switch workspace' })
+
+      -- Buffer-local text-object keymaps for norg files only
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = 'norg',
+        group   = vim.api.nvim_create_augroup('neorg_text_objects', { clear = true }),
+        callback = function(ev)
+          local buf  = ev.buf
+          local opts = { buffer = buf, silent = true }
+
+          -- Move heading/item up or down
+          vim.keymap.set('n', '<leader>nhu',
+            '<Plug>(neorg.text-objects.item-up)',
+            vim.tbl_extend('force', opts, { desc = 'Neorg: Move item up' }))
+          vim.keymap.set('n', '<leader>nhd',
+            '<Plug>(neorg.text-objects.item-down)',
+            vim.tbl_extend('force', opts, { desc = 'Neorg: Move item down' }))
+
+          -- Text objects (operator-pending and visual)
+          vim.keymap.set({ 'o', 'x' }, 'iH',
+            '<Plug>(neorg.text-objects.heading.inner)',
+            vim.tbl_extend('force', opts, { desc = 'Neorg: Inner heading' }))
+          vim.keymap.set({ 'o', 'x' }, 'aH',
+            '<Plug>(neorg.text-objects.heading.outer)',
+            vim.tbl_extend('force', opts, { desc = 'Neorg: Outer heading' }))
+          vim.keymap.set({ 'o', 'x' }, 'it',
+            '<Plug>(neorg.text-objects.tag.inner)',
+            vim.tbl_extend('force', opts, { desc = 'Neorg: Inner tag' }))
+          vim.keymap.set({ 'o', 'x' }, 'at',
+            '<Plug>(neorg.text-objects.tag.outer)',
+            vim.tbl_extend('force', opts, { desc = 'Neorg: Outer tag' }))
+          vim.keymap.set({ 'o', 'x' }, 'il',
+            '<Plug>(neorg.text-objects.list.outer)',
+            vim.tbl_extend('force', opts, { desc = 'Neorg: List' }))
+        end,
+      })
     end,
   },
   {

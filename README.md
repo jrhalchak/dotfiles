@@ -77,7 +77,70 @@ How i3 / LightDM / polybar / feh/ picom launch together.
    9. Starts xborders for window decorations
    10. Reloads i3 config to apply gap configuration
 
-## Todo
+## AI Instructions & Skills
+
+Reusable AI context lives under `shared/ai/`. It is designed to work consistently
+across three tools: GitHub Copilot (VS Code), OpenCode, and Claude Code.
+
+### Two layers
+
+**Layer 1 — Always-on global instructions** (`shared/ai/instructions/`)
+
+Thin context injected into every session regardless of project or topic. Contains
+personal preferences, code style, and commit conventions. Keep this short — it
+costs tokens on every request.
+
+- Source: `global.norg` (you edit this)
+- Export: `global.md` (you generate from the norg source; this is what the tools read)
+
+**Layer 2 — On-demand skills** (`shared/ai/skills/<name>/`)
+
+Topic-specific knowledge loaded only when relevant. The agent reads each skill's
+description and decides when to activate it; you can also invoke skills manually.
+Each skill directory contains:
+
+- `SKILL.md` — YAML frontmatter (`name` + `description`) + a reference to the content file
+- `<name>.norg` — source (you edit this)
+- `<name>.md` — exported (you generate; this is what the tools read)
+
+Current skills: `neorg` — norg file format syntax and conventions.
+
+### Adding a new skill
+
+1. Create `shared/ai/skills/<name>/`
+2. Write `<name>.norg` with the reference content
+3. Export to `<name>.md`
+4. Create `SKILL.md` with frontmatter `name` + `description` and a link to `<name>.md`
+5. For Copilot: add a `{ "file": "..." }` entry to `shared/config/vscode/settings.json`
+   pointing at the exported `.md` (Copilot has no skill auto-trigger; the file is
+   listed in settings so it is injected when Copilot is active)
+
+### How each tool is wired
+
+| Tool | Global instructions | Skills |
+|---|---|---|
+| **Copilot** | `settings.json` → `instructions/global.md` | `settings.json` → `skills/<name>/<name>.md` (listed explicitly) |
+| **OpenCode** | `opencode.json` `instructions` array → `instructions/global.md` | `~/.config/opencode/skills/` symlinked to `shared/ai/skills/` |
+| **Claude Code** | `~/.claude/CLAUDE.md` symlinked to `config/claude/CLAUDE.md`, which imports `instructions/global.md` | `~/.claude/skills/` symlinked to `shared/ai/skills/` |
+
+### Symlinks set by setup.sh
+
+```
+shared/config/claude/CLAUDE.md   → ~/.claude/CLAUDE.md
+shared/ai/skills/                → ~/.config/opencode/skills/
+shared/ai/skills/                → ~/.claude/skills/
+shared/config/vscode/settings.json → ~/.config/Code/User/settings.json        (Linux)
+shared/config/vscode/settings.json → ~/Library/Application Support/Code/User/settings.json  (macOS)
+```
+
+### Source vs exported files
+
+All source files are `.norg` (edited by hand). Exported `.md` files are generated
+by running `:Neorg export to-file` in Neovim and are committed alongside the source.
+The tools read the `.md` files. Never edit the `.md` files directly — edit the
+`.norg` source and re-export.
+
+
 
 - [ ] Look at this [atlassian](https://www.atlassian.com/git/tutorials/dotfiles)
 

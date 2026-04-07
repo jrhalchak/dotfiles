@@ -123,6 +123,21 @@ if [ ! -f "$VIFM_APPIMAGE" ]; then
   installed=true
 fi
 
+# Install zk (zettelkasten note CLI)
+ZK_VERSION="v0.15.2"
+ZK_BIN="$HOME/dotfiles/shared/apps/bin/zk"
+
+if [ ! -f "$ZK_BIN" ]; then
+  echo "Installing zk $ZK_VERSION..."
+  mkdir -p "$HOME/dotfiles/shared/apps/bin"
+  curl -fsSL "https://github.com/zk-org/zk/releases/download/${ZK_VERSION}/zk-${ZK_VERSION}-linux-amd64.tar.gz" \
+    -o /tmp/zk.tar.gz
+  tar -xzf /tmp/zk.tar.gz -C /tmp zk
+  mv /tmp/zk "$ZK_BIN"
+  chmod +x "$ZK_BIN"
+  installed=true
+fi
+
 # Notify of new installations
 if [ "$installed" = true ]; then
   echo ""

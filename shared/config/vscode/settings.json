@@ -1,0 +1,11 @@
+{
+    "github.copilot.nextEditSuggestions.enabled": true,
+    "python.analysis.typeCheckingMode": "standard",
+    "keyboard.dispatch": "keyCode",
+    "workbench.editor.empty.hint": "hidden",
+    "makefile.configureOnOpen": true,
+    "github.copilot.chat.codeGeneration.instructions": [
+        { "file": "${env:HOME}/dotfiles/shared/ai/instructions/global.md" },
+        { "file": "${env:HOME}/dotfiles/shared/ai/skills/neorg/neorg.md" }
+    ]
+}

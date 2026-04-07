@@ -36,10 +36,14 @@ link "$DOTFILES_DIR/zsh/.zshrc" "$HOME/.zshrc"
 link "$DOTFILES_DIR/shared/config/nvim" "$HOME/.config/nvim"
 link "$DOTFILES_DIR/shared/config/neorg" "$HOME/.config/neorg"
 link "$DOTFILES_DIR/shared/config/nvc" "$HOME/.config/nvc"
+link "$DOTFILES_DIR/shared/config/nvmd" "$HOME/.config/nvmd"
 link "$DOTFILES_DIR/shared/config/wezterm" "$HOME/.config/wezterm"
 link "$DOTFILES_DIR/shared/config/tmux/.tmux.conf" "$HOME/.tmux.conf"
 link "$DOTFILES_DIR/shared/config/opencode/opencode.json" "$HOME/.config/opencode/opencode.json"
 link "$DOTFILES_DIR/shared/config/.doom.d" "$HOME/.doom.d"
+link "$DOTFILES_DIR/shared/config/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
+link "$DOTFILES_DIR/shared/ai/skills" "$HOME/.config/opencode/skills"
+link "$DOTFILES_DIR/shared/ai/skills" "$HOME/.claude/skills"
 
 #--
 #- Exit this script early if running on macOS (Darwin)
@@ -47,6 +51,8 @@ link "$DOTFILES_DIR/shared/config/.doom.d" "$HOME/.doom.d"
 #--
 if [ "$(uname)" = "Darwin" ]; then
   link "$DOTFILES_DIR/mac/.aerospace.toml" "$HOME/.aerospace.toml"
+  link "$DOTFILES_DIR/shared/config/vscode/settings.json" \
+    "$HOME/Library/Application Support/Code/User/settings.json"
 
   exit 0
 fi
@@ -61,6 +67,7 @@ link "$DOTFILES_DIR/linux/config/picom" "$HOME/.config/picom"
 link "$DOTFILES_DIR/linux/config/polybar" "$HOME/.config/polybar"
 link "$DOTFILES_DIR/linux/config/dunst" "$HOME/.config/dunst"
 link "$DOTFILES_DIR/linux/config/wofi" "$HOME/.config/wofi"
+link "$DOTFILES_DIR/shared/config/vscode/settings.json" "$HOME/.config/Code/User/settings.json"
 
 # Bins
 for bin_file in "$DOTFILES_DIR/shared/apps/bin"/*; do

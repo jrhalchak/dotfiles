@@ -163,6 +163,7 @@ fi
 # alias neorg="nvim -u ~/neorg/.config/init.lua"
 alias neorg="NVIM_APPNAME=neorg nvim"
 alias nvc="NVIM_APPNAME=nvc nvim"
+alias nvmd="NVIM_APPNAME=nvmd nvim"
 alias nvorg="cd ~/orgfiles && NVIM_APPNAME=nvorg nvim"
 
 alias gg="git log --graph --abbrev-commit --decorate --oneline"
