@@ -9,28 +9,6 @@ return {
     ft = { "markdown" },
   },
 
-  -- zk LSP client: note search, backlinks, tag search, wikilink completion
-  {
-    "zk-org/zk-nvim",
-    dependencies = { "nvim-telescope/telescope.nvim" },
-    ft = { "markdown" },
-    config = function()
-      require("zk").setup({
-        picker = "telescope",
-        lsp = {
-          config = {
-            cmd = { "zk", "lsp" },
-            name = "zk",
-          },
-          auto_attach = {
-            enabled = true,
-            filetypes = { "markdown" },
-          },
-        },
-      })
-    end,
-  },
-
   -- mkdnflow: in-buffer markdown editing (links, todos, lists, YAML, folding)
   -- tables module disabled — vim-table-mode handles tables (with formula support)
   {
@@ -41,13 +19,44 @@ return {
         modules = {
           tables = false,  -- handled by vim-table-mode (formula support)
           yaml   = true,   -- parse YAML frontmatter
-          folds  = false, -- markview.nvim owns folding
+          folds  = false,  -- markview.nvim owns folding
+          foldtext = true, -- custom fold line display
         },
         -- resolve links relative to the current file's directory
         path_resolution = {
-          primary     = "current",
-          fallback    = "current",
-          root_marker = ".zk",
+          primary  = "current",
+          fallback = "current",
+        },
+        foldtext = {
+          object_count      = false,
+          line_count        = true,
+          line_percentage   = true,
+          word_count        = false,
+          -- single polygon icon matching heading level; no dot-count row
+          title_transformer = function()
+            return function(text)
+              local level = 0
+              local t = text
+              while t:match('^%s*#') do
+                level = level + 1
+                t = t:gsub('^%s*#', '', 1)
+              end
+              level = math.max(1, math.min(6, level))
+              local icons = { '●', '○', '△', '□', '⬠', '⬡' }
+              text = text:gsub('%b{}', '')
+              text = vim.trim(text)
+              text = text:gsub('^%s*#+%s*', '')
+              return icons[level] .. ' ' .. text
+            end
+          end,
+          fill_chars = {
+            left_edge         = ' ',
+            right_edge        = ' ',
+            left_inside       = '  ',
+            right_inside      = '  ',
+            section_separator = ' · ',
+            middle            = ' ',
+          },
         },
         links = {
           style              = "wiki",
@@ -140,7 +149,7 @@ return {
           status_order = { "not_started", "in_progress", "blocked", "cancelled", "complete" },
         },
         mappings = {
-          MkdnEnter                  = { { "n", "v" }, "<CR>" },
+          MkdnEnter                  = { "i", "<CR>" },  -- n: handled by follow_first_link_on_line(); v: <leader>nL
           MkdnGoBack                 = { "n", "<BS>" },
           MkdnGoForward              = { "n", "<Del>" },
           MkdnNextLink               = { "n", "<Tab>" },
@@ -199,21 +208,33 @@ return {
           headings = {
             enable = true,
             -- icons carried over from neorg config (user can swap)
-            heading_1 = { style = "icon", icon = "  ",  hl = "MarkviewHeading1" },
-            heading_2 = { style = "icon", icon = "  ",  hl = "MarkviewHeading2" },
-            heading_3 = { style = "icon", icon = "󰔶  ", hl = "MarkviewHeading3" },
-            heading_4 = { style = "icon", icon = "  ",  hl = "MarkviewHeading4" },
-            heading_5 = { style = "icon", icon = "󰜁  ", hl = "MarkviewHeading5" },
-            heading_6 = { style = "icon", icon = "  ",  hl = "MarkviewHeading6" },
+            heading_1 = { style = "icon", icon = "● ",  hl = "MarkviewHeading1" },
+            heading_2 = { style = "icon", icon = "○ ",  hl = "MarkviewHeading2" },
+            heading_3 = { style = "icon", icon = "△ ",  hl = "MarkviewHeading3" },
+            heading_4 = { style = "icon", icon = "□ ",  hl = "MarkviewHeading4" },
+            heading_5 = { style = "icon", icon = "⬠ ",  hl = "MarkviewHeading5" },
+            heading_6 = { style = "icon", icon = "⬡ ",  hl = "MarkviewHeading6" },
             shift_width = 0,
           },
 
           list_items = {
             enable = true,
             -- placeholder bullet — user will swap for NERDfont glyph
-            marker_minus = { add_padding = true, conceal_on_checkboxes = true, text = "→", hl = "MarkviewListItemMinus" },
-            marker_plus  = { add_padding = true, conceal_on_checkboxes = true, text = "→", hl = "MarkviewListItemPlus" },
-            marker_star  = { add_padding = true, conceal_on_checkboxes = true, text = "→", hl = "MarkviewListItemStar" },
+            marker_minus = { add_padding = false, conceal_on_checkboxes = false, text = "→", hl = "MarkviewListItemMinus" },
+            marker_plus  = { add_padding = false, conceal_on_checkboxes = false, text = "→", hl = "MarkviewListItemPlus" },
+            marker_star  = { add_padding = false, conceal_on_checkboxes = false, text = "→", hl = "MarkviewListItemStar" },
+            marker_dot = {
+              add_padding = false,
+              conceal_on_checkboxes = false,
+              text = function(_, item) return string.format("%d.", item.n) end,
+              hl = "@markup.list.markdown",
+            },
+            marker_parenthesis = {
+              add_padding = false,
+              conceal_on_checkboxes = false,
+              text = function(_, item) return string.format("%d)", item.n) end,
+              hl = "@markup.list.markdown",
+            },
           },
 
           code_blocks = { enable = true },
@@ -278,10 +299,21 @@ return {
     name = "mdagenda",
     lazy = true,
     keys = {
-      { "<leader>na", function() require("mdagenda").toggle() end, desc = "zk: Agenda" },
+      { "<leader>na", function() require("mdagenda").toggle() end, desc = "Agenda" },
     },
     config = function()
       require("mdagenda").setup()
+    end,
+  },
+
+  -- bdiagram: ASCII box-drawing conceal for ```bdiagram fenced blocks.
+  -- Local plugin; lives in pack/dev/bdiagram (outside start/ so lazy owns loading).
+  {
+    dir = vim.fn.stdpath("config") .. "/pack/dev/bdiagram",
+    name = "bdiagram",
+    ft = { "markdown" },
+    config = function()
+      require("bdiagram").setup()
     end,
   },
 }

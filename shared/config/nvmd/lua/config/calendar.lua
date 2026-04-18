@@ -33,10 +33,7 @@ end
 
 -- Open or create a journal entry for the given date.
 local function open_journal(date_str)
-  -- ZkNew accepts a 'date' option used by the filename template.
-  -- We pass it as a string; zk will use it in the {{date now ...}} template
-  -- if the group sets the filename to a date-based template.
-  require("zk.commands").get("ZkNew")({ group = "journal", date = date_str })
+  require("config.notes").journal_for_date(date_str)
 end
 
 -- Entry point called from the vimscript bridge.

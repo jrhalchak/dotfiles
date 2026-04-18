@@ -10,6 +10,8 @@ Options:
     --apply         Write converted .md files to disk.
     --delete-norg   Remove .norg files after successful conversion.
                     Only valid with --apply.
+    --revert        Delete generated .md files (only where a .norg counterpart
+                    exists). Dry-run by default; add --apply to actually delete.
     --log FILE      Write a conversion log to FILE (default: stderr summary only).
     --file FILE     Convert a single file instead of a whole vault.
 
@@ -18,16 +20,18 @@ Examples:
     python3 norg2md.py --apply ~/vault/work
     python3 norg2md.py --apply --delete-norg ~/vault/omni
     python3 norg2md.py --dry-run --file ~/vault/notes/index.norg
+    python3 norg2md.py --revert ~/vault/notes          # preview what would be deleted
+    python3 norg2md.py --revert --apply ~/vault/notes  # actually delete the .md files
 
 Notes:
   - Folder structure is preserved; .norg → .md extension.
   - Links are rewritten from {:path:}[text] → [[path]] wikilink syntax.
   - Root-relative links {:$/path:} are resolved relative to the vault root.
-  - Heading anchor links ({** Heading} / {:path:** Heading}) lose the anchor
-    (no standard cross-file anchor syntax in GFM/zk); flagged in the log.
   - @bdiagram and @data blocks are wrapped in fenced code blocks.
   - Definition lists ($ term / body) become **term** + paragraph.
   - Dry-run is the default; pass --apply to write files.
+  - --revert only removes .md files that have a matching .norg file, so it
+    won't touch any markdown files you wrote by hand.
 """
 
 import argparse
@@ -46,10 +50,11 @@ NORG_TODO = {
     " ": " ",   # not started  → [ ]
     "x": "x",   # done         → [x]
     "_": "-",   # cancelled    → [-]
-    "-": "-",   # on hold      → [-]   (closest match)
+    "-": "/",   # in progress  → [/]
     "!": "!",   # urgent       → [!]
-    "?": "/",   # uncertain    → [/]   (in_progress is closest)
-    "=": "/",   # on hold (=)  → [/]
+    "?": " ",   # uncertain    → [ ]  (treat as not started)
+    "=": "-",   # on hold      → [-]
+    "+": " ",   # recurring    → [ ]  (treat as not started)
 }
 
 
@@ -416,13 +421,14 @@ def convert_definition(line: str) -> Optional[str]:
     Convert a norg definition list term ($ Term) to **Term**.
     The body follows as normal indented text.
     Returns None if not a definition term.
+    Leading whitespace is stripped — norg structurally indents definition
+    terms under headings, but that indentation has no meaning in markdown.
     """
     m = re.match(r"^(\s*)\$\s+(.*)", line)
     if not m:
         return None
-    indent  = m.group(1)
-    term    = m.group(2).strip()
-    return f"{indent}**{term}**"
+    term = m.group(2).strip()
+    return f"**{term}**"
 
 
 def convert_hr(line: str) -> Optional[str]:
@@ -472,7 +478,7 @@ def process_line(raw: str, lnum: int, state: ConvertState) -> list[str]:
         elif tag == "bdiagram":
             state.block     = Block.BDIAGRAM
             state.fence_open = True
-            return ["```"]
+            return ["```bdiagram"]
 
         elif tag == "data":
             state.block     = Block.DATA
@@ -528,7 +534,9 @@ def process_line(raw: str, lnum: int, state: ConvertState) -> list[str]:
 
     if state.block == Block.TABLE:
         # Pipe table rows pass through; @table/@end wrappers are dropped.
-        return [line]
+        # Strip leading whitespace — norg structurally indents table rows
+        # under headings, but markdown requires tables start at column 0.
+        return [line.lstrip()]
 
     if state.block == Block.MARKDOWN:
         return [line]
@@ -564,8 +572,11 @@ def process_line(raw: str, lnum: int, state: ConvertState) -> list[str]:
         converted = convert_inline(converted)
         return [converted]
 
-    # Plain paragraph line — apply inline transforms
-    out = convert_links(line, state, lnum)
+    # Plain paragraph line — strip structural indentation (norg indents body text
+    # under headings by 3-4 spaces; this is purely syntactic and has no meaning
+    # in markdown), then apply inline transforms.
+    out = line.lstrip()
+    out = convert_links(out, state, lnum)
     out = convert_inline(out)
     return [out]
 
@@ -595,6 +606,35 @@ def convert_file(norg_path: Path, vault_root: Path) -> tuple[list[str], list[str
     if state.fence_open:
         output.append("```\n")
         state.warnings.append(f"  EOF: unclosed block '{state.block}' — fence auto-closed")
+
+    # Ensure blank lines before and after table blocks.
+    # Markdown renderers (and markview) require tables to be surrounded by
+    # blank lines; without them a table immediately after a heading bleeds
+    # into the heading and concealment breaks.
+    # Skip lines inside fenced code blocks — pipe characters there are diagram
+    # or code content, not GFM table rows.
+    def is_table_row(line: str) -> bool:
+        return line.lstrip().startswith("|")
+
+    blank = "\n"
+    fixed: list[str] = []
+    in_fence = False
+    for i, line in enumerate(output):
+        stripped = line.strip()
+        if stripped.startswith("```"):
+            in_fence = not in_fence
+        prev = output[i - 1] if i > 0 else blank
+        nxt  = output[i + 1] if i + 1 < len(output) else blank
+        if not in_fence:
+            # First row of a table block: insert blank before if needed
+            if is_table_row(line) and not is_table_row(prev) and prev != blank:
+                fixed.append(blank)
+        fixed.append(line)
+        if not in_fence:
+            # Last row of a table block: insert blank after if needed
+            if is_table_row(line) and not is_table_row(nxt) and nxt != blank:
+                fixed.append(blank)
+    output = fixed
 
     input_lines = [l if l.endswith("\n") else l + "\n" for l in
                    [l.rstrip("\n") for l in raw_lines]]
@@ -671,6 +711,57 @@ def print_summary(results: list[dict], dry_run: bool, log_path: Optional[Path]):
             print(f"Could not write log: {e}", file=sys.stderr)
 
 
+# ── revert ───────────────────────────────────────────────────────────────────
+
+def run_revert(files: list[Path], apply: bool, log_path: Optional[Path]):
+    """
+    Delete the .md counterpart of each .norg file in `files`, if it exists.
+    In dry-run mode (apply=False), only prints what would be deleted.
+    """
+    candidates = [(norg, md_path(norg)) for norg in files if md_path(norg).exists()]
+
+    if not candidates:
+        print("No generated .md files found to revert.", file=sys.stderr)
+        return
+
+    deleted = 0
+    errors  = 0
+
+    for norg, md in candidates:
+        if apply:
+            try:
+                md.unlink()
+                print(f"  [deleted] {md}", file=sys.stderr)
+                deleted += 1
+            except Exception as e:
+                print(f"  [err]     {md}: {e}", file=sys.stderr)
+                errors += 1
+        else:
+            print(f"  [would delete] {md}", file=sys.stderr)
+
+    label = "DRY RUN — " if not apply else ""
+    summary_lines = [
+        "",
+        f"{label}Revert summary",
+        f"  .md files found  : {len(candidates)}",
+    ]
+    if apply:
+        summary_lines += [
+            f"  Deleted          : {deleted}",
+            f"  Errors           : {errors}",
+        ]
+    summary_lines.append("")
+    summary = "\n".join(summary_lines)
+    print(summary, file=sys.stderr)
+
+    if log_path:
+        try:
+            log_path.write_text(summary + "\n", encoding="utf-8")
+            print(f"Log written to {log_path}", file=sys.stderr)
+        except Exception as e:
+            print(f"Could not write log: {e}", file=sys.stderr)
+
+
 # ── main ──────────────────────────────────────────────────────────────────────
 
 def main():
@@ -687,6 +778,9 @@ def main():
                         help="Write converted .md files to disk.")
     parser.add_argument("--delete-norg", action="store_true",
                         help="Delete .norg files after successful conversion. Requires --apply.")
+    parser.add_argument("--revert", action="store_true",
+                        help="Delete generated .md files (only where a .norg counterpart exists). "
+                             "Dry-run by default; add --apply to actually delete.")
     parser.add_argument("--log", metavar="FILE",
                         help="Write warning log to FILE.")
     parser.add_argument("--file", metavar="FILE",
@@ -701,6 +795,8 @@ def main():
         args.dry_run = False
     if args.delete_norg and not args.apply:
         parser.error("--delete-norg requires --apply")
+    if args.revert and args.delete_norg:
+        parser.error("--revert and --delete-norg are mutually exclusive")
     if not args.file and not args.vault_root:
         parser.error("provide either a vault_root or --file")
 
@@ -724,6 +820,12 @@ def main():
             print(f"No .norg files found in {vault_root}", file=sys.stderr)
             sys.exit(0)
 
+    # ── revert mode ───────────────────────────────────────────────────────────
+    if args.revert:
+        run_revert(files, apply=args.apply, log_path=log_path)
+        return
+
+    # ── convert mode ──────────────────────────────────────────────────────────
     results = []
 
     for norg_path in files:

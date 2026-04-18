@@ -13,10 +13,14 @@ local function clear_bdiagram_conceal(bufnr, start_row, end_row)
 end
 
 local function conceal_visible_bdiagrams()
-  local bufnr = vim.api.nvim_get_current_buf()
-  local start_row = vim.fn.line("w0") - 1  -- 0-based
-  local end_row = vim.fn.line("w$") - 1
-  conceal.conceal_bdiagram(bufnr, start_row, end_row)
+  -- vim.schedule defers to end of event loop tick so we always run after
+  -- markview has applied its extmarks, letting us clear the ones we own.
+  vim.schedule(function()
+    local bufnr = vim.api.nvim_get_current_buf()
+    local start_row = vim.fn.line("w0") - 1  -- 0-based
+    local end_row = vim.fn.line("w$") - 1
+    conceal.conceal_bdiagram(bufnr, start_row, end_row)
+  end)
 end
 
 function M.setup(opts)
@@ -35,7 +39,7 @@ require'nvim-treesitter.parsers'.get_parser_configs().bdiagram = {
 
   if M.options.conceal_on_change then
     vim.api.nvim_create_autocmd({"BufReadPost", "TextChanged", "TextChangedI"}, {
-      pattern = "*.norg",
+      pattern = "*.md",
       callback = function()
         conceal_visible_bdiagrams()
       end,
@@ -44,7 +48,7 @@ require'nvim-treesitter.parsers'.get_parser_configs().bdiagram = {
 
   if M.options.conceal_on_move then
     vim.api.nvim_create_autocmd({"CursorMoved", "CursorMovedI"}, {
-      pattern = "*.norg",
+      pattern = "*.md",
       callback = function()
         conceal_visible_bdiagrams()
       end,
@@ -53,7 +57,7 @@ require'nvim-treesitter.parsers'.get_parser_configs().bdiagram = {
 
   if M.options.conceal_insert_toggle then
     vim.api.nvim_create_autocmd("FileType", {
-      pattern = "norg",
+      pattern = "markdown",
       callback = function(args)
         local bufnr = args.buf
 
@@ -67,7 +71,9 @@ require'nvim-treesitter.parsers'.get_parser_configs().bdiagram = {
         vim.api.nvim_create_autocmd({"InsertLeave"}, {
           buffer = bufnr,
           callback = function()
-            require("bdiagram.conceal").conceal_bdiagram(bufnr, 0, vim.api.nvim_buf_line_count(bufnr)-1)
+            vim.schedule(function()
+              require("bdiagram.conceal").conceal_bdiagram(bufnr, 0, vim.api.nvim_buf_line_count(bufnr)-1)
+            end)
           end,
           desc = "Restore bdiagram conceals after insert mode"
         })

@@ -32,6 +32,7 @@ link() {
   echo "Linked $src -> $dest"
 }
 
+link "$DOTFILES_DIR/shared/.inputrc" "$HOME/.inputrc"
 link "$DOTFILES_DIR/zsh/.zshrc" "$HOME/.zshrc"
 link "$DOTFILES_DIR/shared/config/nvim" "$HOME/.config/nvim"
 link "$DOTFILES_DIR/shared/config/neorg" "$HOME/.config/neorg"

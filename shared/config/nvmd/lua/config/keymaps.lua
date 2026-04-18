@@ -2,6 +2,84 @@
 local constants = require"config.constants"
 local utils = require"config.utils"
 
+-- Opens index.md for the given vault entry { name, path }.
+local function open_vault_index(vault)
+  vim.cmd("edit " .. vim.fn.fnameescape(vault.path .. "/index.md"))
+end
+
+-- Shows a telescope picker over all configured vaults; calls cb with the chosen entry.
+local function pick_vault(prompt, cb)
+  local cfg = require("mdagenda.config")
+  vim.ui.select(cfg.vault_list(), {
+    prompt = prompt,
+    format_item = function(v) return v.name end,
+  }, function(choice)
+    if choice then cb(choice) end
+  end)
+end
+
+-- Inserts YAML frontmatter at the top of the current markdown buffer.
+-- No-ops if frontmatter already exists.
+local function insert_note_metadata()
+  if vim.bo.filetype ~= "markdown" then return end
+  if vim.api.nvim_buf_get_lines(0, 0, 1, false)[1] == "---" then
+    vim.notify("Frontmatter already exists", vim.log.levels.INFO)
+    return
+  end
+  local title     = vim.fn.expand("%:t:r")
+  local author    = vim.fn.expand("$USER")
+  local timestamp = vim.fn.strftime("%Y-%m-%dT%H:%M:%S%z")
+  local lines = {
+    "---",
+    "title: " .. title,
+    "description: ",
+    "authors: " .. author,
+    "categories: ",
+    "created: " .. timestamp,
+    "updated: " .. timestamp,
+    "---",
+    "",
+  }
+  vim.api.nvim_buf_set_lines(0, 0, 0, false, lines)
+  -- land on the title value, ready to edit
+  vim.api.nvim_win_set_cursor(0, { 2, #"title: " })
+  vim.cmd("startinsert!")
+end
+
+-- Follow the first wiki link or markdown link on the current line.
+-- Mimics Neorg's <CR> navigation: jump to the link target regardless of where
+-- the cursor sits on the line. Silent no-op when no link is found.
+local function follow_first_link_on_line()
+  local line = vim.api.nvim_get_current_line()
+
+  -- Wiki link: [[path]], [[path#anchor]], [[path|alias]], [[path#anchor|alias]]
+  local wiki = line:match('%[%[([^%]]+)%]%]')
+  if wiki then
+    local target = wiki:match('^([^|]+)') or wiki
+    local path, anchor = target:match('^([^#]+)#?(.*)')
+    anchor = (anchor and anchor ~= '') and anchor or nil
+    require('mkdnflow').links.followLink({
+      path   = vim.trim(path),
+      anchor = anchor and vim.trim(anchor) or nil,
+    })
+    return
+  end
+
+  -- Standard markdown link: [text](path) or [text](path#anchor)
+  local md = line:match('%[.-%]%(([^)]+)%)')
+  if md then
+    local path, anchor = md:match('^([^#]+)#?(.*)')
+    anchor = (anchor and anchor ~= '') and anchor or nil
+    require('mkdnflow').links.followLink({
+      path   = vim.trim(path),
+      anchor = anchor and vim.trim(anchor) or nil,
+    })
+    return
+  end
+
+  -- No link found: silent no-op
+end
+
 --[[
   The normal/visual configurations are setup for which-key. Use utils.keymap if
   which-key isn"t in the config.
@@ -99,36 +177,66 @@ M.setup = function()
     { "<leader>wv", ":set scb<CR>", desc = "Mark buf for sync view" },
     { "<leader>wd", ":diffthis<CR>", desc = "Mark buf for diff" },
 
-    -- Notes (zk)
-    { "<leader>n",   group = "Notes (zk)" },
+    -- Notes
+    { "<leader>n",   group = "Notes" },
     -- new notes
     { "<leader>nn",  group = "New note" },
-    { "<leader>nnn", "<CMD>ZkNew { dir = vim.fn.expand('%:p:h') }<CR>",            desc = "zk: New note (here)" },
-    { "<leader>nnj", "<CMD>ZkNew { group = 'journal' }<CR>",                       desc = "zk: New journal entry" },
-    { "<leader>nnc", function() _G._calendar_mode = "journal" vim.cmd("Calendar") end, desc = "zk: Open journal for date (calendar)" },
+    { "<leader>nnn", function() require("config.notes").new_note() end,            desc = "notes: New note (here)" },
+    -- journal
+    { "<leader>nj",  group = "Journal" },
+    { "<leader>njt", function() require("config.notes").journal(0)  end,           desc = "notes: Journal today" },
+    { "<leader>njn", function() require("config.notes").journal(1)  end,           desc = "notes: Journal tomorrow" },
+    { "<leader>njp", function() require("config.notes").journal(-1) end,           desc = "notes: Journal yesterday" },
+    { "<leader>njc", function() _G._calendar_mode = "journal" vim.cmd("Calendar") end, desc = "notes: Journal calendar picker" },
+    { "<leader>njl", function() require("config.notes").journal_list() end,        desc = "notes: List journal entries" },
     -- find / search
     { "<leader>nf",  group = "Find" },
-    { "<leader>nd",  function() _G._calendar_mode = "date"    vim.cmd("Calendar") end, desc = "zk: Insert date from calendar" },
-    { "<leader>nff", "<CMD>ZkNotes { sort = { 'modified' } }<CR>",                 desc = "zk: Find notes" },
-    { "<leader>nft", "<CMD>ZkTags<CR>",                                            desc = "zk: Find by tag" },
-    { "<leader>nfg", "<CMD>ZkNotes { match = { vim.fn.input('Search: ') } }<CR>",  desc = "zk: Grep notes" },
+    { "<leader>nd",  function() _G._calendar_mode = "date"    vim.cmd("Calendar") end, desc = "notes: Insert date from calendar" },
+    { "<leader>nff", function() require("config.notes").find() end,                desc = "notes: Find notes" },
+    { "<leader>nft", function() require("config.notes").grep_tags() end,           desc = "notes: Find by tag" },
+    { "<leader>nfg", function() require("config.notes").grep() end,                desc = "notes: Grep notes" },
     -- current buffer
-    { "<leader>nb",  "<CMD>ZkBacklinks<CR>",                                       desc = "zk: Backlinks" },
-    { "<leader>nl",  "<CMD>ZkLinks<CR>",                                           desc = "zk: Links in note" },
-    { "<leader>ni",  "<CMD>ZkInsertLink<CR>",                                      desc = "zk: Insert link" },
+    { "<leader>nb",  function() require("config.notes").backlinks() end,           desc = "notes: Backlinks" },
+    { "<leader>nl",  function() require("config.notes").note_links() end,          desc = "notes: Links in note" },
+    { "<leader>ni",  function() require("config.notes").insert_link() end,         desc = "notes: Insert link" },
+    { "<leader>nm",  insert_note_metadata,                                         desc = "notes: Insert note metadata" },
+    { "<leader>nI",  function()
+        -- 1. If inside a vault, open its index directly
+        local vault = require("config.notes").vault_for_buf()
+        if vault then
+          open_vault_index(vault)
+          return
+        end
+        -- 2. Fall back to ZK_DEFAULT_VAULT (or configured env var)
+        local default = require("mdagenda.config").default_vault()
+        if default then
+          open_vault_index(default)
+          return
+        end
+        -- 3. Nothing configured: show picker
+        pick_vault("Open vault index:", open_vault_index)
+      end,                                                                          desc = "notes: Open vault index" },
+    { "<leader>nv",  function()
+        pick_vault("Switch vault:", open_vault_index)
+      end,                                                                          desc = "notes: Switch vault" },
+    { "<leader>n?",  function()
+        vim.cmd("vsplit " .. vim.fn.fnameescape(vim.fn.stdpath("config") .. "/NOTES.md"))
+      end,                                                                          desc = "notes: Open reference" },
     -- agenda
-    { "<leader>na",  function() require("mdagenda").toggle() end,                  desc = "zk: Agenda" },
-    { "<leader>nD",  function() _G._calendar_mode = "due_date"     vim.cmd("Calendar") end, desc = "zk: Set due date" },
-    { "<leader>nT",  function() _G._calendar_mode = "due_datetime" vim.cmd("Calendar") end, desc = "zk: Set due date+time" },
-    { "<leader>nP",  function() require("mdagenda.edit").cycle_priority() end,     desc = "zk: Cycle priority" },
-    { "<leader>nC",  function() require("mdagenda.convert").todo_to_task() end,    desc = "zk: Convert todo to task file" },
+    { "<leader>na",  function() require("mdagenda").toggle() end,                  desc = "Agenda" },
+    { "<leader>nD",  function() _G._calendar_mode = "due_date"     vim.cmd("Calendar") end, desc = "Set due date" },
+    { "<leader>nT",  function() _G._calendar_mode = "due_datetime" vim.cmd("Calendar") end, desc = "Set due date+time" },
+    { "<leader>nP",  function() require("mdagenda.edit").cycle_priority() end,     desc = "Cycle priority" },
+    { "<leader>nC",  function() require("mdagenda.convert").todo_to_task() end,    desc = "Convert todo to task file" },
 
     -- Table mode
-    { "<leader>T",  group = "Table mode" },
-    { "<leader>Tt", ":TableModeToggle<CR>",   desc = "Table: Toggle table mode" },
-    { "<leader>Tr", ":TableModeRealign<CR>",  desc = "Table: Realign" },
-    { "<leader>Tf", ":TableEvalFormulaLine<CR>", desc = "Table: Eval formula line" },
-    { "<leader>Ta", ":TableAddFormula<CR>",   desc = "Table: Add formula" },
+    { "<leader>nt",   group = "Table mode" },
+    { "<leader>ntt",  ":TableModeToggle<CR>",      desc = "Table: Toggle table mode" },
+    { "<leader>ntr",  ":TableModeRealign<CR>",     desc = "Table: Realign" },
+    { "<leader>ntf",  ":TableEvalFormulaLine<CR>", desc = "Table: Eval formula line" },
+    { "<leader>nta",  ":TableAddFormula<CR>",      desc = "Table: Add formula" },
+    { "<leader>ntd",  group = "Table: Delete" },
+    { "<leader>nti",  group = "Table: Insert" },
 
     -- Opencode
     { '<leader>ot', opencode.toggle, desc = 'Toggle opencode' },
@@ -245,6 +353,34 @@ M.setup_lsp = function(buf)
   })
 end
 
+
+M.setup_markdown = function(buf)
+  local wk = require("which-key")
+
+  -- Normal mode: <CR> follows the first link on the line (Neorg-style navigation)
+  vim.keymap.set('n', '<CR>', follow_first_link_on_line, {
+    buffer = buf,
+    desc   = 'Follow first link on line',
+  })
+
+  -- Normal mode: <leader>nL selects the word under cursor, then opens a picker
+  -- to choose an existing note; the word becomes the link display text.
+  vim.keymap.set('n', '<leader>nL', function()
+    require("config.notes").insert_link()
+  end, { buffer = buf, desc = 'notes: Insert link (word as display text)' })
+
+  -- Visual mode: <leader>nL inserts a link, using selection as display text
+  -- Visual mode: <leader>nc creates a new note from selection (title = selection)
+  --              and replaces the selection with a link to the new note
+  wk.add({
+    {
+      mode   = { "v" },
+      buffer = buf,
+      { "<leader>nL", function() require("config.notes").insert_link_visual() end,    desc = "notes: Insert link (selection as display text)" },
+      { "<leader>nc", function() require("config.notes").new_from_selection() end,    desc = "notes: New note from selection" },
+    }
+  })
+end
 
 M.setup_splits = function()
   local wk = require"which-key"

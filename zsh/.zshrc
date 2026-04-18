@@ -122,9 +122,9 @@ if [[ "$(uname)" == "Darwin" ]]; then
     export MANROFFOPT="-c"
   fi
 
-  export NEORG_DW="omni"
+  export ZK_DEFAULT_VAULT="omni"
 else
-  export NEORG_DW="notes"
+  export ZK_DEFAULT_VAULT="notes"
 
   source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
   source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh

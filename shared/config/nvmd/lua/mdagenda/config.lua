@@ -4,6 +4,10 @@
 local M = {}
 
 M.defaults = {
+  -- Environment variable whose value names the default vault (e.g. "omni").
+  -- Set on a per-machine basis so the picker is skipped when not in a vault.
+  -- Example: export ZK_DEFAULT_VAULT=omni
+  default_vault_env = "ZK_DEFAULT_VAULT",
   vaults = {
     notes = vim.fn.expand("~/vault/notes"),
     omni  = vim.fn.expand("~/vault/omni"),
@@ -27,6 +31,22 @@ function M.vault_list()
   end
   table.sort(out, function(a, b) return a.name < b.name end)
   return out
+end
+
+-- Return the default vault { name, path } from the configured env var, or nil.
+function M.default_vault()
+  local env_name = M.values.default_vault_env
+  local val = env_name and vim.env[env_name]
+  if not val or val == "" then return nil end
+  local path = M.values.vaults[val]
+  if not path then
+    vim.notify(
+      string.format("mdagenda: %s=%q does not match a configured vault", env_name, val),
+      vim.log.levels.WARN
+    )
+    return nil
+  end
+  return { name = val, path = path }
 end
 
 -- Derive vault name from a file path. Returns nil if path is outside all vaults.

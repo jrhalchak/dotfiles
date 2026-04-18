@@ -138,6 +138,8 @@ return {
   },
   {
     "folke/snacks.nvim",
+    priority = 1000,
+    lazy = false,
     ---@type snacks.Config
     opts = {
       -- your configuration comes here
@@ -223,6 +225,38 @@ return {
           scope = { enabled = false },
           words = { enabled = false },
         }
+      },
+      {
+        "folke/noice.nvim",
+        event = "VeryLazy",
+        dependencies = {
+          "MunifTanjim/nui.nvim",
+        },
+        opts = {
+          -- use snacks for notifications instead of noice
+          notify = { enabled = false },
+          -- use snacks for vim.ui.input
+          views = {
+            cmdline_popup = {
+              position = { row = "40%", col = "50%" },
+              size = { width = 60, height = "auto" },
+            },
+          },
+          routes = {
+            -- send unimportant messages (e.g. written, line info) to mini popup
+            {
+              filter = {
+                event = "msg_show",
+                any = {
+                  { find = "%d+L, %d+B" },
+                  { find = "; after #%d+" },
+                  { find = "; before #%d+" },
+                },
+              },
+              view = "mini",
+            },
+          },
+        },
       },
       {
         "folke/which-key.nvim",

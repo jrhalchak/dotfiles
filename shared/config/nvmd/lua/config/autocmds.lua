@@ -73,6 +73,16 @@ M.setup = function()
       require("config.norg_folds").setup()
     end,
   })
+
+  augroup("MarkdownFileType", groupopts)
+  autocmd("Filetype", {
+    group = "MarkdownFileType",
+    pattern = { "markdown" },
+    callback = function(ev)
+      require("config.markdown_folds").setup()
+      require("config.keymaps").setup_markdown(ev.buf)
+    end,
+  })
 end
 
 return M
