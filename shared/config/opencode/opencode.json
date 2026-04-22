@@ -3,5 +3,11 @@
   "instructions": [
     ".github/copilot-instructions.md",
     "~/dotfiles/shared/ai/instructions/global.md"
-  ]
+  ],
+  "mcp": {
+    "atlassian-mcp-server": {
+      "type": "remote",
+      "url": "https://mcp.atlassian.com/v1/mcp"
+    }
+  }
 }

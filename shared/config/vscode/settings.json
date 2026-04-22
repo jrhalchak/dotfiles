@@ -7,5 +7,13 @@
     "github.copilot.chat.codeGeneration.instructions": [
         { "file": "${env:HOME}/dotfiles/shared/ai/instructions/global.md" },
         { "file": "${env:HOME}/dotfiles/shared/ai/skills/neorg/neorg.md" }
-    ]
+    ],
+    "mcp": {
+        "servers": {
+            "atlassian-mcp-server": {
+                "url": "https://mcp.atlassian.com/v1/mcp",
+                "type": "http"
+            }
+        }
+    }
 }
