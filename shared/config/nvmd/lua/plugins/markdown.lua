@@ -17,7 +17,7 @@ return {
     config = function()
       require("mkdnflow").setup({
         modules = {
-          tables = false,  -- handled by vim-table-mode (formula support)
+          tables = { enable = false },  -- handled by vim-table-mode (formula support)
           yaml   = true,   -- parse YAML frontmatter
           folds  = false,  -- markview.nvim owns folding
           foldtext = true, -- custom fold line display
