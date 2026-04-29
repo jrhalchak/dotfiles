@@ -50,10 +50,10 @@ return {
             end
           end,
           fill_chars = {
-            left_edge         = ' ',
+            left_edge         = '',
             right_edge        = ' ',
-            left_inside       = '  ',
-            right_inside      = '  ',
+            left_inside       = ' ',
+            right_inside      = '',
             section_separator = ' · ',
             middle            = ' ',
           },
