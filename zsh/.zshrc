@@ -71,6 +71,7 @@ alias vim="vi"
 
 alias ctags='/usr/local/bin/ctags'
 alias vidc="nvim -u \"NONE\""
+alias smv='sudo rsync -a --info=progress2 --remove-source-files'
 
 alias ssh-all='ssh-add $(find ~/.ssh -type f ! -name "*.*" -not -name "config" -not -name "known_hosts" -exec realpath {} \;)'
 

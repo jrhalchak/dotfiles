@@ -19,8 +19,8 @@ font pango:VictorMono Nerd Font Mono Bold 10
 exec_always --no-startup-id ~/dotfiles/linux/scripts/input.sh
 exec_always --no-startup-id sh -c 'stdbuf -oL i3-msg -t subscribe "[\"output\"]" | while read -r _; do ~/dotfiles/linux/scripts/monitor_xrandr.sh; done'
 
-# Always run keynav for keyboard (mouse) pointer navigation with splits
-exec_always --no-startup-id keynav 'loadconfig ~/.config/keynav/keynavrc,daemonize'
+# Launch keynav overlay directly via i3 binding (passive grab unreliable on this system)
+bindsym $mod+semicolon exec --no-startup-id "keynav 'loadconfig ~/.config/keynav/keynavrc,start'"
 
 # This font is widely installed, provides lots of unicode glyphs, right-to-left text rendering and scalability on retina/hidpi displays (thanks to pango). #font pango:DejaVu Sans Mono 8
 
@@ -86,11 +86,12 @@ bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOU
 bindsym $mod+Shift+q kill
 
 # ROFI
-# Program Launcher
-bindsym $mod+space exec rofi -no-config -no-lazy-grab -show drun -modi drun -theme ~/.config/wofi/launcher.rasi
-bindsym $mod+Shift+space exec rofi -no-config -no-lazy-grab -show drun -modi filebrowser -theme ~/.config/wofi/launcher.rasi
+# App launcher
+bindsym $mod+space exec --no-startup-id rofi -no-config -no-lazy-grab -show drun -modi drun -theme ~/.config/rofi/launcher.rasi
+# Command runner: Enter = run silently, Shift+Enter = run in terminal
+bindsym $mod+Shift+space exec --no-startup-id ~/dotfiles/linux/scripts/rofi_launcher.sh
 
-bindsym $mod+Tab exec rofi -no-config -no-lazy-grab -show window -theme ~/.config/wofi/launcher.rasi
+bindsym $mod+Tab exec rofi -no-config -no-lazy-grab -show window -theme ~/.config/rofi/launcher.rasi
 
 # change focus
 bindsym $mod+h focus left
@@ -120,10 +121,10 @@ bindsym $mod+e layout toggle split
 bindsym $mod+t layout stacking
 
 # toggle tiling / floating
-bindsym $mod+Shift+backtick floating toggle
+bindsym $mod+Shift+grave floating toggle
 
 # change focus between tiling / floating windows
-bindsym $mod+backtick focus mode_toggle
+bindsym $mod+grave focus mode_toggle
 
 # focus the parent container
 bindsym $mod+a focus parent

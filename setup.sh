@@ -64,10 +64,11 @@ fi
 
 link "$DOTFILES_DIR/linux/config/fastfetch" "$HOME/.config/fastfetch"
 link "$DOTFILES_DIR/linux/config/i3" "$HOME/.config/i3"
+link "$DOTFILES_DIR/linux/config/keynav" "$HOME/.config/keynav"
 link "$DOTFILES_DIR/linux/config/picom" "$HOME/.config/picom"
 link "$DOTFILES_DIR/linux/config/polybar" "$HOME/.config/polybar"
 link "$DOTFILES_DIR/linux/config/dunst" "$HOME/.config/dunst"
-link "$DOTFILES_DIR/linux/config/wofi" "$HOME/.config/wofi"
+link "$DOTFILES_DIR/linux/config/rofi" "$HOME/.config/rofi"
 link "$DOTFILES_DIR/shared/config/vscode/settings.json" "$HOME/.config/Code/User/settings.json"
 
 # Bins

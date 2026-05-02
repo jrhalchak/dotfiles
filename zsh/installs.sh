@@ -92,8 +92,8 @@ nvim_appimage="$HOME/dotfiles/shared/apps/bin/nvim"
 if [ ! -f "$nvim_appimage" ]; then
   echo "Installing Neovim AppImage $nvim_version..."
   mkdir -p "$HOME/dotfiles/shared/apps/bin"
-  curl -fsSL "https://github.com/neovim/neovim/releases/download/${nvim_version}/nvim-linux-x86_64.appimage" -o "nvim"
-  chmod +x "nvim"
+  curl -fsSL "https://github.com/neovim/neovim/releases/download/${nvim_version}/nvim-linux-x86_64.appimage" -o "$nvim_appimage"
+  chmod +x "$nvim_appimage"
   installed=true
 fi
 
@@ -138,6 +138,18 @@ if [ ! -f "$ZK_BIN" ]; then
   installed=true
 fi
 
+# Install battop binary if not present
+BATTOP_VERSION="v0.2.4"
+BATTOP_BIN="$HOME/dotfiles/shared/apps/bin/battop"
+
+if [ ! -f "$BATTOP_BIN" ]; then
+  echo "Installing battop $BATTOP_VERSION..."
+  mkdir -p "$HOME/dotfiles/shared/apps/bin"
+  curl -fsSL "https://github.com/svartalf/rust-battop/releases/download/${BATTOP_VERSION}/battop-${BATTOP_VERSION}-x86_64-unknown-linux-gnu" -o "$BATTOP_BIN"
+  chmod +x "$BATTOP_BIN"
+  installed=true
+fi
+
 # Notify of new installations
 if [ "$installed" = true ]; then
   echo ""
@@ -147,5 +159,3 @@ if [ "$installed" = true ]; then
   echo "-----------------------------------------------------"
   echo ""
 fi
-
-

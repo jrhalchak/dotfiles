@@ -82,6 +82,14 @@ function precmd() {
     echo "" # buffer line
     fastfetch
     echo "" # buffer line
+    # _ROFI_WZ_CMD: run a command passed in from rofi_launcher.sh via wezterm.
+    # Namespaced to avoid accidental collision with other tools. Evaluated here
+    # so output appears after fastfetch but before the first prompt.
+    if [[ -n "$_ROFI_WZ_CMD" ]]; then
+      eval "$_ROFI_WZ_CMD"
+      unset _ROFI_WZ_CMD
+      echo "" # buffer line after command output
+    fi
   else
     echo "" # Add a buffer line after command output
   fi

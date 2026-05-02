@@ -73,6 +73,12 @@ function M.get_keybinds()
       action = act.TogglePaneZoomState,
     },
 
+    {
+      key = "Enter",
+      mods = "ALT",
+      action = act.SendKey({ key = "Enter", mods = "ALT" }),
+    },
+
     -- paste from the clipboard
     { key = 'V', mods = 'CTRL', action = act.PasteFrom 'Clipboard' },
 
