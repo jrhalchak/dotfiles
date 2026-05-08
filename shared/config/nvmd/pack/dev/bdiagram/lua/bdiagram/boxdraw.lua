@@ -227,6 +227,63 @@ local function get_box_char(char, left, right, above, below)
     return char
   end
 
+  -- Contextual slashes/backslashes as explicit corners. These are strict:
+  -- the slash/backslash only becomes a corner when one side is a horizontal arm
+  -- and the other side is a vertical arm, and the opposite sides are NOT
+  -- box arms. This gives an explicit, non-joining corner so stacked boxes
+  -- (top/bottom touching) can be authored with `/` and `\`.
+  if char == "\\" then
+    local left_h = left and (is_thin_h(left) or is_double_h(left) or is_thick_h(left))
+    local right_h = right and (is_thin_h(right) or is_double_h(right) or is_thick_h(right))
+    local above_v = above and (is_thin_v(above) or is_double_v(above) or is_thick_v(above))
+    local below_v = below and (is_thin_v(below) or is_double_v(below) or is_thick_v(below))
+
+    local lt_left  = line_type_h(left)
+    local lt_right = line_type_h(right)
+    local lt_above = line_type_v(above)
+    local lt_below = line_type_v(below)
+
+    -- top-right corner when there's a horizontal arm to the left and a
+    -- vertical arm below, and the other two sides are not box arms.
+    if left_h and below_v and not right_h and not above_v then
+      local key = table.concat({ "none", "none", lt_below, lt_left }, "-")
+      if corner_map[key] then return corner_map[key] end
+    end
+
+    -- bottom-left corner when there's a horizontal arm to the right and a
+    -- vertical arm above, and the other two sides are not box arms.
+    if right_h and above_v and not left_h and not below_v then
+      local key = table.concat({ lt_above, lt_right, "none", "none" }, "-")
+      if corner_map[key] then return corner_map[key] end
+    end
+  end
+
+  if char == "/" then
+    local left_h = left and (is_thin_h(left) or is_double_h(left) or is_thick_h(left))
+    local right_h = right and (is_thin_h(right) or is_double_h(right) or is_thick_h(right))
+    local above_v = above and (is_thin_v(above) or is_double_v(above) or is_thick_v(above))
+    local below_v = below and (is_thin_v(below) or is_double_v(below) or is_thick_v(below))
+
+    local lt_left  = line_type_h(left)
+    local lt_right = line_type_h(right)
+    local lt_above = line_type_v(above)
+    local lt_below = line_type_v(below)
+
+    -- top-left corner when there's a horizontal arm to the right and a
+    -- vertical arm below, and the other two sides are not box arms.
+    if right_h and below_v and not left_h and not above_v then
+      local key = table.concat({ "none", lt_right, lt_below, "none" }, "-")
+      if corner_map[key] then return corner_map[key] end
+    end
+
+    -- bottom-right corner when there's a horizontal arm to the left and a
+    -- vertical arm above, and the other two sides are not box arms.
+    if left_h and above_v and not right_h and not below_v then
+      local key = table.concat({ lt_above, "none", "none", lt_left }, "-")
+      if corner_map[key] then return corner_map[key] end
+    end
+  end
+
   -- `<` / `>`: only conceal as arrows when the inner side (the shaft side) is
   -- adjacent to a horizontal line or a `+`. Protects `<env>`, `a > b`, etc.
   if char == "<" then
