@@ -72,9 +72,9 @@ function M.conceal_bdiagram(bufnr, start_row, end_row)
           })
         else
           local conceal = boxdraw.get_box_char(char, left, right, above, below)
-          if conceal ~= char and (boxdraw.box_map[conceal] or boxdraw.box_map[char] or char == "+") then
+          if type(conceal) == "string" and conceal ~= "" and conceal ~= char then
             vim.api.nvim_buf_set_extmark(bufnr, M.namespace, r, col - 1, {
-              virt_text     = {{ tostring(conceal), "Conceal" }},
+              virt_text     = {{ conceal, "Conceal" }},
               virt_text_pos = "overlay",
               hl_mode       = "combine",
             })

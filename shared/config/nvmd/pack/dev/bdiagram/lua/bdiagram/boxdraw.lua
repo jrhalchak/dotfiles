@@ -52,7 +52,7 @@ local function is_double_h(c) return c == "=" end
 local function is_thick_h(c) return c == "_" end
 
 -- allow arrows next to corners
-local function is_thin_v(c) return c == "|" or c == "<" or c == ">" or c == "+" or c == ":" end
+local function is_thin_v(c) return c == "|" or c == "<" or c == ">" or c == "+" or c == ":" or c == "v" or c == "^" end
 -- local function is_dotted_v(c) return c == ":" end
 local function is_double_v(c) return c == ";" end
 local function is_thick_v(c) return c == "!" end
@@ -98,8 +98,8 @@ local corner_map = {
   ["thin-thin-none-none"]     = "╰",
   ["double-double-none-none"] = "╚",
   ["thick-thick-none-none"]   = "┗",
-  ["double-thin-none-none"]   = "╙",
-  ["thin-double-none-none"]   = "╘",
+  ["double-thin-none-none"]   = "╘",
+  ["thin-double-none-none"]   = "╙",
   ["thick-thin-none-none"]    = "┖",
   ["thin-thick-none-none"]    = "┕",
 
@@ -107,10 +107,12 @@ local corner_map = {
   ["thin-none-none-thin"]     = "╯",
   ["double-none-none-double"] = "╝",
   ["thick-none-none-thick"]   = "┛",
-  ["double-none-none-thin"]   = "╜",
-  ["thin-none-none-double"]   = "╛",
-  ["thick-none-none-thin"]    = "┙",
-  ["thin-none-none-thick"]    = "┚",
+  ["double-none-none-thin"]   = "╛",
+  ["thin-none-none-double"]   = "╜",
+  -- Swapped from neorg: ┚ is UP HEAVY AND LEFT LIGHT (above thick, left thin);
+  -- ┙ is UP LIGHT AND LEFT HEAVY (above thin, left thick).
+  ["thick-none-none-thin"]    = "┚",
+  ["thin-none-none-thick"]    = "┙",
 }
 
 local function get_box_char(char, left, right, above, below)
@@ -208,6 +210,38 @@ local function get_box_char(char, left, right, above, below)
     return "+"
   end
 
+  -- Context-dependent `^`: arrow when shaft is below, otherwise fall through
+  -- to the generic box_map handling (which gives the wavy `◡`).
+  if char == "^" then
+    if below == "|" or below == ":" or below == "!" or below == ";" or below == "+" then
+      return "▲"
+    end
+  end
+
+  -- Context-dependent `v`: arrow when shaft is above. Not in box_map, so
+  -- otherwise return as-is so plain text `v` is preserved.
+  if char == "v" then
+    if above == "|" or above == ":" or above == "!" or above == ";" or above == "+" then
+      return "▼"
+    end
+    return char
+  end
+
+  -- `<` / `>`: only conceal as arrows when the inner side (the shaft side) is
+  -- adjacent to a horizontal line or a `+`. Protects `<env>`, `a > b`, etc.
+  if char == "<" then
+    if right == "-" or right == "=" or right == "_" or right == "\"" or right == "+" then
+      return "◄"
+    end
+    return char
+  end
+  if char == ">" then
+    if left == "-" or left == "=" or left == "_" or left == "\"" or left == "+" then
+      return "▶"
+    end
+    return char
+  end
+
   -- TODO - Enable `+` to conceal when directly next to an arrow (as a corner in the direction of the arrow, maybe a join/cross next to box character?)
 
   -- Don't replace characters just next to normal text or in-between words
@@ -225,138 +259,6 @@ local function get_box_char(char, left, right, above, below)
     return char
   end
 end
-
---[[
-LIGHT HORIZONTAL: ─
-HEAVY HORIZONTAL: ━
-LIGHT VERTICAL: │
-HEAVY VERTICAL: ┃
-LIGHT TRIPLE DASH HORIZONTAL: ┄
-HEAVY TRIPLE DASH HORIZONTAL: ┅
-LIGHT TRIPLE DASH VERTICAL: ┆
-HEAVY TRIPLE DASH VERTICAL: ┇
-LIGHT QUADRUPLE DASH HORIZONTAL: ┈
-HEAVY QUADRUPLE DASH HORIZONTAL: ┉
-LIGHT QUADRUPLE DASH VERTICAL: ┊
-HEAVY QUADRUPLE DASH VERTICAL: ┋
-LIGHT DOWN AND RIGHT: ┌
-DOWN LIGHT AND RIGHT HEAVY: ┍
-DOWN HEAVY AND RIGHT LIGHT: ┎
-HEAVY DOWN AND RIGHT: ┏
-LIGHT DOWN AND LEFT: ┐
-DOWN LIGHT AND LEFT HEAVY: ┑
-DOWN HEAVY AND LEFT LIGHT: ┒
-HEAVY DOWN AND LEFT: ┓
-LIGHT UP AND RIGHT: └
-UP LIGHT AND RIGHT HEAVY: ┕
-UP HEAVY AND RIGHT LIGHT: ┖
-HEAVY UP AND RIGHT: ┗
-LIGHT UP AND LEFT: ┘
-UP LIGHT AND LEFT HEAVY: ┙
-UP HEAVY AND LEFT LIGHT: ┚
-HEAVY UP AND LEFT: ┛
-LIGHT VERTICAL AND RIGHT: ├
-VERTICAL LIGHT AND RIGHT HEAVY: ┝
-UP HEAVY AND RIGHT DOWN LIGHT: ┞
-DOWN HEAVY AND RIGHT UP LIGHT: ┟
-VERTICAL HEAVY AND RIGHT LIGHT: ┠
-DOWN LIGHT AND RIGHT UP HEAVY: ┡
-UP LIGHT AND RIGHT DOWN HEAVY: ┢
-HEAVY VERTICAL AND RIGHT: ┣
-LIGHT VERTICAL AND LEFT: ┤
-VERTICAL LIGHT AND LEFT HEAVY: ┥
-UP HEAVY AND LEFT DOWN LIGHT: ┦
-DOWN HEAVY AND LEFT UP LIGHT: ┧
-VERTICAL HEAVY AND LEFT LIGHT: ┨
-DOWN LIGHT AND LEFT UP HEAVY: ┩
-UP LIGHT AND LEFT DOWN HEAVY: ┪
-HEAVY VERTICAL AND LEFT: ┫
-LIGHT DOWN AND HORIZONTAL: ┬
-LEFT HEAVY AND RIGHT DOWN LIGHT: ┭
-RIGHT HEAVY AND LEFT DOWN LIGHT: ┮
-DOWN LIGHT AND HORIZONTAL HEAVY: ┯
-DOWN HEAVY AND HORIZONTAL LIGHT: ┰
-RIGHT LIGHT AND LEFT DOWN HEAVY: ┱
-LEFT LIGHT AND RIGHT DOWN HEAVY: ┲
-HEAVY DOWN AND HORIZONTAL: ┳
-LIGHT UP AND HORIZONTAL: ┴
-LEFT HEAVY AND RIGHT UP LIGHT: ┵
-RIGHT HEAVY AND LEFT UP LIGHT: ┶
-UP LIGHT AND HORIZONTAL HEAVY: ┷
-UP HEAVY AND HORIZONTAL LIGHT: ┸
-RIGHT LIGHT AND LEFT UP HEAVY: ┹
-LEFT LIGHT AND RIGHT UP HEAVY: ┺
-HEAVY UP AND HORIZONTAL: ┻
-LIGHT VERTICAL AND HORIZONTAL: ┼
-LEFT HEAVY AND RIGHT VERTICAL LIGHT: ┽
-RIGHT HEAVY AND LEFT VERTICAL LIGHT: ┾
-VERTICAL LIGHT AND HORIZONTAL HEAVY: ┿
-UP HEAVY AND DOWN HORIZONTAL LIGHT: ╀
-DOWN HEAVY AND UP HORIZONTAL LIGHT: ╁
-VERTICAL HEAVY AND HORIZONTAL LIGHT: ╂
-LEFT UP HEAVY AND RIGHT DOWN LIGHT: ╃
-RIGHT UP HEAVY AND LEFT DOWN LIGHT: ╄
-LEFT DOWN HEAVY AND RIGHT UP LIGHT: ╅
-RIGHT DOWN HEAVY AND LEFT UP LIGHT: ╆
-DOWN LIGHT AND UP HORIZONTAL HEAVY: ╇
-UP LIGHT AND DOWN HORIZONTAL HEAVY: ╈
-RIGHT LIGHT AND LEFT VERTICAL HEAVY: ╉
-LEFT LIGHT AND RIGHT VERTICAL HEAVY: ╊
-HEAVY VERTICAL AND HORIZONTAL: ╋
-LIGHT DOUBLE DASH HORIZONTAL: ╌
-HEAVY DOUBLE DASH HORIZONTAL: ╍
-LIGHT DOUBLE DASH VERTICAL: ╎
-HEAVY DOUBLE DASH VERTICAL: ╏
-DOUBLE HORIZONTAL: ═
-DOUBLE VERTICAL: ║
-DOWN SINGLE AND RIGHT DOUBLE: ╒
-DOWN DOUBLE AND RIGHT SINGLE: ╓
-DOUBLE DOWN AND RIGHT: ╔
-DOWN SINGLE AND LEFT DOUBLE: ╕
-DOWN DOUBLE AND LEFT SINGLE: ╖
-DOUBLE DOWN AND LEFT: ╗
-UP SINGLE AND RIGHT DOUBLE: ╘
-UP DOUBLE AND RIGHT SINGLE: ╙
-DOUBLE UP AND RIGHT: ╚
-UP SINGLE AND LEFT DOUBLE: ╛
-UP DOUBLE AND LEFT SINGLE: ╜
-DOUBLE UP AND LEFT: ╝
-VERTICAL SINGLE AND RIGHT DOUBLE: ╞
-VERTICAL DOUBLE AND RIGHT SINGLE: ╟
-DOUBLE VERTICAL AND RIGHT: ╠
-VERTICAL SINGLE AND LEFT DOUBLE: ╡
-VERTICAL DOUBLE AND LEFT SINGLE: ╢
-DOUBLE VERTICAL AND LEFT: ╣
-DOWN SINGLE AND HORIZONTAL DOUBLE: ╤
-DOWN DOUBLE AND HORIZONTAL SINGLE: ╥
-DOUBLE DOWN AND HORIZONTAL: ╦
-UP SINGLE AND HORIZONTAL DOUBLE: ╧
-UP DOUBLE AND HORIZONTAL SINGLE: ╨
-DOUBLE UP AND HORIZONTAL: ╩
-VERTICAL SINGLE AND HORIZONTAL DOUBLE: ╪
-VERTICAL DOUBLE AND HORIZONTAL SINGLE: ╫
-DOUBLE VERTICAL AND HORIZONTAL: ╬
-LIGHT ARC DOWN AND RIGHT: ╭
-LIGHT ARC DOWN AND LEFT: ╮
-LIGHT ARC UP AND LEFT: ╯
-LIGHT ARC UP AND RIGHT: ╰
-LIGHT DIAGONAL UPPER RIGHT TO LOWER LEFT: ╱
-LIGHT DIAGONAL UPPER LEFT TO LOWER RIGHT: ╲
-LIGHT DIAGONAL CROSS: ╳
-LIGHT LEFT: ╴
-LIGHT UP: ╵
-LIGHT RIGHT: ╶
-LIGHT DOWN: ╷
-HEAVY LEFT: ╸
-HEAVY UP: ╹
-HEAVY RIGHT: ╺
-HEAVY DOWN: ╻
-LIGHT LEFT AND HEAVY RIGHT: ╼
-LIGHT UP AND HEAVY DOWN: ╽
-HEAVY LEFT AND LIGHT RIGHT: ╾
-HEAVY UP AND LIGHT DOWN: ╿
-]]--
-
 
 return {
   box_map = box_map,

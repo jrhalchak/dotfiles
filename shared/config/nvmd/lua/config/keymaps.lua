@@ -219,6 +219,15 @@ M.setup = function()
     { "<leader>nv",  function()
         pick_vault("Switch vault:", open_vault_index)
       end,                                                                          desc = "notes: Switch vault" },
+    { "<leader>nV",  function()
+        if vim.o.virtualedit == "all" then
+          vim.o.virtualedit = ""
+          vim.notify("virtualedit: off", vim.log.levels.INFO)
+        else
+          vim.o.virtualedit = "all"
+          vim.notify("virtualedit: all (edit anywhere)", vim.log.levels.INFO)
+        end
+      end,                                                                          desc = "notes: Toggle virtualedit (edit anywhere, for diagrams)" },
     { "<leader>n?",  function()
         vim.cmd("vsplit " .. vim.fn.fnameescape(vim.fn.stdpath("config") .. "/NOTES.md"))
       end,                                                                          desc = "notes: Open reference" },
